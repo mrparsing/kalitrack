@@ -30,13 +30,15 @@ header {
     font-size: 24px;
     cursor: pointer;
     margin-right: 10px;
-    z-index: 1000; /* Assicurati che il pulsante sia sopra la sidebar */
+    margin-right: 20px;
+    margin-left: 10px;
 }
 
 /* Dashboard Layout */
 .dashboard-container {
     display: flex;
-    height: calc(100vh - 80px); /* Full height minus header */
+    height: calc(100vh - 80px);
+    /* Full height minus header */
 }
 
 /* Sidebar */
@@ -47,16 +49,12 @@ header {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    position: fixed; /* Cambiato a fixed per renderlo sempre visibile in caso di scrolling */
-    left: -250px; /* Inizialmente nascosto */
-    top: 0;
-    bottom: 0;
-    transition: left 0.3s ease; /* Modificato da transform a left per un miglior controllo */
-    z-index: 900; /* Assicurati che la sidebar sia sopra gli altri elementi */
+    position: relative;
+    transition: transform 0.3s ease;
 }
 
 .sidebar.active {
-    left: 0; /* Sposta a sinistra per mostrare */
+    transform: translateX(0);
 }
 
 /* Sidebar Button Style */
@@ -86,12 +84,13 @@ header {
 
 /* Logout button style */
 .logout-btn {
-    background-color: #ff5733; /* Distinctive color for logout */
-    color: #fff; /* Text color for logout */
+    background-color: #ff5733;
+    /* Distinctive color for logout */
+    color: #fff;
 }
 
 .logout-btn:hover {
-    background-color: #e14a2a; /* Hover color for logout */
+    background-color: #e14a2a;
 }
 
 /* Divider Style */
@@ -131,9 +130,64 @@ header {
     line-height: 1.5;
 }
 
-/* Overlay */
+/* Mobile Layout */
+@media (max-width: 768px) {
+
+    /* Display menu button */
+    .menu-btn {
+        display: block;
+    }
+
+    .dashboard-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 300px;
+        background-color: #2c2c2c;
+        transform: translateX(-100%);
+        z-index: 900;
+        padding-top: 60px;
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        padding: 20px;
+    }
+
+    /* Center main content on mobile */
+    .workout-of-the-day {
+        margin-top: 20px;
+        text-align: center;
+    }
+}
+
+#menu {
+    display: none;
+    /* Inizialmente nascosto */
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    width: 200px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#menu.open {
+    display: block;
+    /* Mostra il menu quando ha la classe 'open' */
+}
+
 .overlay {
-    display: none; /* Nasconde l'overlay */
+    display: none;
+    /* Nasconde l'overlay */
     position: fixed;
     top: 0;
     left: 0;
@@ -144,26 +198,15 @@ header {
 }
 
 .overlay.visible {
-    display: block; /* Mostra l'overlay quando ha la classe 'visible' */
+    display: block;
+    /* Mostra l'overlay quando ha la classe 'visible' */
 }
 
-/* Mobile Layout */
-@media (max-width: 768px) {
-    .dashboard-container {
-        flex-direction: column; /* Verticale su mobile */
-    }
-
-    .sidebar {
-        padding-top: 60px; /* Padding superiore per la sidebar */
-    }
-
-    .main-content {
-        padding: 20px; /* Padding per il contenuto principale */
-    }
-
-    /* Center main content on mobile */
-    .workout-of-the-day {
-        margin-top: 20px; /* Margine superiore per il contenuto */
-        text-align: center; /* Centro il contenuto */
-    }
+#menuButton {
+    font-size: 24px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    transition: transform 0.3s;
+    z-index: 1000;
 }
