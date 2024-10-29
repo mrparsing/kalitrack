@@ -37,7 +37,7 @@ header {
 }
 
 /* Contenitore della pagina di registrazione */
-.signup-container {
+.container {
     width: 100%;
     max-width: 400px;
     padding: 20px;
@@ -56,19 +56,19 @@ h2 {
 }
 
 /* Stile del form */
-.signup-form {
+.form {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-.signup-form label {
+.form label {
     text-align: left;
     font-size: 14px;
     color: #bdbdbd;
 }
 
-.signup-form input {
+.form input {
     padding: 10px;
     border: none;
     border-radius: 5px;
@@ -77,11 +77,11 @@ h2 {
     font-size: 16px;
 }
 
-.signup-form input::placeholder {
+.form input::placeholder {
     color: #999;
 }
 
-.signup-btn {
+.submit-btn {
     background-color: #ff5733;
     color: #fff;
     border: none;
@@ -92,7 +92,7 @@ h2 {
     transition: background-color 0.3s ease;
 }
 
-.signup-btn:hover {
+.submit-btn:hover {
     background-color: #e14a2a;
 }
 
@@ -126,4 +126,45 @@ h2 {
 .google-btn:hover {
     background-color: #c13528;
     /* Darker Red on hover */
+}
+
+select {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    /* Remove the default border */
+    border-radius: 5px;
+    /* Match the input fields */
+    background-color: #333;
+    /* Match the background color */
+    color: #fff;
+    /* Match the text color */
+    font-size: 16px;
+    /* Match the font size */
+    appearance: none;
+    /* Remove default styling for better control */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="%23fff" d="M8 11l-4-4h8z"/></svg>');
+    /* Custom arrow */
+    background-repeat: no-repeat;
+    /* Prevent repeating the background */
+    background-position: right 10px center;
+    /* Position the arrow */
+    background-size: 12px;
+    /* Size of the arrow */
+}
+
+select:focus {
+    outline: none;
+    /* Remove outline on focus */
+    box-shadow: 0 0 5px rgba(255, 87, 51, 0.5);
+    /* Add a subtle glow effect */
+}
+
+.home-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.home-link a {
+    color: #ff5733;
 }

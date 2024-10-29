@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profilo Utente - KaliFit</title>
+    <link rel="stylesheet" href="style_registrazione.css">
+    <script type="module">
+        // Importa le funzioni necessarie da Firebase
+        import { initializeApp } from "firebase/app";
+        import { getFirestore, collection, addDoc } from "firebase/firestore";
+
+        // Configurazione della tua app Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2qNYCMQMjm6pAqTEWvP-1FWfPfKaQCi8",
+            authDomain: "kalitrack.firebaseapp.com",
+            projectId: "kalitrack",
+            storageBucket: "kalitrack.appspot.com",
+            messagingSenderId: "253824979149",
+            appId: "1:253824979149:web:21f3085e86bb3a41821984",
+            measurementId: "G-498X9RNHLC"
+        };
+
+        // Inizializza Firebase e Firestore
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Funzione per gestire il submit del profilo
+        async function submitProfile(event) {
+            event.preventDefault(); // Prevenire il comportamento di invio predefinito del modulo
+            const age = document.getElementById('age').value;
+            const gender = document.getElementById('gender').value;
+            const weight = document.getElementById('weight').value;
+
+            try {
+                // Aggiungi i dati del profilo a Firestore
+                await addDoc(collection(db, "userProfiles"), {
+                    age: age,
+                    gender: gender,
+                    weight: weight
+                });
+                alert("Profilo salvato con successo!");
+                // Reindirizza l'utente a un'altra pagina, se necessario
+                window.location.href = '../home/home.html'; // Cambia URL se necessario
+            } catch (error) {
+                console.error("Errore nel salvataggio del profilo:", error);
+                alert("Errore nel salvataggio del profilo. Riprova più tardi.");
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <!-- Header semplice -->
+    <header>
+        <div class="logo">KaliFit</div>
+    </header>
+
+    <!-- Contenitore della pagina di profilo -->
+    <div class="container">
+        <h2>Completa il tuo profilo</h2>
+        <form class="form" id="form" onsubmit="submitProfile(event)">
+            <label for="age">Età</label>
+            <input type="number" id="age" name="age" placeholder="Inserisci la tua età" required>
+
+            <label for="gender">Sesso</label>
+            <select id="gender" name="gender" required>
+                <option value="" disabled selected>Seleziona il tuo sesso</option>
+                <option value="maschio">Maschio</option>
+                <option value="femmina">Femmina</option>
+                <option value="altro">Non specifico</option>
+            </select>
+
+            <label for="weight">Peso (in kg)</label>
+            <input type="number" id="weight" name="weight" placeholder="Inserisci il tuo peso" required>
+
+            <button type="submit" class="submit-btn">Salva Profilo</button>
+        </form>
+        <p class="home-link">Torna alla <a href="../home/home.html">dashboard</a>.</p>
+    </div>
+</body>
+
+</html>
