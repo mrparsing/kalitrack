@@ -34,21 +34,14 @@
 
         // Ottieni l'ID dell'utente attualmente autenticato
         const user = auth.currentUser;
-
+        console.log(user);
 
         // Funzione per caricare le informazioni del profilo
         // Funzione per caricare le informazioni del profilo
         window.loadProfile = function () {
-            const userId = getCurrentUserId(); // Funzione che deve restituire l'ID utente corrente
+            const userDocRef = doc(db, "userProfiles", user);
+            console.log("userId", user);
 
-            if (!userId) {
-                console.error("Nessun utente autenticato.");
-                return; // Esci se non c'è un ID utente
-            }
-
-            const userDocRef = doc(db, "userProfiles", userId);
-            console.log("userId", userId);
-            console.log(db);
             getDoc(userDocRef) // Utilizza getDoc per ottenere i dati del documento
                 .then((doc) => {
                     if (doc.exists()) {
@@ -65,11 +58,6 @@
                 .catch((error) => {
                     console.error("Errore nel recupero del documento:", error);
                 });
-        }
-        function getCurrentUserId() {
-            // Logica per ottenere l'ID utente autenticato (es. usando Firebase Auth)
-            // Restituisci l'ID dell'utente autenticato, oppure null se non c'è
-            return "userIdDelleUser"; // Sostituisci con la logica effettiva
         }
 
         // Chiama la funzione per caricare il profilo quando la pagina è pronta
