@@ -29,16 +29,13 @@ header {
     color: #ff5733;
     font-size: 24px;
     cursor: pointer;
-    margin-right: 10px;
     margin-right: 20px;
-    margin-left: 10px;
 }
 
 /* Dashboard Layout */
 .dashboard-container {
     display: flex;
-    height: calc(100vh - 80px);
-    /* Full height minus header */
+    height: calc(100vh - 80px); /* Full height minus header */
 }
 
 /* Sidebar */
@@ -82,17 +79,6 @@ header {
     color: #ff5733;
 }
 
-/* Logout button style */
-.logout-btn {
-    background-color: #ff5733;
-    /* Distinctive color for logout */
-    color: #fff;
-}
-
-.logout-btn:hover {
-    background-color: #e14a2a;
-}
-
 /* Divider Style */
 .sidebar-divider {
     height: 2px;
@@ -109,31 +95,44 @@ header {
     justify-content: center;
 }
 
-.workout-of-the-day {
+/* Profile Section */
+.profile-section {
     background-color: #2c2c2c;
     padding: 20px;
     border-radius: 10px;
     max-width: 600px;
     width: 100%;
-    text-align: center;
+    color: #f5f5f5;
 }
 
-.workout-of-the-day h2 {
+.profile-section h2 {
     color: #ff5733;
     font-size: 28px;
     margin-bottom: 15px;
 }
 
-.workout-of-the-day p {
-    color: #bdbdbd;
+.profile-section p {
     font-size: 18px;
     line-height: 1.5;
 }
 
+.profile-section button {
+    margin-top: 20px;
+    background-color: #ff5733;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.profile-section button:hover {
+    background-color: #e14a2a;
+}
+
 /* Mobile Layout */
 @media (max-width: 768px) {
-
-    /* Display menu button */
     .menu-btn {
         display: block;
     }
@@ -161,33 +160,10 @@ header {
     .main-content {
         padding: 20px;
     }
-
-    /* Center main content on mobile */
-    .workout-of-the-day {
-        margin-top: 20px;
-        text-align: center;
-    }
-}
-
-#menu {
-    display: none;
-    /* Inizialmente nascosto */
-    position: absolute;
-    background: white;
-    border: 1px solid #ccc;
-    width: 200px;
-    padding: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-#menu.open {
-    display: block;
-    /* Mostra il menu quando ha la classe 'open' */
 }
 
 .overlay {
-    display: none;
-    /* Nasconde l'overlay */
+    display: none; /* Nasconde l'overlay */
     position: fixed;
     top: 0;
     left: 0;
@@ -198,8 +174,7 @@ header {
 }
 
 .overlay.visible {
-    display: block;
-    /* Mostra l'overlay quando ha la classe 'visible' */
+    display: block; /* Mostra l'overlay quando ha la classe 'visible' */
 }
 
 #menuButton {

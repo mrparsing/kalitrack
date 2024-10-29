@@ -1,0 +1,116 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #1c1c1c;
+    color: #f5f5f5;
+}
+
+/* Header */
+header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background-color: #333;
+    color: #ff5733;
+    font-size: 24px;
+    font-weight: bold;
+    border-bottom: 2px solid #444;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #2c2c2c;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: fixed;
+    left: 0;
+    top: 70px; /* Altezza dell'header */
+    bottom: 0;
+    z-index: 900;
+}
+
+/* Sidebar Button Style */
+.sidebar-btn {
+    background-color: #333;
+    color: #f5f5f5;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.sidebar-btn:hover {
+    background-color: #444;
+    transform: scale(1.05);
+}
+
+.sidebar-btn i {
+    font-size: 20px;
+    color: #ff5733;
+}
+
+/* Profile Section Style */
+.profile-section {
+    background-color: #2c2c2c;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 600px;
+    margin: 20px auto;
+    color: #f5f5f5;
+}
+
+.profile-section h2 {
+    color: #ff5733;
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.profile-section p {
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+.profile-section button {
+    margin-top: 20px;
+    background-color: #ff5733;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.profile-section button:hover {
+    background-color: #e14a2a;
+}
+
+/* Main Content Area */
+.main-content {
+    flex-grow: 1;
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Workout Section */
+.workout-of-the-day {
+    background-color: #2c2c2c;
+    padding: 20px;
+    border-radius: 10px;
+    max-width
+}
