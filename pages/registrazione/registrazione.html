@@ -40,7 +40,7 @@
                 const user = userCredential.user;
                 console.log("Registrazione effettuata:", user);
                 // Reindirizza l'utente alla pagina di benvenuto
-                window.location.href = '../home/home.html'; // Cambia URL se necessario
+                window.location.href = '../user_profile.html';
             } catch (error) {
                 const errorCode = error.code;
                 const errorMessage = error.message;
@@ -58,7 +58,7 @@
                 const user = result.user;
                 console.log("Accesso con Google effettuato:", user);
                 // Reindirizza l'utente alla pagina di benvenuto
-                window.location.href = 'user_profile.html';
+                window.location.href = '../home/home.html';
             } catch (error) {
                 const errorCode = error.code;
                 const errorMessage = error.message;
