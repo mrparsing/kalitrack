@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrazione - KaliFit</title>
     <link rel="stylesheet" href="style_registrazione.css">
-    
+
     <!-- Firebase SDK -->
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"; // Import Firestore functions
 
         // Your web app's Firebase configuration
         const firebaseConfig = {
@@ -26,6 +28,7 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app); // Initialize Firestore
 
         // Funzione per gestire la registrazione
         async function register(event) {
@@ -39,6 +42,16 @@
                 // Registrazione riuscita
                 const user = userCredential.user;
                 console.log("Registrazione effettuata:", user);
+
+                // Salva nome e email nella raccolta userProfiles
+                await setDoc(doc(db, "userProfiles", user.uid), {
+                    name: name,
+                    email: email,
+                    age: null,
+                    gender: null,
+                    weight: null
+                });
+
                 // Reindirizza l'utente alla pagina di benvenuto
                 window.location.href = 'user_profile.html';
             } catch (error) {
@@ -50,7 +63,7 @@
         }
 
         // Funzione per gestire l'accesso con Google
-        window.loginWithGoogle = async function() { // Attach function to window
+        window.loginWithGoogle = async function () { // Attach function to window
             const provider = new GoogleAuthProvider();
             try {
                 const result = await signInWithPopup(auth, provider);
@@ -74,6 +87,7 @@
         });
     </script>
 </head>
+
 <body>
     <!-- Header semplice -->
     <header>
@@ -99,4 +113,5 @@
         <p class="login-link">Hai già un account? <a href="../login/login.html">Accedi</a></p>
     </div>
 </body>
+
 </html>

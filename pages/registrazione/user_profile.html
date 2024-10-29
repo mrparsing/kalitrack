@@ -10,7 +10,7 @@
         // Importa le funzioni necessarie da Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"; // Importa l'autenticazione
+        import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"; 
 
         // Configurazione della tua app Firebase
         const firebaseConfig = {
@@ -26,20 +26,22 @@
         // Inizializza Firebase e Firestore
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app); // Inizializza l'autenticazione
+        const auth = getAuth(app); 
 
         // Funzione per gestire il submit del profilo
-        window.submitProfile = async function (event) { // Attach function to window
-            event.preventDefault(); // Prevenire il comportamento di invio predefinito del modulo
+        window.submitProfile = async function (event) {
+            event.preventDefault(); 
+            const name = document.getElementById('name').value; // Ottieni il nome
+            const email = document.getElementById('email').value; // Ottieni l'email
             const age = document.getElementById('age').value;
             const gender = document.getElementById('gender').value;
             const weight = document.getElementById('weight').value;
 
-            const user = auth.currentUser; // Ottieni l'utente attuale
+            const user = auth.currentUser; 
 
             if (!user) {
                 alert("Devi accedere per salvare il profilo.");
-                return; // Esci dalla funzione se l'utente non è autenticato
+                return;
             }
 
             try {
@@ -50,8 +52,7 @@
                     weight: weight
                 });
                 alert("Profilo salvato con successo!");
-                // Reindirizza l'utente a un'altra pagina, se necessario
-                window.location.href = '../home/home.html'; // Cambia URL se necessario
+                window.location.href = '../home/home.html';
             } catch (error) {
                 console.error("Errore nel salvataggio del profilo:", error);
                 alert("Errore nel salvataggio del profilo. Riprova più tardi.");
@@ -61,12 +62,9 @@
 </head>
 
 <body>
-    <!-- Header semplice -->
     <header>
         <div class="logo">KaliFit</div>
     </header>
-
-    <!-- Contenitore della pagina di profilo -->
     <div class="container">
         <h2>Completa il tuo profilo</h2>
         <form class="form" id="form" onsubmit="submitProfile(event)">
