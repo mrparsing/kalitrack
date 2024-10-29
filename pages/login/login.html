@@ -5,6 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - KaliFit</title>
     <link rel="stylesheet" href="style_login.css">
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2qNYCMQMjm6pAqTEWvP-1FWfPfKaQCi8",
+            authDomain: "kalitrack.firebaseapp.com",
+            projectId: "kalitrack",
+            storageBucket: "kalitrack.appspot.com",
+            messagingSenderId: "253824979149",
+            appId: "1:253824979149:web:21f3085e86bb3a41821984",
+            measurementId: "G-498X9RNHLC"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Funzione per gestire il login
+        async function login(event) {
+            event.preventDefault(); // Prevenire il comportamento di invio predefinito del modulo
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                // Accesso riuscito
+                const user = userCredential.user;
+                console.log("Accesso effettuato:", user);
+                // Reindirizza l'utente alla dashboard (o un'altra pagina)
+                window.location.href = '../home/home.html';
+            } catch (error) {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.error("Errore durante l'accesso:", errorCode, errorMessage);
+                alert("Errore durante l'accesso: " + errorMessage);
+            }
+        }
+    </script>
 </head>
 <body>
     <!-- Header semplice -->
@@ -15,7 +56,7 @@
     <!-- Contenitore della pagina di login -->
     <div class="login-container">
         <h2>Accedi al tuo account</h2>
-        <form class="login-form" action="/dashboard" method="post">
+        <form class="login-form" onsubmit="login(event)">
             <label for="email">Email</label>
             <input type="email" id="email" name="email" placeholder="Inserisci la tua email" required>
 
