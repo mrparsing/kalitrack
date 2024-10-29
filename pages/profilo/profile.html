@@ -63,15 +63,15 @@
                 .catch((error) => {
                     console.error("Errore nel recupero del documento:", error);
                 });
+        }
+        function getCurrentUserId() {
+            // Logica per ottenere l'ID utente autenticato (es. usando Firebase Auth)
+            // Restituisci l'ID dell'utente autenticato, oppure null se non c'è
+            return "userIdDelleUser"; // Sostituisci con la logica effettiva
+        }
 
-            function getCurrentUserId() {
-                // Logica per ottenere l'ID utente autenticato (es. usando Firebase Auth)
-                // Restituisci l'ID dell'utente autenticato, oppure null se non c'è
-                return "userIdDelleUser"; // Sostituisci con la logica effettiva
-            }
-
-            // Chiama la funzione per caricare il profilo quando la pagina è pronta
-            document.addEventListener("DOMContentLoaded", loadProfile);
+        // Chiama la funzione per caricare il profilo quando la pagina è pronta
+        document.addEventListener("DOMContentLoaded", loadProfile);
     </script>
 </head>
 
@@ -151,24 +151,24 @@
     <div class="overlay" id="overlay"></div>
 
     <script>
-            function toggleSidebar() {
-                const sidebar = document.querySelector('.sidebar');
-                const overlay = document.getElementById('overlay');
-                const menuButton = document.getElementById('menuButton');
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('overlay');
+            const menuButton = document.getElementById('menuButton');
 
-                sidebar.classList.toggle('active');
-                overlay.classList.toggle('visible');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('visible');
 
-                if (sidebar.classList.contains('active')) {
-                    menuButton.innerHTML = '<i class="fas fa-times"></i>';
-                } else {
-                    menuButton.innerHTML = '<i class="fas fa-bars"></i>';
-                }
+            if (sidebar.classList.contains('active')) {
+                menuButton.innerHTML = '<i class="fas fa-times"></i>';
+            } else {
+                menuButton.innerHTML = '<i class="fas fa-bars"></i>';
             }
+        }
 
-            document.getElementById('overlay').addEventListener('click', () => {
-                toggleSidebar();
-            });
+        document.getElementById('overlay').addEventListener('click', () => {
+            toggleSidebar();
+        });
     </script>
 </body>
 
