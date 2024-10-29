@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aggiungi Sessione - KaliFit</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <link rel="stylesheet" type="text/css" href="../home/style_home.css">
+    <style>
+        /* Stili aggiuntivi */
+        .session-form {
+            margin: 20px;
+            background-color: #2c2c2c;
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .session-form label {
+            color: #f5f5f5;
+        }
+
+        .session-form input,
+        .session-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #444;
+            color: #f5f5f5;
+        }
+
+        .session-form button {
+            background-color: #ff5733;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .session-form button:hover {
+            background-color: #e14a2a;
+        }
+
+        .main-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .calendar {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+        }
+
+        /* Stili per la lista della sessione */
+        #sessionList {
+            margin-top: 15px;
+            background-color: #2c2c2c;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .session-item {
+            padding: 10px;
+            background-color: #444;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+    </style>
+
+    <script>
+        // Configura Firebase con le tue impostazioni
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2qNYCMQMjm6pAqTEWvP-1FWfPfKaQCi8",
+            authDomain: "kalitrack.firebaseapp.com",
+            projectId: "kalitrack",
+            storageBucket: "kalitrack.appspot.com",
+            messagingSenderId: "253824979149",
+            appId: "1:253824979149:web:21f3085e86bb3a41821984",
+            measurementId: "G-498X9RNHLC"
+        };
+
+        // Inizializza Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'it',
+                events: []
+            });
+            calendar.render();
+
+            flatpickr("#date", { dateFormat: "Y-m-d" });
+            const exerciseListEl = document.getElementById('exerciseList');
+            const exercises = [];
+
+            // Aggiungi esercizio alla lista
+            document.getElementById('addExerciseBtn').addEventListener('click', function () {
+                const exercise = document.getElementById('exercise').value;
+                const series = document.getElementById('series').value;
+                const recovery = document.getElementById('recovery').value;
+
+                if (exercise && series && recovery) {
+                    exercises.push({ exercise, series, recovery });
+
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'session-item';
+                    itemEl.innerText = `${exercise} - ${series} serie - Recupero: ${recovery}s`;
+                    exerciseListEl.appendChild(itemEl);
+
+                    document.getElementById('exercise').value = '';
+                    document.getElementById('series').value = '';
+                    document.getElementById('recovery').value = '';
+                }
+            });
+
+            // Aggiungi la sessione a Firestore e al calendario
+            document.getElementById('saveSessionBtn').addEventListener('click', async function () {
+                const workoutName = document.getElementById('workoutName').value;
+                const date = document.getElementById('date').value;
+
+                if (workoutName && date && exercises.length > 0) {
+                    const description = exercises.map(ex => `${ex.exercise} (${ex.series}, recupero ${ex.recovery}s)`).join(', ');
+
+                    // Verifica l'utente autenticato
+                    auth.onAuthStateChanged(async user => {
+                        if (user) {
+                            // Crea il documento della sessione con l'ID utente
+                            const sessionData = {
+                                userId: user.uid,
+                                workoutName,
+                                date,
+                                exercises
+                            };
+
+                            // Aggiungi il documento alla raccolta "session"
+                            try {
+                                await db.collection('session').add(sessionData);
+
+                                // Aggiungi l'evento al calendario
+                                calendar.addEvent({
+                                    title: workoutName,
+                                    start: date,
+                                    description: description
+                                });
+
+                                // Reset form e lista
+                                document.getElementById('sessionForm').reset();
+                                exerciseListEl.innerHTML = '';
+                                exercises.length = 0;
+
+                                alert("Sessione salvata con successo!");
+                            } catch (error) {
+                                console.error("Errore durante il salvataggio della sessione:", error);
+                                alert("Errore durante il salvataggio della sessione.");
+                            }
+                        } else {
+                            alert("Devi essere loggato per salvare la sessione.");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+</head>
+
+<body>
+    <header>
+        <button class="menu-btn" id="menuButton" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="logo">KaliFit - Aggiungi Sessione</div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Sidebar with Buttons -->
+        <aside class="sidebar">
+            <a href="home.html" class="sidebar-btn">
+                <span class="icon-container">
+                    <i class="fas fa-home"></i>
+                </span>
+                <span class="text">Dashboard</span>
+            </a>
+            <button class="sidebar-btn active">
+                <i class="fas fa-plus"></i>
+                <span>Aggiungi sessioni</span>
+            </button>
+            <button class="sidebar-btn">
+                <i class="fas fa-history"></i>
+                <span>Storico Sessioni</span>
+            </button>
+            <button class="sidebar-btn">
+                <i class="fas fa-dumbbell"></i>
+                <span>Massimali</span>
+            </button>
+            <button class="sidebar-btn">
+                <i class="fas fa-trophy"></i>
+                <span>Sfide</span>
+            </button>
+            <button class="sidebar-btn">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Sessione del Mese</span>
+            </button>
+            <div class="sidebar-divider"></div>
+            <a href="../profilo/profile.html" class="sidebar-btn">
+                <span class="icon-container">
+                    <i class="fas fa-user-circle"></i>
+                </span>
+                <span class="text">Profilo</span>
+            </a>
+            <button class="sidebar-btn">
+                <i class="fas fa-cog"></i>
+                <span>Impostazioni</span>
+            </button>
+            <button class="sidebar-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Form per aggiungere esercizi -->
+            <form class="session-form" id="sessionForm">
+                <label for="workoutName">Nome Allenamento:</label>
+                <input type="text" id="workoutName" name="workoutName" required>
+
+                <label for="date">Data:</label>
+                <input type="text" id="date" name="date" required class="flatpickr">
+
+                <label for="exercise">Esercizio:</label>
+                <input type="text" id="exercise" name="exercise" placeholder="Nome esercizio" required>
+
+                <label for="series">Serie e Ripetizioni:</label>
+                <input type="text" id="series" name="series" placeholder="E.g., 4x10" required>
+
+                <label for="recovery">Recupero (s):</label>
+                <input type="number" id="recovery" name="recovery" placeholder="Tempo di recupero in secondi" required>
+
+                <button type="button" id="addExerciseBtn">Memorizza Esercizio</button>
+
+                <!-- Lista della sessione e pulsante di aggiunta -->
+                <div id="sessionList">
+                    <h3>Sessione Corrente</h3>
+                    <div id="exerciseList"></div>
+                    <button id="saveSessionBtn" style="margin-top: 15px;">Aggiungi Sessione</button>
+                </div>
+            </form>
+
+            <!-- Calendario Dinamico -->
+            <div class="calendar" id="calendar"></div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Inizializza il calendario
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'it',
+                events: []
+            });
+            calendar.render();
+
+            // Inizializza il selettore di data
+            flatpickr("#date", { dateFormat: "Y-m-d" });
+
+            // Gestisce la lista degli esercizi
+            const exerciseListEl = document.getElementById('exerciseList');
+            const exercises = [];
+
+            // Aggiunge un esercizio alla lista
+            document.getElementById('addExerciseBtn').addEventListener('click', function () {
+                const exercise = document.getElementById('exercise').value;
+                const series = document.getElementById('series').value;
+                const recovery = document.getElementById('recovery').value;
+
+                if (exercise && series && recovery) {
+                    const exerciseItem = { exercise, series, recovery };
+                    exercises.push(exerciseItem);
+
+                    // Aggiorna la lista visiva
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'session-item';
+                    itemEl.innerText = `${exercise} - ${series} serie - Recupero: ${recovery}s`;
+                    exerciseListEl.appendChild(itemEl);
+
+                    // Reset input
+                    document.getElementById('exercise').value = '';
+                    document.getElementById('series').value = '';
+                    document.getElementById('recovery').value = '';
+                }
+            });
+
+            // Aggiunge la sessione al calendario
+            document.getElementById('saveSessionBtn').addEventListener('click', function () {
+                const workoutName = document.getElementById('workoutName').value;
+                const date = document.getElementById('date').value;
+
+                if (workoutName && date && exercises.length > 0) {
+                    // Crea una descrizione della sessione
+                    const description = exercises.map(ex => `${ex.exercise} (${ex.series}, recupero ${ex.recovery}s)`).join(', ');
+
+                    // Aggiungi l'evento al calendario
+                    calendar.addEvent({
+                        title: workoutName,
+                        start: date,
+                        description: description
+                    });
+
+                    // Reset della sessione e della lista
+                    document.getElementById('sessionForm').reset();
+                    exerciseListEl.innerHTML = '';
+                    exercises.length = 0;
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
