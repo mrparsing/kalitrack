@@ -27,7 +27,7 @@
         const db = getFirestore(app);
 
         // Funzione per gestire il submit del profilo
-        async function submitProfile(event) {
+        window.submitProfile = async function () { // Attach function to window
             event.preventDefault(); // Prevenire il comportamento di invio predefinito del modulo
             const age = document.getElementById('age').value;
             const gender = document.getElementById('gender').value;
