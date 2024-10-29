@@ -10,6 +10,7 @@
         // Importa le funzioni necessarie da Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"; // Importa l'autenticazione
 
         // Configurazione della tua app Firebase
         const firebaseConfig = {
@@ -25,17 +26,26 @@
         // Inizializza Firebase e Firestore
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app); // Inizializza l'autenticazione
 
         // Funzione per gestire il submit del profilo
-        window.submitProfile = async function () { // Attach function to window
+        window.submitProfile = async function (event) { // Attach function to window
             event.preventDefault(); // Prevenire il comportamento di invio predefinito del modulo
             const age = document.getElementById('age').value;
             const gender = document.getElementById('gender').value;
             const weight = document.getElementById('weight').value;
 
+            const user = auth.currentUser; // Ottieni l'utente attuale
+
+            if (!user) {
+                alert("Devi accedere per salvare il profilo.");
+                return; // Esci dalla funzione se l'utente non è autenticato
+            }
+
             try {
                 // Aggiungi i dati del profilo a Firestore
                 await addDoc(collection(db, "userProfiles"), {
+                    uid: user.uid, // Salva l'ID dell'utente per collegare il profilo all'utente
                     age: age,
                     gender: gender,
                     weight: weight
