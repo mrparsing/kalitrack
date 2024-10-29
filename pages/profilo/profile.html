@@ -46,7 +46,7 @@
                 return; // Esci se non c'è un ID utente
             }
 
-            db.collection("users").doc(userId).get()
+            db.collection("userProfiles").doc(userId).get()
                 .then((doc) => {
                     if (doc.exists) {
                         const userData = doc.data();
