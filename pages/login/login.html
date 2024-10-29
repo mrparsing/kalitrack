@@ -27,18 +27,18 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Funzione per gestire il login
-        async function login(event) {
-            event.preventDefault(); // Prevenire il comportamento di invio predefinito del modulo
+        // Make login function available globally
+        window.login = async function(event) {
+            event.preventDefault(); // Prevent default form submission
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
             try {
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                // Accesso riuscito
+                // Login successful
                 const user = userCredential.user;
                 console.log("Accesso effettuato:", user);
-                // Reindirizza l'utente alla dashboard (o un'altra pagina)
+                // Redirect user to dashboard (or another page)
                 window.location.href = '../home/home.html';
             } catch (error) {
                 const errorCode = error.code;
@@ -46,16 +46,16 @@
                 console.error("Errore durante l'accesso:", errorCode, errorMessage);
                 alert("Errore durante l'accesso: " + errorMessage);
             }
-        }
+        };
     </script>
 </head>
 <body>
-    <!-- Header semplice -->
+    <!-- Simple Header -->
     <header>
         <div class="logo">KaliFit</div>
     </header>
 
-    <!-- Contenitore della pagina di login -->
+    <!-- Login Page Container -->
     <div class="login-container">
         <h2>Accedi al tuo account</h2>
         <form class="login-form" onsubmit="login(event)">
