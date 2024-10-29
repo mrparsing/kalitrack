@@ -31,9 +31,9 @@
         // Funzione per gestire il submit del profilo
         window.submitProfile = async function (event) {
             event.preventDefault(); 
-            const age = document.getElementById('age').value;
-            const gender = document.getElementById('gender').value;
-            const weight = document.getElementById('weight').value;
+            const age = document.getElementById('age').value || null;  // Imposta a null se non fornito
+            const gender = document.getElementById('gender').value || null;  // Imposta a null se non fornito
+            const weight = document.getElementById('weight').value || null;  // Imposta a null se non fornito
 
             const user = auth.currentUser; 
 
@@ -43,12 +43,12 @@
             }
 
             try {
-                // Aggiungi i dati del profilo a Firestore
+                // Aggiungi o aggiorna i dati del profilo a Firestore
                 await setDoc(doc(db, "userProfiles", user.uid), {
                     age: age,
                     gender: gender,
                     weight: weight
-                });
+                }, { merge: true });  // Usa merge per aggiornare solo i campi specificati
                 alert("Profilo salvato con successo!");
                 window.location.href = '../home/home.html';
             } catch (error) {
