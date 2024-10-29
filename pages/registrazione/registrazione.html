@@ -50,7 +50,7 @@
         }
 
         // Funzione per gestire l'accesso con Google
-        async function loginWithGoogle() {
+        window.loginWithGoogle = async function() { // Attach function to window
             const provider = new GoogleAuthProvider();
             try {
                 const result = await signInWithPopup(auth, provider);
@@ -65,7 +65,7 @@
                 console.error("Errore durante l'accesso con Google:", errorCode, errorMessage);
                 alert("Errore durante l'accesso con Google: " + errorMessage);
             }
-        }
+        };
 
         // Aggiungi l'evento DOMContentLoaded
         window.addEventListener('DOMContentLoaded', () => {
