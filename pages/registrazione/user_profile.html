@@ -10,7 +10,7 @@
         // Importa le funzioni necessarie da Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"; 
+        import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
         // Configurazione della tua app Firebase
         const firebaseConfig = {
@@ -26,16 +26,16 @@
         // Inizializza Firebase e Firestore
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app); 
+        const auth = getAuth(app);
 
         // Funzione per gestire il submit del profilo
         window.submitProfile = async function (event) {
-            event.preventDefault(); 
-            const age = document.getElementById('age').value || null;  // Imposta a null se non fornito
-            const gender = document.getElementById('gender').value || null;  // Imposta a null se non fornito
-            const weight = document.getElementById('weight').value || null;  // Imposta a null se non fornito
+            event.preventDefault();
+            const age = document.getElementById('age').value || null;
+            const gender = document.getElementById('gender').value || null;
+            const weight = document.getElementById('weight').value || null;
 
-            const user = auth.currentUser; 
+            const user = auth.currentUser;
 
             if (!user) {
                 alert("Devi accedere per salvare il profilo.");
@@ -43,20 +43,34 @@
             }
 
             try {
-                // Aggiungi o aggiorna i dati del profilo a Firestore
-                await setDoc(doc(db, "userProfiles", user.uid), {
+                const userRef = doc(db, "userProfiles", user.uid);
+
+                // Recupera i dati esistenti
+                const docSnap = await getDoc(userRef);
+                let existingData = {};
+
+                if (docSnap.exists()) {
+                    existingData = docSnap.data();
+                }
+
+                // Unisci i nuovi dati con i dati esistenti
+                const updatedData = {
+                    ...existingData,
                     age: age,
                     gender: gender,
                     weight: weight
-                }, { merge: true });  // Usa merge per aggiornare solo i campi specificati
+                };
+
+                // Salva i dati aggiornati
+                await setDoc(userRef, updatedData, { merge: true });
+
                 alert("Profilo salvato con successo!");
                 window.location.href = '../home/home.html';
             } catch (error) {
                 console.error("Errore nel salvataggio del profilo:", error);
                 alert("Errore nel salvataggio del profilo. Riprova più tardi.");
             }
-        }
-    </script>
+        }    </script>
 </head>
 
 <body>
