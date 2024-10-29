@@ -58,7 +58,7 @@
                 const user = result.user;
                 console.log("Accesso con Google effettuato:", user);
                 // Reindirizza l'utente alla pagina di benvenuto
-                window.location.href = '../home/home.html'; // Cambia URL se necessario
+                window.location.href = 'user_profile.html';
             } catch (error) {
                 const errorCode = error.code;
                 const errorMessage = error.message;
@@ -93,7 +93,7 @@
             <label for="password">Password</label>
             <input type="password" id="password" name="password" placeholder="Crea una password" required>
 
-            <button type="submit" class="signup-btn">Registrati</button>
+            <button type="submit" class="submit-btn">Registrati</button>
         </form>
         <button class="google-btn" onclick="loginWithGoogle()">Accedi con Google</button>
         <p class="login-link">Hai già un account? <a href="../login/login.html">Accedi</a></p>
