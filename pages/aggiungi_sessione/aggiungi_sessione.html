@@ -141,22 +141,21 @@
                 const date = document.getElementById('date').value;
 
                 if (workoutName && date && exercises.length > 0) {
-                    const description = exercises.map(ex => `${ex.exercise} (${ex.series}, recupero ${ex.recovery}s)`).join(', ');
+                    const description = exercises.map(ex => `${ex.exercise} (${ex.series} serie, recupero ${ex.recovery}s)`).join(', ');
 
                     // Verifica l'utente autenticato
                     auth.onAuthStateChanged(async user => {
                         if (user) {
-                            // Crea il documento della sessione con l'ID utente
+                            // Crea il documento della sessione con l'ID utente come ID del documento
                             const sessionData = {
-                                userId: user.uid,
                                 workoutName,
                                 date,
                                 exercises
                             };
 
-                            // Aggiungi il documento alla raccolta "session"
+                            // Salva la sessione in Firestore con userId come ID del documento
                             try {
-                                await db.collection('session').add(sessionData);
+                                await db.collection('session').doc(user.uid).set(sessionData);
 
                                 // Aggiungi l'evento al calendario
                                 calendar.addEvent({
@@ -183,6 +182,7 @@
             });
         });
     </script>
+
 
 </head>
 
