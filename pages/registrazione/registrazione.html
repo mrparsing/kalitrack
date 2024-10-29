@@ -10,7 +10,7 @@
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
         // Your web app's Firebase configuration
         const firebaseConfig = {
@@ -39,13 +39,31 @@
                 // Registrazione riuscita
                 const user = userCredential.user;
                 console.log("Registrazione effettuata:", user);
-                // Reindirizza l'utente alla pagina di benvenuto (o un'altra pagina)
+                // Reindirizza l'utente alla pagina di benvenuto
                 window.location.href = '../home/home.html'; // Cambia URL se necessario
             } catch (error) {
                 const errorCode = error.code;
                 const errorMessage = error.message;
                 console.error("Errore durante la registrazione:", errorCode, errorMessage);
                 alert("Errore durante la registrazione: " + errorMessage);
+            }
+        }
+
+        // Funzione per gestire l'accesso con Google
+        async function loginWithGoogle() {
+            const provider = new GoogleAuthProvider();
+            try {
+                const result = await signInWithPopup(auth, provider);
+                // Accesso riuscito
+                const user = result.user;
+                console.log("Accesso con Google effettuato:", user);
+                // Reindirizza l'utente alla pagina di benvenuto
+                window.location.href = '../home/home.html'; // Cambia URL se necessario
+            } catch (error) {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.error("Errore durante l'accesso con Google:", errorCode, errorMessage);
+                alert("Errore durante l'accesso con Google: " + errorMessage);
             }
         }
 
@@ -77,6 +95,7 @@
 
             <button type="submit" class="signup-btn">Registrati</button>
         </form>
+        <button class="google-btn" onclick="loginWithGoogle()">Accedi con Google</button>
         <p class="login-link">Hai già un account? <a href="../login/login.html">Accedi</a></p>
     </div>
 </body>
