@@ -44,8 +44,7 @@
 
             try {
                 // Aggiungi i dati del profilo a Firestore
-                await addDoc(collection(db, "userProfiles"), {
-                    uid: user.uid, // Salva l'ID dell'utente per collegare il profilo all'utente
+                await setDoc(doc(db, "userProfiles", user.uid), {
                     age: age,
                     gender: gender,
                     weight: weight
