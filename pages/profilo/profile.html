@@ -32,13 +32,9 @@
         // Inizializza Firebase Auth
         const auth = getAuth();
 
-        // Ottieni l'ID dell'utente attualmente autenticato
-        const user = auth.currentUser;
-        console.log(user);
-
         // Funzione per caricare le informazioni del profilo
         // Funzione per caricare le informazioni del profilo
-        window.loadProfile = function () {
+        window.loadProfile = function (user) {
             const userDocRef = doc(db, "userProfiles", user);
             console.log("userId", user);
 
@@ -60,8 +56,12 @@
                 });
         }
 
+        // Ottieni l'ID dell'utente attualmente autenticato
+        const user = auth.currentUser;
+        console.log(user);
+
         // Chiama la funzione per caricare il profilo quando la pagina è pronta
-        document.addEventListener("DOMContentLoaded", loadProfile);
+        document.addEventListener("DOMContentLoaded", loadProfile(user));
     </script>
 </head>
 
