@@ -9,7 +9,7 @@
     <script type="module">
         // Importa le funzioni necessarie da Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
         // Configurazione della tua app Firebase
@@ -47,30 +47,30 @@
 
                 // Recupera i dati esistenti
                 const docSnap = await getDoc(userRef);
-                let existingData = {};
-
-                if (docSnap.exists()) {
-                    existingData = docSnap.data();
-                }
 
                 // Unisci i nuovi dati con i dati esistenti
                 const updatedData = {
-                    ...existingData,
                     age: age,
                     gender: gender,
                     weight: weight
                 };
 
-                // Salva i dati aggiornati
-                await setDoc(userRef, updatedData, { merge: true });
+                updateDoc(userRef, updatedData)
+                    .then(() => {
+                        console.log("Documento aggiornato con successo!");
 
-                alert("Profilo salvato con successo!");
-                window.location.href = '../home/home.html';
+                        alert("Profilo salvato con successo!");
+                        window.location.href = '../home/home.html';
+                    })
+                    .catch((error) => {
+                        console.error("Errore durante l'aggiornamento del documento: ", error);
+                    });
             } catch (error) {
                 console.error("Errore nel salvataggio del profilo:", error);
                 alert("Errore nel salvataggio del profilo. Riprova più tardi.");
             }
-        }    </script>
+        }
+    </script>
 </head>
 
 <body>
