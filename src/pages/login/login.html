@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - KaliFit</title>
+    <link rel="stylesheet" href="style_login.css">
+</head>
+<body>
+    <!-- Header semplice -->
+    <header>
+        <div class="logo">KaliFit</div>
+    </header>
+
+    <!-- Contenitore della pagina di login -->
+    <div class="login-container">
+        <h2>Accedi al tuo account</h2>
+        <form class="login-form" action="/dashboard" method="post">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Inserisci la tua email" required>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Inserisci la tua password" required>
+
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+        <p class="signup-link" onclick="window.location.href='../registrazione/registrazione.html'">Non hai un account? <a href="/signup">Registrati</a></p>
+    </div>
+</body>
+</html>

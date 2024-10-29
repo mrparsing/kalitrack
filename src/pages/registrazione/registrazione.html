@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrazione - KaliFit</title>
+    <link rel="stylesheet" href="style_registrazione.css">
+</head>
+<body>
+    <!-- Header semplice -->
+    <header>
+        <div class="logo">KaliFit</div>
+    </header>
+
+    <!-- Contenitore della pagina di registrazione -->
+    <div class="signup-container">
+        <h2>Crea il tuo account</h2>
+        <form class="signup-form" action="/welcome" method="post">
+            <label for="name">Nome</label>
+            <input type="text" id="name" name="name" placeholder="Inserisci il tuo nome" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Inserisci la tua email" required>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Crea una password" required>
+
+            <button type="submit" class="signup-btn">Registrati</button>
+        </form>
+        <p class="login-link">Hai già un account? <a href="/login">Accedi</a></p>
+    </div>
+</body>
+</html>
