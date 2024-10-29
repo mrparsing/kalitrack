@@ -37,31 +37,39 @@
 
 
         // Funzione per caricare le informazioni del profilo
-        async function loadProfile(userId) {
-            const userDoc = doc(db, "userProfiles", userId);
-            const docSnapshot = await getDoc(userDoc);
+        function loadProfile() {
+            // Supponiamo che tu abbia una funzione per ottenere l'ID utente autenticato
+            const userId = getCurrentUserId(); // Funzione che deve restituire l'ID utente corrente
 
-            if (docSnapshot.exists()) {
-                const userData = docSnapshot.data();
-                document.getElementById("name").innerText = userData.name || "Non disponibile";
-                document.getElementById("email").innerText = userData.email || "Non disponibile";
-                document.getElementById("eta").innerText = userData.eta || "Non disponibile";
-                document.getElementById("sesso").innerText = userData.sesso || "Non disponibile";
-                document.getElementById("peso").innerText = userData.peso || "Non disponibile";
-            } else {
-                console.log("Nessun documento trovato!");
+            if (!userId) {
+                console.error("Nessun utente autenticato.");
+                return; // Esci se non c'è un ID utente
             }
+
+            db.collection("users").doc(userId).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        document.getElementById("name").innerText = userData.name || "Non disponibile";
+                        document.getElementById("email").innerText = userData.email || "Non disponibile";
+                        document.getElementById("dob").innerText = userData.dob || "Non disponibile";
+                        document.getElementById("bio").innerText = userData.bio || "Non disponibile";
+                    } else {
+                        console.log("Nessun documento trovato!");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Errore nel recupero del documento:", error);
+                });
         }
-        const userId = "";
-        if (user) {
-            userId = user.uid; // user.uid contiene l'ID dell'utente
-            console.log("User ID:", userId);
-        } else {
-            console.log("Nessun utente autenticato.");
+        function getCurrentUserId() {
+            // Logica per ottenere l'ID utente autenticato (es. usando Firebase Auth)
+            // Restituisci l'ID dell'utente autenticato, oppure null se non c'è
+            return "userIdDelleUser"; // Sostituisci con la logica effettiva
         }
 
-        // Funzione per gestire il caricamento del profilo quando la pagina è pronta
-        document.addEventListener("DOMContentLoaded", loadProfile(userId));
+        // Chiama la funzione per caricare il profilo quando la pagina è pronta
+        document.addEventListener("DOMContentLoaded", loadProfile);
     </script>
 </head>
 
