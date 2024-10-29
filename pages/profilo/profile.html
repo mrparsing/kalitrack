@@ -37,7 +37,7 @@
 
 
         // Funzione per caricare le informazioni del profilo
-        function loadProfile() {
+        window.loadProfile = function () {
             // Supponiamo che tu abbia una funzione per ottenere l'ID utente autenticato
             const userId = getCurrentUserId(); // Funzione che deve restituire l'ID utente corrente
 
@@ -52,8 +52,9 @@
                         const userData = doc.data();
                         document.getElementById("name").innerText = userData.name || "Non disponibile";
                         document.getElementById("email").innerText = userData.email || "Non disponibile";
-                        document.getElementById("dob").innerText = userData.dob || "Non disponibile";
-                        document.getElementById("bio").innerText = userData.bio || "Non disponibile";
+                        document.getElementById("age").innerText = userData.age || "Non disponibile";
+                        document.getElementById("gender").innerText = userData.gender || "Non disponibile";
+                        document.getElementById("weight").innerText = userData.weight || "Non disponibile";
                     } else {
                         console.log("Nessun documento trovato!");
                     }
@@ -137,9 +138,9 @@
                 <div id="profile-info">
                     <p><strong>Nome:</strong> <span id="name">Caricamento...</span></p>
                     <p><strong>Email:</strong> <span id="email">Caricamento...</span></p>
-                    <p><strong>Età:</strong> <span id="eta">Caricamento...</span></p>
-                    <p><strong>Sesso</strong> <span id="sesso">Caricamento...</span></p>
-                    <p><strong>Peso:</strong> <span id="peso">Caricamento...</span></p>
+                    <p><strong>Età:</strong> <span id="age">Caricamento...</span></p>
+                    <p><strong>Sesso</strong> <span id="gender">Caricamento...</span></p>
+                    <p><strong>Peso:</strong> <span id="weight">Caricamento...</span></p>
                 </div>
                 <button class="sidebar-btn" onclick="editProfile()">Modifica Profilo</button>
             </section>
