@@ -81,6 +81,14 @@
             border-radius: 5px;
             margin-bottom: 5px;
         }
+
+        @media (max-width: 768px) {
+            .main-content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+        }
     </style>
 
     <script>
@@ -203,10 +211,14 @@
                 </span>
                 <span class="text">Dashboard</span>
             </a>
-            <button class="sidebar-btn active">
-                <i class="fas fa-plus"></i>
-                <span>Aggiungi sessioni</span>
-            </button>
+
+            <a href="aggiungi_sessione.html" class="sidebar-btn">
+                <span class="icon-container">
+                    <i class="fas fa-plus"></i>
+                </span>
+                <span class="text">Aggiungi sessioni</span>
+            </a>
+
             <button class="sidebar-btn">
                 <i class="fas fa-history"></i>
                 <span>Storico Sessioni</span>
@@ -273,6 +285,7 @@
             <div class="calendar" id="calendar"></div>
         </main>
     </div>
+    <div class="overlay" id="overlay"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.js"></script>
@@ -340,7 +353,28 @@
                 }
             });
         });
+
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('overlay');
+            const menuButton = document.getElementById('menuButton');
+
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('visible');
+
+            // Cambia l'icona del pulsante in base allo stato del menu
+            if (sidebar.classList.contains('active')) {
+                menuButton.innerHTML = '<i class="fas fa-times"></i>'; // Icona "X" quando il menu è aperto
+            } else {
+                menuButton.innerHTML = '<i class="fas fa-bars"></i>'; // Icona di hamburger quando il menu è chiuso
+            }
+        }
+
+        document.getElementById('overlay').addEventListener('click', () => {
+            toggleSidebar(); // Chiudi il menu quando si clicca sull'overlay
+        });
     </script>
+
 </body>
 
 </html>
