@@ -13,7 +13,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
         // Configurazione di Firebase
         const firebaseConfig = {
@@ -29,16 +29,18 @@
         // Inizializza Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        // Inizializza Firebase Auth
         const auth = getAuth();
 
         // Funzione per caricare le informazioni del profilo
-        // Funzione per caricare le informazioni del profilo
-        window.loadProfile = function (user) {
-            const userDocRef = doc(db, "userProfiles", user);
-            console.log("userId", user);
+        function loadProfile(user) {
+            if (!user) {
+                console.log("Utente non autenticato.");
+                return;
+            }
 
-            getDoc(userDocRef) // Utilizza getDoc per ottenere i dati del documento
+            const userDocRef = doc(db, "userProfiles", user.uid);
+
+            getDoc(userDocRef)
                 .then((doc) => {
                     if (doc.exists()) {
                         const userData = doc.data();
@@ -56,12 +58,10 @@
                 });
         }
 
-        // Ottieni l'ID dell'utente attualmente autenticato
-        const user = auth.currentUser;
-        console.log(user);
-
-        // Chiama la funzione per caricare il profilo quando la pagina è pronta
-        document.addEventListener("DOMContentLoaded", loadProfile(user));
+        // Chiama la funzione per caricare il profilo quando l'utente è autenticato
+        onAuthStateChanged(auth, (user) => {
+            loadProfile(user);
+        });
     </script>
 </head>
 
@@ -130,7 +130,7 @@
                     <p><strong>Nome:</strong> <span id="name">Caricamento...</span></p>
                     <p><strong>Email:</strong> <span id="email">Caricamento...</span></p>
                     <p><strong>Età:</strong> <span id="age">Caricamento...</span></p>
-                    <p><strong>Sesso</strong> <span id="gender">Caricamento...</span></p>
+                    <p><strong>Sesso:</strong> <span id="gender">Caricamento...</span></p>
                     <p><strong>Peso:</strong> <span id="weight">Caricamento...</span></p>
                 </div>
                 <button class="sidebar-btn" onclick="editProfile()">Modifica Profilo</button>
