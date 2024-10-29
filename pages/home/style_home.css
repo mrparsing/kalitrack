@@ -24,6 +24,7 @@ header {
 
 /* Menu button for mobile */
 .menu-btn {
+    display: none;
     background: none;
     border: none;
     color: #ff5733;
