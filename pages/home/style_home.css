@@ -1,0 +1,169 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #1c1c1c;
+    color: #f5f5f5;
+}
+
+/* Header */
+header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background-color: #333;
+    color: #ff5733;
+    font-size: 24px;
+    font-weight: bold;
+    border-bottom: 2px solid #444;
+}
+
+/* Menu button for mobile */
+.menu-btn {
+    background: none;
+    border: none;
+    color: #ff5733;
+    font-size: 24px;
+    cursor: pointer;
+    margin-right: 10px;
+    z-index: 1000; /* Assicurati che il pulsante sia sopra la sidebar */
+}
+
+/* Dashboard Layout */
+.dashboard-container {
+    display: flex;
+    height: calc(100vh - 80px); /* Full height minus header */
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #2c2c2c;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: fixed; /* Cambiato a fixed per renderlo sempre visibile in caso di scrolling */
+    left: -250px; /* Inizialmente nascosto */
+    top: 0;
+    bottom: 0;
+    transition: left 0.3s ease; /* Modificato da transform a left per un miglior controllo */
+    z-index: 900; /* Assicurati che la sidebar sia sopra gli altri elementi */
+}
+
+.sidebar.active {
+    left: 0; /* Sposta a sinistra per mostrare */
+}
+
+/* Sidebar Button Style */
+.sidebar-btn {
+    background-color: #333;
+    color: #f5f5f5;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.sidebar-btn:hover {
+    background-color: #444;
+    transform: scale(1.05);
+}
+
+.sidebar-btn i {
+    font-size: 20px;
+    color: #ff5733;
+}
+
+/* Logout button style */
+.logout-btn {
+    background-color: #ff5733; /* Distinctive color for logout */
+    color: #fff; /* Text color for logout */
+}
+
+.logout-btn:hover {
+    background-color: #e14a2a; /* Hover color for logout */
+}
+
+/* Divider Style */
+.sidebar-divider {
+    height: 2px;
+    background-color: #444;
+    margin: 20px 0;
+}
+
+/* Main Content Area */
+.main-content {
+    flex-grow: 1;
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.workout-of-the-day {
+    background-color: #2c2c2c;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+}
+
+.workout-of-the-day h2 {
+    color: #ff5733;
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.workout-of-the-day p {
+    color: #bdbdbd;
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+/* Overlay */
+.overlay {
+    display: none; /* Nasconde l'overlay */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 800; /* Deve essere sopra il contenuto principale ma sotto la sidebar */
+}
+
+.overlay.visible {
+    display: block; /* Mostra l'overlay quando ha la classe 'visible' */
+}
+
+/* Mobile Layout */
+@media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column; /* Verticale su mobile */
+    }
+
+    .sidebar {
+        padding-top: 60px; /* Padding superiore per la sidebar */
+    }
+
+    .main-content {
+        padding: 20px; /* Padding per il contenuto principale */
+    }
+
+    /* Center main content on mobile */
+    .workout-of-the-day {
+        margin-top: 20px; /* Margine superiore per il contenuto */
+        text-align: center; /* Centro il contenuto */
+    }
+}

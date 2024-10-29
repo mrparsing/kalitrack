@@ -1,7 +1,97 @@
 <!DOCTYPE html>
+<html lang="it">
+
 <head>
-    <title>Home</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - KaliFit</title>
+    <link rel="stylesheet" type="text/css" href="style_home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
+
 <body>
-    <h1>Home</h1>
+    <!-- Header -->
+    <header>
+        <button class="menu-btn" id="menuButton" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i> <!-- Icona di hamburger -->
+        </button>
+        <div class="logo">KaliFit Dashboard</div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Sidebar with Buttons -->
+        <aside class="sidebar">
+            <button class="sidebar-btn">
+                <i class="fas fa-history"></i>
+                <span>Storico Sessioni</span>
+            </button>
+
+            <button class="sidebar-btn">
+                <i class="fas fa-dumbbell"></i>
+                <span>Massimali</span>
+            </button>
+
+            <button class="sidebar-btn">
+                <i class="fas fa-trophy"></i>
+                <span>Sfide</span>
+            </button>
+
+            <button class="sidebar-btn">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Sessione del Mese</span>
+            </button>
+
+            <!-- Divider -->
+            <div class="sidebar-divider"></div>
+
+            <!-- Profile, Settings, and Logout Buttons -->
+            <button class="sidebar-btn">
+                <i class="fas fa-user-circle"></i>
+                <span>Profilo</span>
+            </button>
+
+            <button class="sidebar-btn">
+                <i class="fas fa-cog"></i>
+                <span>Impostazioni</span>
+            </button>
+
+            <button class="sidebar-btn logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </aside>
+
+        <!-- Main Content for "Allenamento del Giorno" -->
+        <main class="main-content">
+            <section class="workout-of-the-day">
+                <h2>Allenamento del Giorno</h2>
+                <p>Descrizione dell'allenamento del giorno...</p>
+            </section>
+        </main>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('overlay');
+            const menuButton = document.getElementById('menuButton');
+
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('visible');
+
+            // Cambia l'icona del pulsante in base allo stato del menu
+            if (sidebar.classList.contains('active')) {
+                menuButton.innerHTML = '<i class="fas fa-times"></i>'; // Icona "X" quando il menu è aperto
+            } else {
+                menuButton.innerHTML = '<i class="fas fa-bars"></i>'; // Icona di hamburger quando il menu è chiuso
+            }
+        }
+
+        document.getElementById('overlay').addEventListener('click', () => {
+            toggleSidebar(); // Chiudi il menu quando si clicca sull'overlay
+        });
+    </script>
 </body>
+</html>

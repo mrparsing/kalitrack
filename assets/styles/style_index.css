@@ -131,7 +131,7 @@ a:hover {
 
     .text h1 {
         font-size: 32px;
-        margin-top: 120px; /* Margine sopra per separare dall'header */
+        margin-top: 100px; /* Margine sopra per separare dall'header */
     }
 
     .image {
