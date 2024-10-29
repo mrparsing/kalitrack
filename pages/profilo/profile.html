@@ -46,7 +46,9 @@
                 return; // Esci se non c'è un ID utente
             }
 
-            const userDocRef = doc(db, "userProfiles", userId); // Creare un riferimento al documento
+            const userDocRef = doc(db, "userProfiles", userId);
+            console.log("userId", userId);
+            console.log(db);
             getDoc(userDocRef) // Utilizza getDoc per ottenere i dati del documento
                 .then((doc) => {
                     if (doc.exists()) {
