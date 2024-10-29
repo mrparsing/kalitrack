@@ -116,3 +116,39 @@ a {
 a:hover {
     color: #e14a2a;
 }
+
+@media (max-width: 768px) {
+    .content {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .text {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .text h1 {
+        font-size: 32px;
+        margin-top: 120px; /* Margine sopra per separare dall'header */
+    }
+
+    .image {
+        max-width: 100%;
+        height: auto;
+        margin: 10px 0;
+        display: flex; /* Per centrare l'immagine */
+        justify-content: center;
+    }
+
+    .image img {
+        max-width: 100%; /* Assicura che l'immagine non esca dal contenitore */
+        height: auto; /* Mantiene le proporzioni */
+    }
+
+    .text p {
+        font-size: 18px;
+        text-align: center;
+    }
+}
