@@ -47,7 +47,6 @@
             const exercises = [];
 
             // Aggiungi esercizio alla lista
-            // Aggiungi esercizio alla lista
             document.getElementById('addExerciseBtn').addEventListener('click', function () {
                 const exercise = document.getElementById('exercise').value;
                 const series = document.getElementById('series').value;
@@ -64,6 +63,7 @@
 
                     // Crea il pulsante di rimozione
                     const removeBtn = document.createElement('button');
+                    removeBtn.style.marginRight = "10px"
                     removeBtn.innerText = 'Rimuovi';
                     removeBtn.className = 'remove-exercise-btn';
 
