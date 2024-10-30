@@ -5,13 +5,16 @@
     display: flex;
     flex-direction: column;
     align-items: center; /* Centra gli elementi orizzontalmente */
+    position: relative; /* Necessario per il posizionamento del titolo */
 }
 
 /* Stile per il titolo */
 .main-content h2 {
     align-self: flex-start; /* Posiziona il titolo in alto a sinistra */
     margin-left: 20px; /* Margine a sinistra per allontanare il titolo dal bordo */
-    margin-top: -100px; /* Margine superiore per avvicinare il titolo all'header */
+    position: sticky; /* Rende il titolo fisso durante lo scroll */
+    top: 0; /* Posizione del titolo quando diventa fisso */
+    z-index: 10; /* Assicura che il titolo sia sopra gli altri contenuti */
 }
 
 /* Stile per la lista di sessioni future */
@@ -20,6 +23,8 @@
     margin: 20px auto; /* Margine verticale per separare dal titolo */
     max-width: 800px;
     width: 100%; /* Assicura che la lista occupi il 100% della larghezza disponibile */
+    max-height: 600px; /* Limita l'altezza massima della lista */
+    overflow-y: auto; /* Abilita lo scroll verticale */
 }
 
 /* Stile per ogni sessione */

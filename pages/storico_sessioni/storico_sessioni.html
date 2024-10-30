@@ -111,6 +111,10 @@
                                                 <li>${ex.exercise} - ${ex.series} serie - Recupero: ${ex.recovery}s</li>
                                             `).join('')}</ul>
                                         `;
+                                        sessionEl.onclick = function () {
+                                            // Reindirizza alla pagina di dettagli della sessione
+                                            window.location.href = `session_detail.html?sessionId=${session.id}`;
+                                        };
                                         sessionHistoryEl.appendChild(sessionEl);
                                     });
                                 } else {
