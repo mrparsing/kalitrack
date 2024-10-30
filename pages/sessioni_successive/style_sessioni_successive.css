@@ -28,6 +28,7 @@
     border-radius: 5px;
     margin-bottom: 15px;
     padding: 15px;
+    transition: background-color 0.3s, transform 0.2s; /* Transizione per il colore di sfondo e la trasformazione */
 }
 
 /* Stile per il nome della sessione */
@@ -49,6 +50,9 @@
     color: #555;
 }
 
+/* Effetto hover per le sessioni */
 .session-item:hover {
-    background-color: #555;
+    background-color: #555; /* Cambia il colore di sfondo */
+    color: #fff; /* Cambia il colore del testo */
+    transform: scale(1.02); /* Leggera ingrandimento dell'elemento */
 }
