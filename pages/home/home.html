@@ -97,6 +97,20 @@
     <div class="overlay" id="overlay"></div>
 
     <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2qNYCMQMjm6pAqTEWvP-1FWfPfKaQCi8",
+            authDomain: "kalitrack.firebaseapp.com",
+            projectId: "kalitrack",
+            storageBucket: "kalitrack.appspot.com",
+            messagingSenderId: "253824979149",
+            appId: "1:253824979149:web:21f3085e86bb3a41821984",
+            measurementId: "G-498X9RNHLC"
+        };
+
+        // Inizializza Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth(); // Inizializza l'autenticazione
+
         function toggleSidebar() {
             const sidebar = document.querySelector('.sidebar');
             const overlay = document.getElementById('overlay');
@@ -118,7 +132,7 @@
         });
 
         // Funzione per il logout
-        window.logout = async function () { // Attach function to window
+        window.logout = async function () {
             try {
                 await auth.signOut();
                 alert("Logout effettuato con successo!");
