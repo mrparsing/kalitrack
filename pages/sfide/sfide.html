@@ -159,6 +159,7 @@
         document.getElementById('overlay').addEventListener('click', toggleSidebar);
 
         // Funzione per aggiungere un esercizio alla lista temporanea
+        // Funzione per aggiungere un esercizio alla lista temporanea
         document.getElementById('addExerciseBtn').addEventListener('click', function () {
             const exercise = document.getElementById("exercise").value.trim();
             const series = document.getElementById("series").value.trim();
@@ -172,13 +173,16 @@
                 const itemEl = document.createElement('div');
                 itemEl.className = 'exercise-item';
                 itemEl.innerText = `${exercise} - ${series} serie - Recupero: ${recoveryTime}s`;
-                exerciseListEl.appendChild(itemEl);
 
                 // Crea il pulsante di rimozione
                 const removeBtn = document.createElement('button');
-                removeBtn.style.marginRight = "10px"
+                removeBtn.style.marginLeft = "10px"; // Adding some margin for spacing
                 removeBtn.innerText = 'Rimuovi';
                 removeBtn.className = 'remove-exercise-btn';
+
+                // Append the remove button to the exercise item
+                itemEl.appendChild(removeBtn); // Append the button to the exercise item
+                exerciseListEl.appendChild(itemEl); // Then append the exercise item to the list
 
                 removeBtn.addEventListener('click', function () {
                     const index = exercises.indexOf(exerciseItem);
@@ -187,7 +191,7 @@
                         itemEl.remove(); // Rimuove l'elemento dalla lista visiva
                     }
                 });
-                
+
                 // Reset input
                 document.getElementById("exercise").value = '';
                 document.getElementById("series").value = '';
@@ -195,9 +199,7 @@
             } else {
                 alert("Per favore, completa tutti i campi.");
             }
-        });
-
-        // Funzione per salvare la sessione nel DB
+        });        // Funzione per salvare la sessione nel DB
         document.getElementById('saveSessionBtn').addEventListener('click', async function () {
             const workoutName = document.getElementById('workoutName').value.trim();
 
