@@ -47,25 +47,45 @@
             const exercises = [];
 
             // Aggiungi esercizio alla lista
+            // Aggiungi esercizio alla lista
             document.getElementById('addExerciseBtn').addEventListener('click', function () {
                 const exercise = document.getElementById('exercise').value;
                 const series = document.getElementById('series').value;
                 const recovery = document.getElementById('recovery').value;
 
                 if (exercise && series && recovery) {
-                    exercises.push({ exercise, series, recovery });
+                    const exerciseItem = { exercise, series, recovery };
+                    exercises.push(exerciseItem);
 
+                    // Aggiorna la lista visiva
                     const itemEl = document.createElement('div');
                     itemEl.className = 'session-item';
                     itemEl.innerText = `${exercise} - ${series} serie - Recupero: ${recovery}s`;
+
+                    // Crea il pulsante di rimozione
+                    const removeBtn = document.createElement('button');
+                    removeBtn.innerText = 'Rimuovi';
+                    removeBtn.className = 'remove-exercise-btn';
+
+                    // Aggiungi evento al pulsante di rimozione
+                    removeBtn.addEventListener('click', function () {
+                        const index = exercises.indexOf(exerciseItem);
+                        if (index > -1) {
+                            exercises.splice(index, 1); // Rimuove l'esercizio dall'array
+                            itemEl.remove(); // Rimuove l'elemento dalla lista visiva
+                        }
+                    });
+
+                    // Aggiungi il pulsante di rimozione all'elemento della lista
+                    itemEl.appendChild(removeBtn);
                     exerciseListEl.appendChild(itemEl);
 
+                    // Reset input
                     document.getElementById('exercise').value = '';
                     document.getElementById('series').value = '';
                     document.getElementById('recovery').value = '';
                 }
             });
-
             // Aggiungi la sessione a Firestore e al calendario
             document.getElementById('saveSessionBtn').addEventListener('click', async function () {
                 const workoutName = document.getElementById('workoutName').value;
@@ -164,21 +184,21 @@
                 </span>
                 <span class="text">Aggiungi sessioni</span>
             </a>
-            
+
             <a href="../massimali/massimali.html" class="sidebar-btn">
                 <span class="icon-container">
                     <i class="fas fa-dumbbell"></i>
                 </span>
                 <span class="text">Massimali</span>
             </a>
-            
+
             <a href="../sfide/sfide.html" class="sidebar-btn">
                 <span class="icon-container">
                     <i class="fas fa-trophy"></i>
                 </span>
                 <span class="text">Sfide</span>
             </a>
-            
+
             <div class="sidebar-divider"></div>
 
             <a href="../profilo/profile.html" class="sidebar-btn">
