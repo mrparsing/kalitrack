@@ -80,16 +80,14 @@
                 <div id="sessionList">
                     <h3>Sessione Corrente</h3>
                     <div id="exerciseList"></div>
-                    <button id="saveSessionBtn" style="margin-top: 15px;">Aggiungi Sessione</button>
+                    <button type="button" id="saveSessionBtn" style="margin-top: 15px;">Aggiungi Sessione</button>
                 </div>
             </form>
 
             <div class="sfide" id="sfide">
                 <h2> Sfide Registrate</h2>
                 <div id="challengeList" class="challenge-list"></div>
-
             </div>
-
         </main>
     </div>
 
@@ -112,49 +110,8 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // Funzione per caricare le sfide dal DB
-        document.getElementById('saveSessionBtn').addEventListener('click', async function () {
-            const workoutName = document.getElementById('workoutName').value;
-
-            if (workoutName && exercises.length > 0) {
-                const sessionData = {
-                    workoutName,
-                    exercises
-                };
-            }
-            auth.onAuthStateChanged(async (user) => {
-                if (user) {
-                    const userRef = db.collection('sfide').doc(user.uid);
-
-                    try {
-                        await userRef.update({
-                            workouts: firebase.firestore.FieldValue.arrayUnion(sessionData)
-                        });
-
-                        // Reset del form e della lista
-                        document.getElementById('sessionForm').reset();
-                        exerciseListEl.innerHTML = '';
-                        exercises.length = 0;
-
-                        alert("Sessione salvata con successo!");
-                    } catch (error) {
-                        // Se il campo 'workouts' non esiste ancora, usa `.set()` per crearlo
-                        if (error.code === 'not-found') {
-                            await userRef.set({
-                                workouts: [sessionData]
-                            });
-                            alert("Sessione salvata con successo!");
-                        } else {
-                            console.error("Errore durante il salvataggio della sessione:", error);
-                            alert("Errore durante il salvataggio della sessione.");
-                        }
-
-                    }
-                } else {
-                    alert("Devi essere loggato per salvare la sessione.");
-                }
-            });
-        });
+        const exerciseListEl = document.getElementById('exerciseList');
+        const exercises = [];
 
         // Funzione per mostrare/nascondere la sidebar
         function toggleSidebar() {
@@ -167,17 +124,13 @@
             menuButton.innerHTML = sidebar.classList.contains('active') ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
         }
 
-        document.getElementById('overlay').addEventListener('click', () => toggleSidebar());
-
-
-        const exerciseListEl = document.getElementById('exerciseList');
-        const exercises = [];
+        document.getElementById('overlay').addEventListener('click', toggleSidebar);
 
         // Funzione per aggiungere un esercizio alla lista temporanea
         document.getElementById('addExerciseBtn').addEventListener('click', function () {
-            const exercise = document.getElementById("exercise").value;
-            const series = document.getElementById("series").value;
-            const recoveryTime = document.getElementById("recoveryTime").value;
+            const exercise = document.getElementById("exercise").value.trim();
+            const series = document.getElementById("series").value.trim();
+            const recoveryTime = document.getElementById("recoveryTime").value.trim();
 
             if (exercise && series && recoveryTime) {
                 const exerciseItem = { exercise, series, recoveryTime };
@@ -193,8 +146,54 @@
                 document.getElementById("exercise").value = '';
                 document.getElementById("series").value = '';
                 document.getElementById("recoveryTime").value = '';
+            } else {
+                alert("Per favore, completa tutti i campi.");
             }
+        });
 
+        // Funzione per salvare la sessione nel DB
+        document.getElementById('saveSessionBtn').addEventListener('click', async function () {
+            const workoutName = document.getElementById('workoutName').value.trim();
+
+            if (workoutName && exercises.length > 0) {
+                const sessionData = {
+                    workoutName,
+                    exercises
+                };
+
+                auth.onAuthStateChanged(async (user) => {
+                    if (user) {
+                        const userRef = db.collection('sfide').doc(user.uid);
+
+                        try {
+                            await userRef.update({
+                                workouts: firebase.firestore.FieldValue.arrayUnion(sessionData)
+                            });
+                            alert("Sessione salvata con successo!");
+                        } catch (error) {
+                            // Se il campo 'workouts' non esiste ancora, usa `.set()` per crearlo
+                            if (error.code === 'not-found') {
+                                await userRef.set({
+                                    workouts: [sessionData]
+                                });
+                                alert("Sessione salvata con successo!");
+                            } else {
+                                console.error("Errore durante il salvataggio della sessione:", error);
+                                alert("Errore durante il salvataggio della sessione.");
+                            }
+                        }
+
+                        // Reset del form e della lista
+                        document.getElementById('sessionForm').reset();
+                        exerciseListEl.innerHTML = '';
+                        exercises.length = 0;
+                    } else {
+                        alert("Devi essere loggato per salvare la sessione.");
+                    }
+                });
+            } else {
+                alert("Per favore, inserisci un nome per l'allenamento e aggiungi esercizi.");
+            }
         });
     </script>
 </body>
