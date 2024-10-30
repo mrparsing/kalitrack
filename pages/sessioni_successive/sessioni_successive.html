@@ -104,8 +104,9 @@
 
                                 if (futureSessions.length > 0) {
                                     futureSessions.forEach(session => {
-                                        const sessionEl = document.createElement("div");
+                                        const sessionEl = document.createElement("a"); // Cambiato da div a a
                                         sessionEl.className = "session-item";
+                                        sessionEl.href = `session_detail.html?sessionId=${session.id}`; // Imposta l'URL per i dettagli della sessione
                                         sessionEl.innerHTML = `
                                             <h3>${session.workoutName} - ${session.date}</h3>
                                             <ul>${session.exercises.map(ex => `

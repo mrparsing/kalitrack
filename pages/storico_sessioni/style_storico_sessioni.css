@@ -11,7 +11,7 @@
 .main-content h2 {
     align-self: flex-start; /* Posiziona il titolo in alto a sinistra */
     margin-left: 20px; /* Margine a sinistra per allontanare il titolo dal bordo */
-    margin-top: 10px; /* Margine superiore per avvicinare il titolo all'header */
+    margin-top: -100px; /* Margine superiore per avvicinare il titolo all'header */
 }
 
 /* Stile per la lista di sessioni future */
@@ -24,8 +24,7 @@
 
 /* Stile per ogni sessione */
 .session-item {
-    background-color: #f4f4f4;
-    border: 1px solid #ccc;
+    background-color: #ccc;
     border-radius: 5px;
     margin-bottom: 15px;
     padding: 15px;
