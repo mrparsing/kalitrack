@@ -59,23 +59,37 @@
 
         <!-- Contenuto principale: Sfide -->
         <main class="main-content">
-            <div class="content-wrapper">
-                <!-- Sinistra: Modulo per aggiungere una sfida -->
-                <div class="add-challenge">
-                    <h2>Aggiungi Sfida</h2>
-                    <form id="challengeForm">
-                        <input type="text" id="challengeTitle" placeholder="Titolo Sfida" required>
-                        <input type="text" id="challengeDescription" placeholder="Descrizione Sfida" required>
-                        <button type="submit">Salva Sfida</button>
-                    </form>
-                </div>
+            <!-- Form per aggiungere esercizi -->
+            <form class="session-form" id="sessionForm">
+                <label for="workoutName">Nome Allenamento:</label>
+                <input type="text" id="workoutName" name="workoutName" required>
 
-                <!-- Destra: Lista delle sfide -->
-                <div class="challenge-list-container">
-                    <h2> Sfide Registrate</h2>
-                    <div id="challengeList" class="challenge-list"></div>
+                <label for="exercise">Esercizio:</label>
+                <input type="text" id="exercise" name="exercise" placeholder="Nome esercizio" required>
+
+                <label for="series">Serie e Ripetizioni:</label>
+                <input type="text" id="series" name="series" placeholder="E.g., 4x10" required>
+
+                <label for="recoveryTime">Recupero (s):</label>
+                <input type="number" id="recoveryTime" name="recoveryTime" placeholder="Tempo di recupero in secondi"
+                    required>
+
+                <button type="button" id="addExerciseBtn">Memorizza Esercizio</button>
+
+                <!-- Lista della sessione e pulsante di aggiunta -->
+                <div id="sessionList">
+                    <h3>Sessione Corrente</h3>
+                    <div id="exerciseList"></div>
+                    <button id="saveSessionBtn" style="margin-top: 15px;">Aggiungi Sessione</button>
                 </div>
+            </form>
+
+            <div class="sfide" id="sfide">
+                <h2> Sfide Registrate</h2>
+                <div id="challengeList" class="challenge-list"></div>
+
             </div>
+
         </main>
     </div>
 
@@ -98,83 +112,49 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // Funzione per gestire l'invio del modulo
-        document.getElementById("challengeForm").addEventListener("submit", function (e) {
-            e.preventDefault();
-            const title = document.getElementById("challengeTitle").value;
-            const description = document.getElementById("challengeDescription").value;
-            saveChallenge(title, description);
-        });
-
-        // Funzione per salvare la sfida nel DB
-        function saveChallenge(title, description) {
-            auth.onAuthStateChanged(user => {
-                if (user) {
-                    const challengeRef = db.collection("sfide").doc(user.uid);
-                    challengeRef.set({
-                        [title]: description
-                    }, { merge: true }).then(() => {
-                        alert("Sfida salvata!");
-                        document.getElementById("challengeForm").reset();
-                        loadChallenges(); // Ricarica la lista dopo il salvataggio
-                    }).catch(error => {
-                        console.error("Errore nel salvataggio della sfida:", error);
-                    });
-                } else {
-                    alert("Devi essere loggato per salvare le sfide.");
-                }
-            });
-        }
-
         // Funzione per caricare le sfide dal DB
-        function loadChallenges() {
-            auth.onAuthStateChanged(user => {
+        document.getElementById('saveSessionBtn').addEventListener('click', async function () {
+            const workoutName = document.getElementById('workoutName').value;
+
+            if (workoutName && date && exercises.length > 0) {
+                const sessionData = {
+                    workoutName,
+                    exercises
+                };
+            }
+            auth.onAuthStateChanged(async (user) => {
                 if (user) {
                     const challengeRef = db.collection("sfide").doc(user.uid);
-                    challengeRef.get().then((doc) => {
-                        const challengeListEl = document.getElementById("challengeList");
-                        challengeListEl.innerHTML = ""; // Pulisce la lista precedente
-                        if (doc.exists) {
-                            const data = doc.data();
-                            for (const title in data) {
-                                const description = data[title];
-                                const challengeItem = document.createElement("div");
-                                challengeItem.className = "challenge-item";
-                                challengeItem.innerHTML = `
-                                    <strong>${title}</strong>: <span>${description}</span>
-                                    <button onclick="deleteChallenge('${title}')">Elimina</button>
-                                `;
-                                challengeListEl.appendChild(challengeItem);
-                            }
+
+                    try {
+                        await userRef.update({
+                            workouts: firebase.firestore.FieldValue.arrayUnion(sessionData)
+                        });
+
+                        // Reset del form e della lista
+                        document.getElementById('sessionForm').reset();
+                        exerciseListEl.innerHTML = '';
+                        exercises.length = 0;
+
+                        alert("Sessione salvata con successo!");
+                    } catch (error) {
+                        // Se il campo 'workouts' non esiste ancora, usa `.set()` per crearlo
+                        if (error.code === 'not-found') {
+                            await userRef.set({
+                                workouts: [sessionData]
+                            });
+                            alert("Sessione salvata con successo!");
                         } else {
-                            challengeListEl.innerHTML = "<p>Nessuna sfida trovata.</p>";
+                            console.error("Errore durante il salvataggio della sessione:", error);
+                            alert("Errore durante il salvataggio della sessione.");
                         }
-                    }).catch(error => {
-                        console.error("Errore nel caricamento delle sfide:", error);
-                    });
+
+                    }
+                } else {
+                    alert("Devi essere loggato per salvare la sessione.");
                 }
             });
-        }
-
-        // Funzione per eliminare una sfida
-        function deleteChallenge(title) {
-            auth.onAuthStateChanged(user => {
-                if (user) {
-                    const challengeRef = db.collection("sfide").doc(user.uid);
-                    challengeRef.update({
-                        [title]: firebase.firestore.FieldValue.delete()
-                    }).then(() => {
-                        alert("Sfida eliminata!");
-                        loadChallenges(); // Ricarica la lista dopo l'eliminazione
-                    }).catch(error => {
-                        console.error("Errore nell'eliminazione della sfida:", error);
-                    });
-                }
-            });
-        }
-
-        // Carica le sfide all'apertura della pagina
-        document.addEventListener("DOMContentLoaded", loadChallenges);
+        });
 
         // Funzione per mostrare/nascondere la sidebar
         function toggleSidebar() {
@@ -188,6 +168,34 @@
         }
 
         document.getElementById('overlay').addEventListener('click', () => toggleSidebar());
+
+
+        const exerciseListEl = document.getElementById('exerciseList');
+        const exercises = [];
+
+        // Funzione per aggiungere un esercizio alla lista temporanea
+        document.getElementById('addExerciseBtn').addEventListener('click', function () {
+            const exercise = document.getElementById("exercise").value;
+            const series = document.getElementById("series").value;
+            const recoveryTime = document.getElementById("recoveryTime").value;
+
+            if (exercise && series && recoveryTime) {
+                const exerciseItem = { exercise, series, recoveryTime };
+                exercises.push(exerciseItem);
+
+                // Aggiorna la lista visiva
+                const itemEl = document.createElement('div');
+                itemEl.className = 'exercise-item';
+                itemEl.innerText = `${exercise} - ${series} serie - Recupero: ${recoveryTime}s`;
+                exerciseListEl.appendChild(itemEl);
+
+                // Reset input
+                document.getElementById("exercise").value = '';
+                document.getElementById("series").value = '';
+                document.getElementById("recoveryTime").value = '';
+            }
+
+        });
     </script>
 </body>
 

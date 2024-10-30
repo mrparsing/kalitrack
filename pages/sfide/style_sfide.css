@@ -1,54 +1,47 @@
-/* Contenuto principale */
-.main-content {
-    flex: 1; /* Occupa lo spazio rimanente */
-    padding: 20px; /* Padding interno */
-}
-
-/* Contenitore principale per i contenuti */
 .content-wrapper {
-    display: flex; /* Layout flessibile */
-    justify-content: space-between; /* Spaziatura uniforme */
+    display: flex;
+    flex-wrap: wrap; /* Consente di adattarsi su più righe per schermi piccoli */
+    gap: 20px; /* Distanza tra i contenuti */
+    padding: 20px;
 }
 
-/* Stile per il modulo di aggiunta sfida */
-.add-challenge {
-    flex: 1; /* Occupa lo spazio disponibile */
-    margin-right: 200px; /* Margine a destra */
+.session-form {
+    margin: 20px;
+    background-color: #2c2c2c;
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 400px;
 }
 
-/* Modulo di input con layout a colonna */
-#challengeForm {
-    display: flex; /* Layout flessibile */
-    flex-direction: column; /* Colonna */
-    align-items: center; /* Allineamento centrale */
-    margin: 20px 0; /* Margine verticale */
+.session-form label {
+    color: #f5f5f5;
 }
 
-/* Input del modulo */
-#challengeForm input {
-    margin: 10px; /* Margine per gli input */
-    padding: 10px; /* Padding per gli input */
-    width: 100%; /* Larghezza al 100% */
-    border: 1px solid #ccc; /* Bordo grigio per gli input */
-    background-color: #444; /* Colore di sfondo */
-    color: white; /* Colore del testo */
-    border-radius: 5px; /* Raggio per gli angoli */
+.session-form input,
+.session-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #444;
+    color: #f5f5f5;
 }
 
-/* Bottone di salvataggio */
-#challengeForm button {
-    padding: 10px 20px; /* Padding per il bottone */
-    background-color: #28a745; /* Colore verde per il bottone */
-    color: white; /* Colore del testo */
-    border: none; /* Nessun bordo per il bottone */
-    border-radius: 5px; /* Raggio per gli angoli */
-    cursor: pointer; /* Cursore a mano */
-    transition: background-color 0.3s; /* Transizione per il colore di sfondo */
+.session-form button {
+    background-color: #ff5733;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
 }
 
-/* Lista delle sfide */
-.challenge-list {
-    flex: 2; /* Occupa più spazio nella larghezza */
+.session-form button:hover {
+    background-color: #e14a2a;
 }
 
 /* Stile per ogni sfida */
@@ -78,41 +71,9 @@
     background-color: #c82333; /* Colore più scuro al passaggio del mouse */
 }
 
-/* Media query per schermi piccoli (mobile) */
-@media (max-width: 768px) {
-    .content-wrapper {
-        flex-direction: column; /* Layout verticale per mobile */
-        align-items: center; /* Allineamento centrale */
-        padding: 10px; /* Riduce il padding generale */
-    }
-
-    /* Modulo di aggiunta sfida */
-    .add-challenge {
-        margin-right: 0; /* Rimuove il margine a destra */
-        width: 100%; /* Larghezza al 100% */
-        margin-bottom: 20px; /* Margine inferiore */
-    }
-
-    /* Stile per ogni sfida in mobile */
-    .challenge-item {
-        flex-direction: column; /* Layout verticale per le sfide */
-        align-items: flex-start; /* Allineamento a sinistra */
-        padding: 10px; /* Padding interno */
-    }
-
-    /* Larghezza degli input nella lista */
-    #challengeForm input {
-        width: 100%; /* Larghezza ridotta */
-    }
-
-    /* Larghezza dei pulsanti nella lista */
-    .challenge-item button {
-        width: 100%; /* Pulsanti al 100% */
-        margin-top: 10px; /* Margine superiore */
-    }
-
-    /* Sidebar */
-    .sidebar {
-        width: 200px; /* Larghezza della sidebar per mobile */
-    }
+.exercise-item {
+    padding: 10px;
+    background-color: #444;
+    border-radius: 5px;
+    margin-bottom: 5px;
 }

@@ -67,7 +67,6 @@
             });
 
             // Aggiungi la sessione a Firestore e al calendario
-            // Aggiungi la sessione a Firestore e al calendario
             document.getElementById('saveSessionBtn').addEventListener('click', async function () {
                 const workoutName = document.getElementById('workoutName').value;
                 const date = document.getElementById('date').value;
@@ -119,8 +118,6 @@
                             alert("Devi essere loggato per salvare la sessione.");
                         }
                     });
-                } else {
-                    alert("Compila tutti i campi per salvare la sessione.");
                 }
             });
         });
