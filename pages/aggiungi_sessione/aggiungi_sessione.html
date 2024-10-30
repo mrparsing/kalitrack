@@ -67,49 +67,60 @@
             });
 
             // Aggiungi la sessione a Firestore e al calendario
+            // Aggiungi la sessione a Firestore e al calendario
             document.getElementById('saveSessionBtn').addEventListener('click', async function () {
                 const workoutName = document.getElementById('workoutName').value;
                 const date = document.getElementById('date').value;
 
                 if (workoutName && date && exercises.length > 0) {
-                    const description = exercises.map(ex => `${ex.exercise} (${ex.series} serie, recupero ${ex.recovery}s)`).join(', ');
+                    const sessionData = {
+                        workoutName,
+                        date,
+                        exercises
+                    };
 
-                    // Verifica l'utente autenticato
-                    auth.onAuthStateChanged(async user => {
+                    auth.onAuthStateChanged(async (user) => {
                         if (user) {
-                            // Crea i dati della sessione da salvare
-                            const sessionData = {
-                                workoutName,
-                                date,
-                                exercises
-                            };
+                            const userRef = db.collection('sessions').doc(user.uid);
 
                             try {
-                                await db.collection('sessions').doc(user.uid).add(sessionData)
-                                // Salva la sessione nella sottocollezione "sessions" dell'utente
-                               // await db.collection('users').doc(user.uid).collection('sessions').add(sessionData);
+                                // Usa arrayUnion per aggiungere la nuova sessione all'array workouts
+                                await userRef.update({
+                                    workouts: firebase.firestore.FieldValue.arrayUnion(sessionData)
+                                });
 
-                                // Aggiungi l'evento al calendario
+                                // Aggiunge la sessione al calendario
+                                const description = exercises.map(ex => `${ex.exercise} (${ex.series}, recupero ${ex.recovery}s)`).join(', ');
                                 calendar.addEvent({
                                     title: workoutName,
                                     start: date,
                                     description: description
                                 });
 
-                                // Reset form e lista
+                                // Reset del form e della lista
                                 document.getElementById('sessionForm').reset();
                                 exerciseListEl.innerHTML = '';
                                 exercises.length = 0;
 
                                 alert("Sessione salvata con successo!");
                             } catch (error) {
-                                console.error("Errore durante il salvataggio della sessione:", error);
-                                alert("Errore durante il salvataggio della sessione.");
+                                // Se il campo 'workouts' non esiste ancora, usa `.set()` per crearlo
+                                if (error.code === 'not-found') {
+                                    await userRef.set({
+                                        workouts: [sessionData]
+                                    });
+                                    alert("Sessione salvata con successo!");
+                                } else {
+                                    console.error("Errore durante il salvataggio della sessione:", error);
+                                    alert("Errore durante il salvataggio della sessione.");
+                                }
                             }
                         } else {
                             alert("Devi essere loggato per salvare la sessione.");
                         }
                     });
+                } else {
+                    alert("Compila tutti i campi per salvare la sessione.");
                 }
             });
         });
