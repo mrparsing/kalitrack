@@ -12,7 +12,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <link rel="stylesheet" type="text/css" href="../home/style_home.css">
-    <link rel="stylesheet" type="text/css" href="style_aggiungi_sessione.css">
 
     <script>
         // Configura Firebase con le tue impostazioni
@@ -72,29 +71,41 @@
                 const date = document.getElementById('date').value;
 
                 if (workoutName && date && exercises.length > 0) {
-                    const sessionData = {
-                        workoutName,
-                        date,
-                        exercises
-                    };
+                    const description = exercises.map(ex => `${ex.exercise} (${ex.series} serie, recupero ${ex.recovery}s)`).join(', ');
 
                     // Verifica l'utente autenticato
                     auth.onAuthStateChanged(async user => {
                         if (user) {
+                            // Crea il documento della sessione con l'ID utente come ID del documento
+                            const sessionData = {
+                                workoutName,
+                                date,
+                                exercises
+                            };
+
+                            // Salva la sessione in Firestore con userId come ID del documento
                             try {
-                                const userDoc = await db.collection('session').doc(user.uid).get();
-                                if (userDoc.exists && userDoc.data().sessions) {
-                                    userDoc.data().sessions.forEach(session => {
-                                        calendar.addEvent({
-                                            title: session.workoutName,
-                                            start: session.date,
-                                            description: session.exercises.map(ex => `${ex.exercise} (${ex.series} serie, recupero ${ex.recovery}s)`).join(', ')
-                                        });
-                                    });
-                                }
+                                await db.collection('session').doc(user.uid).set(sessionData);
+
+                                // Aggiungi l'evento al calendario
+                                calendar.addEvent({
+                                    title: workoutName,
+                                    start: date,
+                                    description: description
+                                });
+
+                                // Reset form e lista
+                                document.getElementById('sessionForm').reset();
+                                exerciseListEl.innerHTML = '';
+                                exercises.length = 0;
+
+                                alert("Sessione salvata con successo!");
                             } catch (error) {
-                                console.error("Errore durante il caricamento delle sessioni:", error);
+                                console.error("Errore durante il salvataggio della sessione:", error);
+                                alert("Errore durante il salvataggio della sessione.");
                             }
+                        } else {
+                            alert("Devi essere loggato per salvare la sessione.");
                         }
                     });
                 }
