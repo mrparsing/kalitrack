@@ -78,15 +78,15 @@
                     // Verifica l'utente autenticato
                     auth.onAuthStateChanged(async user => {
                         if (user) {
-                            // Crea i dati della sessione
+                            // Crea i dati della sessione da salvare
                             const sessionData = {
                                 workoutName,
                                 date,
                                 exercises
                             };
 
-                            // Salva la sessione in Firestore come un nuovo documento nella sottocollezione "sessions"
                             try {
+                                // Salva la sessione nella sottocollezione "sessions" dell'utente
                                 await db.collection('users').doc(user.uid).collection('sessions').add(sessionData);
 
                                 // Aggiungi l'evento al calendario
