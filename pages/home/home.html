@@ -118,11 +118,11 @@
         });
 
         // Funzione per il logout
-        async function logout() {
+        window.logout = async function () { // Attach function to window
             try {
                 await auth.signOut();
                 alert("Logout effettuato con successo!");
-                window.location.href = "../home/home.html"; // Redirect to the home page after logout
+                window.location.href = "../../index.html"; // Redirect to the home page after logout
             } catch (error) {
                 console.error("Errore durante il logout:", error);
                 alert("Si è verificato un errore durante il logout.");
