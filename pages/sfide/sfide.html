@@ -124,7 +124,7 @@
             }
             auth.onAuthStateChanged(async (user) => {
                 if (user) {
-                    const challengeRef = db.collection("sfide").doc(user.uid);
+                    const userRef = db.collection('sfide').doc(user.uid);
 
                     try {
                         await userRef.update({
