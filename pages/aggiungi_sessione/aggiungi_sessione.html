@@ -67,7 +67,6 @@
             });
 
             // Aggiungi la sessione a Firestore e al calendario
-            // Aggiungi la sessione a Firestore e al calendario
             document.getElementById('saveSessionBtn').addEventListener('click', async function () {
                 const workoutName = document.getElementById('workoutName').value;
                 const date = document.getElementById('date').value;
@@ -86,8 +85,9 @@
                             };
 
                             try {
+                                await db.collection('sessions').doc(user.uid).add(sessionData)
                                 // Salva la sessione nella sottocollezione "sessions" dell'utente
-                                await db.collection('users').doc(user.uid).collection('sessions').add(sessionData);
+                               // await db.collection('users').doc(user.uid).collection('sessions').add(sessionData);
 
                                 // Aggiungi l'evento al calendario
                                 calendar.addEvent({
