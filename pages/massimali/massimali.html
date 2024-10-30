@@ -141,12 +141,10 @@
                                 const maxItem = document.createElement("div");
                                 maxItem.className = "max-item";
                                 maxItem.innerHTML = `
-                                    <strong>${exercise}</strong>: 
-                                    <input type="number" value="${maxValue}" id="max-${exercise}" style="width: 80px;" />
-                                    <button onclick="updateMax('${exercise}')">Aggiorna</button>
-                                    <button onclick="deleteMax('${exercise}')">Elimina</button>
-                                `;
-                                maxListEl.appendChild(maxItem);
+    <div class="text"><strong>${exercise}</strong>: <input type="number" value="${maxValue}" id="max-${exercise}" style="width: 80px;" /></div>
+    <button onclick="updateMax('${exercise}')">Aggiorna</button>
+    <button onclick="deleteMax('${exercise}')">Elimina</button>
+`; maxListEl.appendChild(maxItem);
                             }
                         } else {
                             maxListEl.innerHTML = "<p>Nessun massimale trovato.</p>";
