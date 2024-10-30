@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Massimali - KaliFit</title>
+    <title>Sfide - KaliFit</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="../home/style_home.css">
-    <link rel="stylesheet" type="text/css" href="style_massimali.css">
+    <link rel="stylesheet" type="text/css" href="style_sfide.css">
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
@@ -18,7 +18,7 @@
         <button class="menu-btn" id="menuButton" onclick="toggleSidebar()">
             <i class="fas fa-bars"></i>
         </button>
-        <div class="logo">KaliFit - Massimali</div>
+        <div class="logo">KaliFit - Sfide</div>
     </header>
 
     <div class="dashboard-container">
@@ -40,13 +40,9 @@
                 <span class="icon-container"><i class="fas fa-calendar-alt"></i></span>
                 <span class="text">Sessioni Future</span>
             </a>
-            <button class="sidebar-btn active">
-                <i class="fas fa-dumbbell"></i>
-                <span>Massimali</span>
-            </button>
-            <a href="../sessioni_successive/sessioni_successive.html" class="sidebar-btn">
-                <span class="icon-container"><i class="fas fa-trophy"></i></span>
-                <span class="text">Sfide</span>
+            <a href="../massimali/massimali.html" class="sidebar-btn">
+                <span class="icon-container"><i class="fas fa-dumbbell"></i></span>
+                <span class="text">Massimali</span>
             </a>
             <div class="sidebar-divider"></div>
             <a href="../profilo/profile.html" class="sidebar-btn">
@@ -61,23 +57,23 @@
             </button>
         </aside>
 
-        <!-- Contenuto principale: Massimali -->
+        <!-- Contenuto principale: Sfide -->
         <main class="main-content">
             <div class="content-wrapper">
-                <!-- Sinistra: Modulo per aggiungere un massimale -->
-                <div class="add-max">
-                    <h2>Aggiungi Massimale</h2>
-                    <form id="maxForm">
-                        <input type="text" id="exercise" placeholder="Esercizio" required>
-                        <input type="number" id="maxValue" placeholder="Massimale (kg)" required>
-                        <button type="submit">Salva Massimale</button>
+                <!-- Sinistra: Modulo per aggiungere una sfida -->
+                <div class="add-challenge">
+                    <h2>Aggiungi Sfida</h2>
+                    <form id="challengeForm">
+                        <input type="text" id="challengeTitle" placeholder="Titolo Sfida" required>
+                        <input type="text" id="challengeDescription" placeholder="Descrizione Sfida" required>
+                        <button type="submit">Salva Sfida</button>
                     </form>
                 </div>
 
-                <!-- Destra: Lista dei massimali -->
-                <div class="max-list-container">
-                    <h2>Massimali Registrati</h2>
-                    <div id="maxList" class="max-list"></div>
+                <!-- Destra: Lista delle sfide -->
+                <div class="challenge-list-container">
+                    <h2> Sfide Registrate</h2>
+                    <div id="challengeList" class="challenge-list"></div>
                 </div>
             </div>
         </main>
@@ -103,100 +99,82 @@
         const auth = firebase.auth();
 
         // Funzione per gestire l'invio del modulo
-        document.getElementById("maxForm").addEventListener("submit", function (e) {
+        document.getElementById("challengeForm").addEventListener("submit", function (e) {
             e.preventDefault();
-            const exercise = document.getElementById("exercise").value;
-            const maxValue = document.getElementById("maxValue").value;
-            saveMax(exercise, maxValue);
+            const title = document.getElementById("challengeTitle").value;
+            const description = document.getElementById("challengeDescription").value;
+            saveChallenge(title, description);
         });
 
-        // Funzione per salvare il massimale nel DB
-        function saveMax(exercise, maxValue) {
+        // Funzione per salvare la sfida nel DB
+        function saveChallenge(title, description) {
             auth.onAuthStateChanged(user => {
                 if (user) {
-                    const maxRef = db.collection("massimali").doc(user.uid);
-                    maxRef.set({
-                        [exercise]: maxValue
+                    const challengeRef = db.collection("sfide").doc(user.uid);
+                    challengeRef.set({
+                        [title]: description
                     }, { merge: true }).then(() => {
-                        alert("Massimale salvato!");
-                        document.getElementById("maxForm").reset();
-                        loadMax(); // Ricarica la lista dopo il salvataggio
+                        alert("Sfida salvata!");
+                        document.getElementById("challengeForm").reset();
+                        loadChallenges(); // Ricarica la lista dopo il salvataggio
                     }).catch(error => {
-                        console.error("Errore nel salvataggio del massimale:", error);
+                        console.error("Errore nel salvataggio della sfida:", error);
                     });
                 } else {
-                    alert("Devi essere loggato per salvare i massimali.");
+                    alert("Devi essere loggato per salvare le sfide.");
                 }
             });
         }
 
-        // Funzione per caricare i massimali dal DB
-        function loadMax() {
+        // Funzione per caricare le sfide dal DB
+        function loadChallenges() {
             auth.onAuthStateChanged(user => {
                 if (user) {
-                    const maxRef = db.collection("massimali").doc(user.uid);
-                    maxRef.get().then((doc) => {
-                        const maxListEl = document.getElementById("maxList");
-                        maxListEl.innerHTML = ""; // Pulisce la lista precedente
+                    const challengeRef = db.collection("sfide").doc(user.uid);
+                    challengeRef.get().then((doc) => {
+                        const challengeListEl = document.getElementById("challengeList");
+                        challengeListEl.innerHTML = ""; // Pulisce la lista precedente
                         if (doc.exists) {
                             const data = doc.data();
-                            for (const exercise in data) {
-                                const maxValue = data[exercise];
-                                const maxItem = document.createElement("div");
-                                maxItem.className = "max-item";
-                                maxItem.innerHTML = `
-    <div class="text"><strong>${exercise}</strong>: <input type="number" value="${maxValue}" id="max-${exercise}" style="width: 80px;" /></div>
-    <button onclick="updateMax('${exercise}')">Aggiorna</button>
-    <button onclick="deleteMax('${exercise}')">Elimina</button>
-`; maxListEl.appendChild(maxItem);
+                            for (const title in data) {
+                                const description = data[title];
+                                const challengeItem = document.createElement("div");
+                                challengeItem.className = "challenge-item";
+                                challengeItem.innerHTML = `
+                                    <strong>${title}</strong>: <span>${description}</span>
+                                    <button onclick="deleteChallenge('${title}')">Elimina</button>
+                                `;
+                                challengeListEl.appendChild(challengeItem);
                             }
                         } else {
-                            maxListEl.innerHTML = "<p>Nessun massimale trovato.</p>";
+                            challengeListEl.innerHTML = "<p>Nessuna sfida trovata.</p>";
                         }
                     }).catch(error => {
-                        console.error("Errore nel caricamento dei massimali:", error);
+                        console.error("Errore nel caricamento delle sfide:", error);
                     });
                 }
             });
         }
 
-        // Funzione per aggiornare un massimale
-        function updateMax(exercise) {
-            const newValue = document.getElementById(`max-${exercise}`).value;
+        // Funzione per eliminare una sfida
+        function deleteChallenge(title) {
             auth.onAuthStateChanged(user => {
                 if (user) {
-                    const maxRef = db.collection("massimali").doc(user.uid);
-                    maxRef.update({
-                        [exercise]: newValue
+                    const challengeRef = db.collection("sfide").doc(user.uid);
+                    challengeRef.update({
+                        [title]: firebase.firestore.FieldValue.delete()
                     }).then(() => {
-                        alert("Massimale aggiornato!");
-                        loadMax(); // Ricarica la lista dopo l'aggiornamento
+                        alert("Sfida eliminata!");
+                        loadChallenges(); // Ricarica la lista dopo l'eliminazione
                     }).catch(error => {
-                        console.error("Errore nell'aggiornamento del massimale:", error);
+                        console.error("Errore nell'eliminazione della sfida:", error);
                     });
                 }
             });
         }
 
-        // Funzione per eliminare un massimale
-        function deleteMax(exercise) {
-            auth.onAuthStateChanged(user => {
-                if (user) {
-                    const maxRef = db.collection("massimali").doc(user.uid);
-                    maxRef.update({
-                        [exercise]: firebase.firestore.FieldValue.delete()
-                    }).then(() => {
-                        alert("Massimale eliminato!");
-                        loadMax(); // Ricarica la lista dopo l'eliminazione
-                    }).catch(error => {
-                        console.error("Errore nell'eliminazione del massimale:", error);
-                    });
-                }
-            });
-        }
-
-        // Carica i massimali all'apertura della pagina
-        document.addEventListener("DOMContentLoaded", loadMax);
+        // Carica le sfide all'apertura della pagina
+        document.addEventListener("DOMContentLoaded", loadChallenges);
 
         // Funzione per mostrare/nascondere la sidebar
         function toggleSidebar() {
