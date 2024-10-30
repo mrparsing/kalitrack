@@ -8,7 +8,7 @@
 /* Stile per il modulo di aggiunta massimale */
 .add-max {
     flex: 1; /* Occupare lo spazio disponibile */
-    margin-right: 200px; /* Margine a destra per distanziare dalla lista */
+    margin-right: 100px;
 }
 
 /* Modulo di input con layout a colonna */
@@ -49,23 +49,37 @@
 
 /* Stile per ogni massimale */
 .max-item {
-    background-color: #f8f9fa; /* Colore di sfondo chiaro */
+    background-color: #555; /* Colore di sfondo chiaro */
     border: 1px solid #ccc; /* Bordo grigio per ogni massimale */
     border-radius: 5px; /* Raggio per gli angoli */
     margin: 10px 0; /* Margine verticale */
-    padding: 10px; /* Padding */
+    padding: 15px; /* Padding */
     display: flex; /* Layout flessibile */
     justify-content: space-between; /* Spaziatura uniforme tra gli elementi */
     align-items: center; /* Allinea verticalmente */
+    flex-wrap: wrap; /* Permette al contenuto di andare a capo */
 }
+
+.max-item .text {
+    flex-grow: 1; /* Permette al testo di occupare tutto lo spazio disponibile */
+    margin-right: 10px; /* Margine a destra per distanziare dai pulsanti */
+    overflow-wrap: break-word; /* Permette il wrapping delle parole lunghe */
+    white-space: normal; /* Permette al testo di andare a capo */
+}
+
 
 /* Stile per il bottone di eliminazione e aggiornamento */
 .max-item button {
     background-color: #dc3545; /* Colore rosso per il bottone */
     color: white; /* Colore del testo */
+    padding: 10px 15px; /* Padding per il bottone */
+    margin: 5px;
     border: none; /* Nessun bordo */
     border-radius: 5px; /* Raggio per gli angoli */
     cursor: pointer; /* Cursore a mano */
+    min-width: 100px; /* Larghezza minima per i pulsanti */
+    max-width: 150px; /* Larghezza massima per i pulsanti */
+    text-align: center; /* Allinea il testo al centro */
 }
 
 .max-item button:hover {
@@ -85,18 +99,19 @@
         margin-right: 0; /* Rimuove il margine a destra */
         width: 100%; /* Larghezza al 100% */
         margin-bottom: 50px;
-        margin-top: -200px;
     }
 
     /* Modifica il layout dei massimali */
     .max-item {
         flex-direction: column; /* Layout verticale per i massimali */
-        align-items: flex-start; /* Allineamento a sinistra */
+        align-items: center; /* Allineamento a sinistra */
+        padding: 10px;
+        margin: 10px;
     }
 
     /* Larghezza degli input nella lista */
     .max-item input {
-        width: 80%; /* Larghezza ridotta */
+        width: 100%; /* Larghezza ridotta */
         margin-bottom: 10px; /* Margine inferiore */
     }
 
@@ -107,7 +122,7 @@
 
     /* Larghezza dei pulsanti nella lista */
     .max-item button {
-        width: 100%; /* Pulsanti al 100% */
+        width: 50%; /* Pulsanti al 100% */
         margin-bottom: 5px; /* Margine inferiore */
     }
 }
