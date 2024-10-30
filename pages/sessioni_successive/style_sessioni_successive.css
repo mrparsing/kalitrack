@@ -1,12 +1,27 @@
 /* File style_future.css */
 
+/* Stile per il contenitore principale */
+.main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra gli elementi orizzontalmente */
+}
+
+/* Stile per il titolo */
+.main-content h2 {
+    align-self: flex-start; /* Posiziona il titolo in alto a sinistra */
+    margin-left: 20px; /* Margine a sinistra per allontanare il titolo dal bordo */
+}
+
 /* Stile per la lista di sessioni future */
 .session-list {
     padding: 20px;
-    margin: 0 auto;
+    margin: 20px auto; /* Margine verticale per separare dal titolo */
     max-width: 800px;
+    width: 100%; /* Assicura che la lista occupi il 100% della larghezza disponibile */
 }
 
+/* Stile per ogni sessione */
 .session-item {
     background-color: #f4f4f4;
     border: 1px solid #ccc;
@@ -15,17 +30,20 @@
     padding: 15px;
 }
 
+/* Stile per il nome della sessione */
 .session-item h3 {
     color: #333;
     font-size: 18px;
     margin-bottom: 10px;
 }
 
+/* Stile per la lista degli esercizi */
 .session-item ul {
     list-style-type: none;
     padding: 0;
 }
 
+/* Stile per ogni esercizio */
 .session-item li {
     padding: 5px 0;
     color: #555;

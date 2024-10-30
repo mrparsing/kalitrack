@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
 </head>
+
 <body>
     <header>
         <button class="menu-btn" id="menuButton" onclick="toggleSidebar()">
@@ -38,6 +40,15 @@
                 <span class="icon-container"><i class="fas fa-calendar-alt"></i></span>
                 <span class="text">Sessioni Future</span>
             </a>
+            <button class="sidebar-btn">
+                <i class="fas fa-dumbbell"></i>
+                <span>Massimali</span>
+            </button>
+
+            <button class="sidebar-btn">
+                <i class="fas fa-trophy"></i>
+                <span>Sfide</span>
+            </button>
             <!-- Altri link della sidebar -->
             <div class="sidebar-divider"></div>
             <a href="../profilo/profile.html" class="sidebar-btn">
@@ -132,4 +143,5 @@
         document.getElementById('overlay').addEventListener('click', () => toggleSidebar());
     </script>
 </body>
+
 </html>
