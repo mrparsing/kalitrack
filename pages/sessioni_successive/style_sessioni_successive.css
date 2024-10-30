@@ -11,6 +11,7 @@
 .main-content h2 {
     align-self: flex-start; /* Posiziona il titolo in alto a sinistra */
     margin-left: 20px; /* Margine a sinistra per allontanare il titolo dal bordo */
+    margin-top: 10px; /* Margine superiore per avvicinare il titolo all'header */
 }
 
 /* Stile per la lista di sessioni future */
