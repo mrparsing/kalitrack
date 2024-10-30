@@ -1,17 +1,9 @@
-.content-wrapper {
-    display: flex;
-    flex-wrap: wrap; /* Consente di adattarsi su più righe per schermi piccoli */
-    gap: 20px; /* Distanza tra i contenuti */
-    padding: 20px;
-}
-
 .session-form {
-    margin: 20px;
     background-color: #2c2c2c;
     padding: 20px;
     border-radius: 10px;
     width: 100%;
-    max-width: 400px;
+    max-width: 500px;
 }
 
 .session-form label {
@@ -32,7 +24,7 @@
 .session-form button {
     background-color: #ff5733;
     color: #fff;
-    padding: 10px;
+    padding: 5px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -44,7 +36,47 @@
     background-color: #e14a2a;
 }
 
-/* Stile per ogni sfida */
+.main-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+/* Stili per la lista della sessione */
+#sessionList {
+    margin-top: 15px;
+    background-color: #2c2c2c;
+    border-radius: 10px;
+    padding: 10px;
+    max-height: 200px; /* Set a maximum height */
+    overflow-y: auto; /* Make it scrollable */
+}
+
+.exercise-item {
+    padding: 10px;
+    background-color: #444;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    display: flex; /* Usa flexbox per disporre gli elementi */
+    justify-content: space-between; /* Spazia il contenuto tra i lati */
+    align-items: center; /* Allinea verticalmente al centro */
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Optional: Adjust the height for smaller screens */
+    #sessionList {
+        max-height: 200px; /* Smaller max height on mobile */
+    }
+
+    
+}
+
 .challenge-item {
     background-color: #444; /* Colore di sfondo chiaro */
     border: 1px solid #ccc; /* Bordo grigio per ogni sfida */
@@ -54,6 +86,11 @@
     display: flex; /* Layout flessibile */
     justify-content: space-between; /* Spaziatura uniforme tra gli elementi */
     align-items: center; /* Allineamento verticale */
+}
+
+#challengeList {
+    margin-right: 100px;
+    width: 100%;
 }
 
 /* Pulsante per eliminare la sfida */
@@ -69,11 +106,4 @@
 /* Hover per il pulsante di eliminazione */
 .challenge-item button:hover {
     background-color: #c82333; /* Colore più scuro al passaggio del mouse */
-}
-
-.exercise-item {
-    padding: 10px;
-    background-color: #444;
-    border-radius: 5px;
-    margin-bottom: 5px;
 }

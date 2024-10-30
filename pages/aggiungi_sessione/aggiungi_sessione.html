@@ -59,11 +59,14 @@
                     // Aggiorna la lista visiva
                     const itemEl = document.createElement('div');
                     itemEl.className = 'session-item';
-                    itemEl.innerText = `${exercise} - ${series} serie - Recupero: ${recovery}s`;
+
+                    // Crea un contenitore per l'esercizio e il pulsante
+                    const itemContent = document.createElement('div');
+                    itemContent.className = 'item-content';
+                    itemContent.innerText = `${exercise} - ${series} serie - Recupero: ${recovery}s`;
 
                     // Crea il pulsante di rimozione
                     const removeBtn = document.createElement('button');
-                    removeBtn.style.marginRight = "10px"
                     removeBtn.innerText = 'Rimuovi';
                     removeBtn.className = 'remove-exercise-btn';
 
@@ -76,10 +79,10 @@
                         }
                     });
 
-                    // Aggiungi il pulsante di rimozione all'elemento della lista
+                    // Aggiungi contenuto e pulsante all'elemento della lista
+                    itemEl.appendChild(itemContent);
                     itemEl.appendChild(removeBtn);
                     exerciseListEl.appendChild(itemEl);
-
                     // Reset input
                     document.getElementById('exercise').value = '';
                     document.getElementById('series').value = '';

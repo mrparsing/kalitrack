@@ -7,6 +7,7 @@
     <title>Dettaglio Sessione - KaliFit</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="../home/style_home.css">
+    <link rel="stylesheet" type="text/css" href="style_workout.css">
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
@@ -58,15 +59,14 @@
                 <i class="fas fa-sign-out-alt"></i><span>Logout</span>
             </button>
         </aside>
-
         <main class="main-content">
-            <h2>Workout</h2>
             <section id="sessionDetails">
                 <h2 id="sessionName">Nome Sessione</h2>
                 <p id="sessionDate">Data: --</p>
             </section>
+
             <section id="exerciseList" class="exercise-list">
-                <h3>Esercizi</h3>
+                <h3 id="list">Esercizi</h3>
                 <div id="exercisesContainer">
                     <!-- Gli esercizi verranno caricati qui -->
                 </div>
@@ -105,14 +105,19 @@
                         .then(docSnapshot => {
                             if (docSnapshot.exists) {
                                 const sessionData = docSnapshot.data().workouts || [];
-                                console.log(sessionData);
-                                const selectedSession = sessionData.find(workout =>
-                                    workout.name === workoutName && workout.date === date
-                                );
-                                console.log(selectedSession);
+
+                                // Debug: Stampa tutti i workout trovati
+                                console.log("Lista workout trovati:", sessionData);
+
+                                // Cerca il workout in base a workoutName e data
+                                const selectedSession = sessionData.find(workout => {
+                                    console.log(`Verifica workout: ${workout.workoutName} con data ${workout.date}`);
+                                    return workout.workoutName === workoutName && workout.date === date;
+                                });
 
                                 if (selectedSession) {
-                                    document.getElementById("sessionName").textContent = selectedSession.name || "Sessione senza nome";
+                                    console.log("Workout selezionato:", selectedSession);
+                                    document.getElementById("sessionName").textContent = selectedSession.workoutName || "Sessione senza nome";
                                     document.getElementById("sessionDate").textContent = `Data: ${selectedSession.date || "Non specificata"}`;
 
                                     const exercisesContainer = document.getElementById("exercisesContainer");
@@ -122,16 +127,18 @@
                                         const exerciseItem = document.createElement("div");
                                         exerciseItem.className = "exercise-item";
                                         exerciseItem.innerHTML = `
-                                            <h4>${exercise.name}</h4>
-                                            <p>Serie: ${exercise.series}, Ripetizioni: ${exercise.repetitions}</p>
-                                            <p>Recupero: ${exercise.recovery} sec</p>
-                                        `;
+                                    <h4>${exercise.exercise}</h4>
+                                    <p>Serie: ${exercise.series}, Ripetizioni: ${exercise.repetitions}</p>
+                                    <p>Recupero: ${exercise.recovery} sec</p>
+                                `;
                                         exercisesContainer.appendChild(exerciseItem);
                                     });
                                 } else {
+                                    console.log("Nessun workout trovato con i criteri specificati.");
                                     alert("Sessione non trovata.");
                                 }
                             } else {
+                                console.log("Documento utente non trovato.");
                                 alert("Nessun dato trovato per questo utente.");
                             }
                         }).catch(error => {
@@ -142,7 +149,6 @@
                 }
             });
         }
-
         const { workoutName, date } = getUrlParams();
         if (workoutName && date) {
             loadSessionDetails(workoutName, date);

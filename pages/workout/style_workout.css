@@ -1,0 +1,83 @@
+.main-content h2 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+/* Sezione del dettaglio sessione */
+#sessionDetails {
+    margin-bottom: 1rem;
+}
+
+#sessionDetails h2 {
+    font-size: 1.8rem;
+    color: var(--accent-color);
+}
+
+#sessionDate {
+    color: #555;
+}
+
+/* Stile per la lista degli esercizi */
+.exercise-list {
+    margin-top: 1.5rem;
+}
+
+.exercise-item {
+    background-color: var(--background-color);
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.exercise-item h4 {
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+}
+
+.exercise-item p {
+    color: #666;
+}
+
+/* Overlay per sidebar mobile */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9;
+}
+
+.overlay.visible {
+    display: block;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Stile per la sidebar su schermi più piccoli */
+@media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        position: fixed;
+        left: -100%;
+        top: 0;
+        height: 100%;
+        transition: left 0.3s ease;
+        z-index: 10;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+}

@@ -1,10 +1,9 @@
 .session-form {
-    margin: 20px;
     background-color: #2c2c2c;
     padding: 20px;
     border-radius: 10px;
     width: 100%;
-    max-width: 400px;
+    max-width: 500px;
 }
 
 .session-form label {
@@ -25,7 +24,7 @@
 .session-form button {
     background-color: #ff5733;
     color: #fff;
-    padding: 10px;
+    padding: 5px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -57,6 +56,8 @@
     background-color: #2c2c2c;
     border-radius: 10px;
     padding: 10px;
+    max-height: 200px; /* Set a maximum height */
+    overflow-y: auto; /* Make it scrollable */
 }
 
 .session-item {
@@ -64,6 +65,9 @@
     background-color: #444;
     border-radius: 5px;
     margin-bottom: 5px;
+    display: flex; /* Usa flexbox per disporre gli elementi */
+    justify-content: space-between; /* Spazia il contenuto tra i lati */
+    align-items: center; /* Allinea verticalmente al centro */
 }
 
 @media (max-width: 768px) {
@@ -72,4 +76,11 @@
         flex-direction: column;
         align-items: center;
     }
+
+    /* Optional: Adjust the height for smaller screens */
+    #sessionList {
+        max-height: 200px; /* Smaller max height on mobile */
+    }
+
+    
 }
