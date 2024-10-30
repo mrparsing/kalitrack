@@ -195,6 +195,44 @@
                 alert("Per favore, inserisci un nome per l'allenamento e aggiungi esercizi.");
             }
         });
+
+        // Funzione per caricare le sfide dal DB
+        async function loadChallenges() {
+            const user = auth.currentUser;
+
+            if (user) {
+                const userRef = db.collection('sfide').doc(user.uid);
+                const doc = await userRef.get();
+
+                if (doc.exists) {
+                    const data = doc.data();
+                    const workouts = data.workouts;
+
+                    // Clear existing challenges
+                    challengeListEl.innerHTML = '';
+
+                    // Display each challenge
+                    workouts.forEach(workout => {
+                        const workoutEl = document.createElement('div');
+                        workoutEl.className = 'challenge-item';
+                        workoutEl.innerHTML = `<strong>${workout.workoutName}</strong><br>${workout.exercises.map(e => `${e.exercise} - ${e.series} serie - Recupero: ${e.recoveryTime}s`).join('<br>')}`;
+                        challengeListEl.appendChild(workoutEl);
+                    });
+                } else {
+                    challengeListEl.innerHTML = '<p>Nessuna sfida registrata.</p>';
+                }
+            } else {
+                challengeListEl.innerHTML = '<p>Devi essere loggato per visualizzare le sfide.</p>';
+            }
+        }
+
+        // Carica le sfide quando l'utente è autenticato
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                loadChallenges();
+            }
+        });
+
     </script>
 </body>
 
