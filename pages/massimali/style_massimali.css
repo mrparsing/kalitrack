@@ -1,0 +1,113 @@
+/* Stile per il contenitore principale */
+.content-wrapper {
+    display: flex; /* Layout flessibile */
+    justify-content: space-between; /* Spaziatura uniforme */
+    padding: 20px; /* Padding interno */
+}
+
+/* Stile per il modulo di aggiunta massimale */
+.add-max {
+    flex: 1; /* Occupare lo spazio disponibile */
+    margin-right: 200px; /* Margine a destra per distanziare dalla lista */
+}
+
+/* Modulo di input con layout a colonna */
+#maxForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+}
+
+/* Stile per il modulo di input */
+#maxForm input {
+    margin: 5px; /* Margine per gli input */
+    padding: 15px; /* Padding per gli input */
+    margin: 20px;
+    width: 150%; /* Larghezza al 100% */
+    border: 1px solid #ccc; /* Bordo grigio per gli input */
+    background-color: #444;
+    color: white;
+    border-radius: 5px; /* Raggio per gli angoli */
+}
+
+/* Stile per il bottone di salvataggio */
+#maxForm button {
+    padding: 10px 20px; /* Padding per il bottone */
+    background-color: #28a745; /* Colore verde per il bottone */
+    color: white; /* Colore del testo */
+    border: none; /* Nessun bordo per il bottone */
+    border-radius: 5px; /* Raggio per gli angoli */
+    cursor: pointer; /* Cursore a mano */
+    transition: background-color 0.3s; /* Transizione per il colore di sfondo */
+}
+
+/* Stile per la lista dei massimali */
+.max-list {
+    width: 100%; /* Larghezza della lista */
+}
+
+/* Stile per ogni massimale */
+.max-item {
+    background-color: #f8f9fa; /* Colore di sfondo chiaro */
+    border: 1px solid #ccc; /* Bordo grigio per ogni massimale */
+    border-radius: 5px; /* Raggio per gli angoli */
+    margin: 10px 0; /* Margine verticale */
+    padding: 10px; /* Padding */
+    display: flex; /* Layout flessibile */
+    justify-content: space-between; /* Spaziatura uniforme tra gli elementi */
+    align-items: center; /* Allinea verticalmente */
+}
+
+/* Stile per il bottone di eliminazione e aggiornamento */
+.max-item button {
+    background-color: #dc3545; /* Colore rosso per il bottone */
+    color: white; /* Colore del testo */
+    border: none; /* Nessun bordo */
+    border-radius: 5px; /* Raggio per gli angoli */
+    cursor: pointer; /* Cursore a mano */
+}
+
+.max-item button:hover {
+    background-color: #c82333; /* Colore più scuro al passaggio del mouse */
+}
+
+/* Media query per schermi piccoli (mobile) */
+@media (max-width: 768px) {
+    .content-wrapper {
+        flex-direction: column; /* Layout verticale per mobile */
+        align-items: center; /* Allineamento centrale */
+        padding: 10px; /* Riduce il padding generale */
+    }
+
+    /* Stile per il modulo di aggiunta massimale */
+    .add-max {
+        margin-right: 0; /* Rimuove il margine a destra */
+        width: 100%; /* Larghezza al 100% */
+        margin-bottom: 50px;
+        margin-top: -200px;
+    }
+
+    /* Modifica il layout dei massimali */
+    .max-item {
+        flex-direction: column; /* Layout verticale per i massimali */
+        align-items: flex-start; /* Allineamento a sinistra */
+    }
+
+    /* Larghezza degli input nella lista */
+    .max-item input {
+        width: 80%; /* Larghezza ridotta */
+        margin-bottom: 10px; /* Margine inferiore */
+    }
+
+    /* Larghezza degli input nel modulo */
+    #maxForm input {
+        width: 100%; /* Larghezza al 100% */
+    }
+
+    /* Larghezza dei pulsanti nella lista */
+    .max-item button {
+        width: 100%; /* Pulsanti al 100% */
+        margin-bottom: 5px; /* Margine inferiore */
+    }
+}

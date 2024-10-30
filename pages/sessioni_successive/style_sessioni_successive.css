@@ -57,7 +57,7 @@
 
 /* Effetto hover per le sessioni */
 .session-item:hover {
-    background-color: #555; /* Cambia il colore di sfondo */
+    background-color: #999999; /* Cambia il colore di sfondo */
     color: #fff; /* Cambia il colore del testo */
     transform: scale(1.02); /* Leggera ingrandimento dell'elemento */
 }
