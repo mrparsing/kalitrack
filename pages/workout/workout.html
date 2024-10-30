@@ -105,9 +105,11 @@
                         .then(docSnapshot => {
                             if (docSnapshot.exists) {
                                 const sessionData = docSnapshot.data().workouts || [];
+                                console.log(sessionData);
                                 const selectedSession = sessionData.find(workout =>
                                     workout.name === workoutName && workout.date === date
                                 );
+                                console.log(selectedSession);
 
                                 if (selectedSession) {
                                     document.getElementById("sessionName").textContent = selectedSession.name || "Sessione senza nome";
