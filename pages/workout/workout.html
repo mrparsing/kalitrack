@@ -20,9 +20,7 @@
         <div class="logo">KaliTrack - Workout</div>
     </header>
 
-    <!-- Sidebar -->
     <div class="dashboard-container">
-        <!-- Sidebar con i pulsanti -->
         <aside class="sidebar">
             <a href="home.html" class="sidebar-btn">
                 <span class="icon-container"><i class="fas fa-home"></i></span>
@@ -48,9 +46,7 @@
                 <span class="icon-container"><i class="fas fa-calendar-alt"></i></span>
                 <span class="text">Sessione del mese</span>
             </a>
-            <!-- Altri link della sidebar -->
             <div class="sidebar-divider"></div>
-
             <a href="../profilo/profile.html" class="sidebar-btn">
                 <span class="icon-container"><i class="fas fa-user-circle"></i></span>
                 <span class="text">Profilo</span>
@@ -58,21 +54,28 @@
             <button class="sidebar-btn">
                 <i class="fas fa-cog"></i><span>Impostazioni</span>
             </button>
-            <button class="sidebar-btn">
+            <button class="sidebar-btn" id="logoutBtn">
                 <i class="fas fa-sign-out-alt"></i><span>Logout</span>
             </button>
         </aside>
 
-        <!-- Contenuto principale: Storico Sessioni -->
         <main class="main-content">
             <h2>Workout</h2>
-
+            <section id="sessionDetails">
+                <h2 id="sessionName">Nome Sessione</h2>
+                <p id="sessionDate">Data: --</p>
+            </section>
+            <section id="exerciseList" class="exercise-list">
+                <h3>Esercizi</h3>
+                <div id="exercisesContainer">
+                    <!-- Gli esercizi verranno caricati qui -->
+                </div>
+            </section>
         </main>
     </div>
     <div class="overlay" id="overlay"></div>
 
     <script>
-        // Configurazione di Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyB2qNYCMQMjm6pAqTEWvP-1FWfPfKaQCi8",
             authDomain: "kalitrack.firebaseapp.com",
@@ -83,12 +86,10 @@
             measurementId: "G-498X9RNHLC"
         };
 
-        // Inizializza Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // Funzione per ottenere i parametri dall'URL
         function getUrlParams() {
             const params = new URLSearchParams(window.location.search);
             return {
@@ -97,40 +98,39 @@
             };
         }
 
-        // Funzione per caricare i dettagli della sessione
         function loadSessionDetails(workoutName, date) {
             auth.onAuthStateChanged(user => {
                 if (user) {
-                    // Query per cercare la sessione in base a workoutName e date
-                    db.collection("sessions").doc(user.uid).collection("userSessions")
-                        .where("workoutName", "==", workoutName)
-                        .where("date", "==", date)
-                        .get()
-                        .then(querySnapshot => {
-                            if (!querySnapshot.empty) {
-                                const sessionDoc = querySnapshot.docs[0]; // Prende il primo documento trovato
-                                const sessionData = sessionDoc.data();
+                    db.collection("sessions").doc(user.uid).get()
+                        .then(docSnapshot => {
+                            if (docSnapshot.exists) {
+                                const sessionData = docSnapshot.data().workouts || [];
+                                const selectedSession = sessionData.find(workout =>
+                                    workout.name === workoutName && workout.date === date
+                                );
 
-                                // Visualizza i dettagli della sessione
-                                document.getElementById("sessionName").textContent = sessionData.workoutName || "Sessione senza nome";
-                                document.getElementById("sessionDate").textContent = `Data: ${sessionData.date || "Non specificata"}`;
+                                if (selectedSession) {
+                                    document.getElementById("sessionName").textContent = selectedSession.name || "Sessione senza nome";
+                                    document.getElementById("sessionDate").textContent = `Data: ${selectedSession.date || "Non specificata"}`;
 
-                                // Visualizza gli esercizi della sessione
-                                const exercisesContainer = document.getElementById("exercisesContainer");
-                                exercisesContainer.innerHTML = ""; // Pulisce la lista precedente
+                                    const exercisesContainer = document.getElementById("exercisesContainer");
+                                    exercisesContainer.innerHTML = "";
 
-                                sessionData.exercises.forEach(exercise => {
-                                    const exerciseItem = document.createElement("div");
-                                    exerciseItem.className = "exercise-item";
-                                    exerciseItem.innerHTML = `
-                                        <h4>${exercise.name}</h4>
-                                        <p>Serie: ${exercise.series}, Ripetizioni: ${exercise.repetitions}</p>
-                                        <p>Recupero: ${exercise.recovery} sec</p>
-                                    `;
-                                    exercisesContainer.appendChild(exerciseItem);
-                                });
+                                    selectedSession.exercises.forEach(exercise => {
+                                        const exerciseItem = document.createElement("div");
+                                        exerciseItem.className = "exercise-item";
+                                        exerciseItem.innerHTML = `
+                                            <h4>${exercise.name}</h4>
+                                            <p>Serie: ${exercise.series}, Ripetizioni: ${exercise.repetitions}</p>
+                                            <p>Recupero: ${exercise.recovery} sec</p>
+                                        `;
+                                        exercisesContainer.appendChild(exerciseItem);
+                                    });
+                                } else {
+                                    alert("Sessione non trovata.");
+                                }
                             } else {
-                                alert("Sessione non trovata.");
+                                alert("Nessun dato trovato per questo utente.");
                             }
                         }).catch(error => {
                             console.error("Errore nel caricamento della sessione:", error);
@@ -141,18 +141,16 @@
             });
         }
 
-        // Ottiene i parametri dell'URL e carica i dettagli della sessione
         const { workoutName, date } = getUrlParams();
         if (workoutName && date) {
             loadSessionDetails(workoutName, date);
         }
 
-        // Funzione per il logout
         document.getElementById('logoutBtn').addEventListener('click', async function () {
             try {
                 await auth.signOut();
                 alert("Logout effettuato con successo!");
-                window.location.href = "../../index.html"; // Redirect to the home page after logout
+                window.location.href = "../../index.html";
             } catch (error) {
                 console.error("Errore durante il logout:", error);
                 alert("Si è verificato un errore durante il logout.");
