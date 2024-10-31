@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aggiungi Sessione - KaliFit</title>
+    <title>Aggiungi Sessione - KaliTrack</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -156,7 +156,7 @@
         <button class="menu-btn" id="menuButton" onclick="toggleSidebar()">
             <i class="fas fa-bars"></i>
         </button>
-        <div class="logo">KaliFit - Aggiungi Sessione</div>
+        <div class="logo">KaliTrack - Aggiungi Sessione</div>
     </header>
 
     <div class="dashboard-container">
@@ -225,40 +225,44 @@
         <!-- Main Content -->
         <main class="main-content">
             <!-- Form per aggiungere esercizi -->
-            <form class="session-form" id="sessionForm">
-                <label for="workoutName">Nome Allenamento:</label>
-                <input type="text" id="workoutName" name="workoutName" required>
+            <div class="form">
+                <h2>Aggiungi una sessione</h2>
 
-                <label for="date">Data:</label>
-                <input type="text" id="date" name="date" required class="flatpickr">
+                <form class="session-form" id="sessionForm">
+                    <label for="workoutName">Nome Allenamento:</label>
+                    <input type="text" id="workoutName" name="workoutName" required>
 
-                <label for="exercise">Esercizio:</label>
-                <input type="text" id="exercise" name="exercise" placeholder="Nome esercizio" required>
+                    <label for="date">Data:</label>
+                    <input type="text" id="date" name="date" required class="flatpickr">
 
-                <div class="flex-row">
-                    <div class="flex-item">
-                        <label for="series">Serie:</label>
-                        <input type="text" id="series" name="series" required>
+                    <label for="exercise">Esercizio:</label>
+                    <input type="text" id="exercise" name="exercise" placeholder="Nome esercizio" required>
+
+                    <div class="flex-row">
+                        <div class="flex-item">
+                            <label for="series">Serie:</label>
+                            <input type="text" id="series" name="series" required>
+                        </div>
+                        <div class="flex-item">
+                            <label for="repetitions">Ripetizioni:</label>
+                            <input type="text" id="repetitions" name="repetitions" required>
+                        </div>
                     </div>
-                    <div class="flex-item">
-                        <label for="repetitions">Ripetizioni:</label>
-                        <input type="text" id="repetitions" name="repetitions" required>
+
+                    <label for="recovery">Recupero (s):</label>
+                    <input type="number" id="recovery" name="recovery" placeholder="Tempo di recupero in secondi"
+                        required>
+
+                    <button type="button" id="addExerciseBtn">Memorizza Esercizio</button>
+
+                    <!-- Lista della sessione e pulsante di aggiunta -->
+                    <div id="sessionList">
+                        <h3>Sessione Corrente</h3>
+                        <div id="exerciseList"></div>
+                        <button id="saveSessionBtn" style="margin-top: 15px;">Aggiungi Sessione</button>
                     </div>
-                </div>
-
-                <label for="recovery">Recupero (s):</label>
-                <input type="number" id="recovery" name="recovery" placeholder="Tempo di recupero in secondi" required>
-
-                <button type="button" id="addExerciseBtn">Memorizza Esercizio</button>
-
-                <!-- Lista della sessione e pulsante di aggiunta -->
-                <div id="sessionList">
-                    <h3>Sessione Corrente</h3>
-                    <div id="exerciseList"></div>
-                    <button id="saveSessionBtn" style="margin-top: 15px;">Aggiungi Sessione</button>
-                </div>
-            </form>
-
+                </form>
+            </div>
             <!-- Calendario Dinamico -->
             <div class="calendar" id="calendar"></div>
         </main>
@@ -353,6 +357,20 @@
         document.getElementById('overlay').addEventListener('click', () => {
             toggleSidebar(); // Chiudi il menu quando si clicca sull'overlay
         });
+
+        async function logout() {
+            try {
+                await auth.signOut();
+                alert("Logout effettuato con successo!");
+                window.location.href = "../../index.html";
+            } catch (error) {
+                console.error("Errore durante il logout:", error);
+                alert("Si è verificato un errore durante il logout.");
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
     </script>
 
 </body>

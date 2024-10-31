@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - KaliFit</title>
+    <title>Login - KaliTrack</title>
     <link rel="stylesheet" href="style_login.css">
 
     <!-- Firebase SDK -->
@@ -72,13 +72,27 @@
             const form = document.querySelector('.login-form');
             form.addEventListener('submit', login);
         });
+
+        async function logout() {
+            try {
+                await auth.signOut();
+                alert("Logout effettuato con successo!");
+                window.location.href = "../../index.html";
+            } catch (error) {
+                console.error("Errore durante il logout:", error);
+                alert("Si è verificato un errore durante il logout.");
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
     </script>
 </head>
 
 <body>
     <!-- Header semplice -->
     <header>
-        <div class="logo">KaliFit</div>
+        <div class="logo">KaliTrack</div>
     </header>
 
     <!-- Contenitore della pagina di login -->

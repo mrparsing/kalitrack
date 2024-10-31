@@ -104,14 +104,14 @@
                 </span>
                 <span class="text">Aggiungi sessioni</span>
             </a>
-            
+
             <a href="../massimali/massimali.html" class="sidebar-btn">
                 <span class="icon-container">
                     <i class="fas fa-dumbbell"></i>
                 </span>
                 <span class="text">Massimali</span>
             </a>
-            
+
             <a href="../sfide/sfide.html" class="sidebar-btn">
                 <span class="icon-container">
                     <i class="fas fa-trophy"></i>
@@ -178,6 +178,20 @@
         document.getElementById('overlay').addEventListener('click', () => {
             toggleSidebar();
         });
+
+        async function logout() {
+            try {
+                await auth.signOut();
+                alert("Logout effettuato con successo!");
+                window.location.href = "../../index.html";
+            } catch (error) {
+                console.error("Errore durante il logout:", error);
+                alert("Si è verificato un errore durante il logout.");
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
     </script>
 </body>
 

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - KaliFit</title>
+    <title>Dashboard - KaliTrack</title>
     <link rel="stylesheet" type="text/css" href="style_home.css">
     <!-- FullCalendar CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
@@ -16,9 +16,11 @@
     <!-- FullCalendar e Firebase -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.js"></script>
+
 </head>
 
 <body>
@@ -27,7 +29,7 @@
         <button class="menu-btn" id="menuButton" onclick="toggleSidebar()">
             <i class="fas fa-bars"></i>
         </button>
-        <div class="logo">KaliFit Dashboard</div>
+        <div class="logo">KaliTrack Dashboard</div>
     </header>
 
     <div class="dashboard-container">
@@ -101,26 +103,19 @@
         <main class="main-content">
             <!-- Allenamento del Giorno (Top Left) -->
             <section class="workout-of-the-day">
-                <h2>Allenamento del Giorno</h2>
-                <p>Ecco il workout suggerito per oggi:</p>
-                <ul>
-                    <li>Push-ups: 3x15</li>
-                    <li>Pull-ups: 3x10</li>
-                    <li>Dips: 3x12</li>
-                    <li>Plank: 3x1 minuto</li>
-                </ul>
-                <button onclick="playVideo()">Video dimostrativo</button>
+                <h2 style="color: #ff5733;">Allenamento del Giorno</h2>
+                <div id="workout-of-the-day" class="workout-list" style="margin-top: 15px;"></div>
             </section>
 
             <!-- Calendario (Top Right) -->
             <section class="calendar">
-                <h2>Calendario</h2>
+                <h2 style="color: #ff5733;">Calendario</h2>
                 <div id="calendar"></div>
             </section>
 
             <!-- Obiettivi e Progressi (Bottom Left) -->
             <section class="goals-and-progress">
-                <h2>Obiettivi e Progressi</h2>
+                <h2 style="color: #ff5733;">Obiettivi e Progressi</h2>
                 <p>Obiettivi attuali:</p>
                 <ul>
                     <li>Muscle-up: <progress value="60" max="100"></progress> 60%</li>
@@ -131,7 +126,7 @@
 
             <!-- Sfide Settimanali (Bottom Right) -->
             <section class="challenges">
-                <h2>Sfide Settimanali</h2>
+                <h2 style="color: #ff5733;">Sfide Settimanali</h2>
                 <p>Partecipa a una sfida per migliorare le tue abilità!</p>
                 <ul>
                     <li><strong>30 giorni di Push-up</strong> - <button
@@ -146,18 +141,65 @@
 
     <script>
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
+            apiKey: "AIzaSyB2qNYCMQMjm6pAqTEWvP-1FWfPfKaQCi8",
             authDomain: "kalitrack.firebaseapp.com",
             projectId: "kalitrack",
             storageBucket: "kalitrack.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID",
-            measurementId: "YOUR_MEASUREMENT_ID"
+            messagingSenderId: "253824979149",
+            appId: "1:253824979149:web:21f3085e86bb3a41821984",
+            measurementId: "G-498X9RNHLC"
         };
 
         // Inizializza Firebase
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(); // Inizializza l'autenticazione
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const div_workout = document.getElementsByClassName('workout-of-the-day')
+            div_workout.onclick = function () {
+                // Reindirizza alla pagina di dettagli della sessione
+                window.location.href = `../workout/workout.html?workout_name=${session.workoutName}&date=${session.date}`;
+            };
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    const today = new Date().toISOString().split('T')[0];
+                    db.collection("sessions").doc(user.uid).get()
+                        .then((doc) => {
+                            if (doc.exists) {
+                                const allSessions = doc.data().workouts;
+                                const workout_of_the_day_EL = allSessions.filter(session => session.date == today);
+
+                                const workout_of_the_day = document.getElementById("workout-of-the-day");
+
+                                if (workout_of_the_day_EL.length > 0) {
+                                    workout_of_the_day_EL.forEach(session => {
+                                        const sessionEl = document.createElement("div");
+                                        sessionEl.className = "session-item";
+                                        sessionEl.innerHTML = `
+            <h3>${session.workoutName} - ${session.date}</h3>
+            <ul>${session.exercises.map(ex => `
+                <li>${ex.exercise} - ${ex.series} serie - Recupero: ${ex.recovery}s</li>
+            `).join('')}</ul>
+            `;
+                                        sessionEl.onclick = function () {
+                                            // Reindirizza alla pagina di dettagli della sessione
+                                            window.location.href = `../workout/workout.html?workout_name=${session.workoutName}&date=${session.date}`;
+                                        };
+                                        workout_of_the_day.appendChild(sessionEl);
+                                    });
+                                } else {
+                                    workout_of_the_day.innerHTML = "<p>Oggi non hai nessun allenamento in programma.</p>";
+                                }
+
+                            }
+                        }
+                        )
+                }
+            })
+        });
+
+
 
         function toggleSidebar() {
             const sidebar = document.querySelector('.sidebar');
@@ -191,44 +233,59 @@
 
         document.getElementById('logoutBtn').addEventListener('click', logout);
 
-        // FullCalendar Initialization
-        document.addEventListener('DOMContentLoaded', function () {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
+        document.addEventListener("DOMContentLoaded", function () {
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 locale: 'it',
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
-                events: [
-                    {
-                        title: 'Allenamento gambe',
-                        start: '2024-11-01',
-                        description: 'Sessione di allenamento focalizzata sulle gambe.'
-                    },
-                    {
-                        title: 'Test di resistenza',
-                        start: '2024-11-05',
-                        description: 'Test per valutare i progressi di resistenza.'
-                    },
-                    {
-                        title: 'Allenamento spalle',
-                        start: '2024-11-10',
-                        description: 'Sessione di allenamento per rafforzare le spalle.'
-                    },
-                    {
-                        title: 'Cardio intenso',
-                        start: '2024-11-15',
-                        description: 'Allenamento cardio per migliorare la resistenza.'
-                    }
-                ],
-                eventClick: function (info) {
-                    alert("Dettagli dell'evento:\n" + info.event.title + "\n" + info.event.start.toLocaleDateString() + "\n" + info.event.extendedProps.description);
                 }
             });
-            calendar.render();
+
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    db.collection("sessions").doc(user.uid).get()
+                        .then((doc) => {
+                            if (doc.exists) {
+                                const allSessions = doc.data().workouts;
+                                const events = allSessions.map(session => ({
+                                    title: session.workoutName,
+                                    start: session.date,
+                                    extendedProps: {
+                                        description: session.exercises.map(ex => `${ex.exercise} - ${ex.series} serie - Recupero: ${ex.recovery}s`).join(", ")
+                                    }
+                                }));
+                                events.forEach(event => {
+                                    calendar.addEvent(event);
+                                });
+                                calendar.on('eventClick', function (info) {
+                                    // Ottenere la data corretta senza conversione a UTC
+                                    const date = info.event.start;
+
+                                    // Formattare la data nel formato 'YYYY-MM-DD'
+                                    const year = date.getFullYear();
+                                    const month = String(date.getMonth() + 1).padStart(2, '0'); // I mesi in JavaScript partono da 0
+                                    const day = String(date.getDate()).padStart(2, '0');
+
+                                    const formattedDate = `${year}-${month}-${day}`;
+                                    const workoutName = info.event.title;
+
+                                    // Reindirizza alla pagina di dettagli della sessione
+                                    window.location.href = `../workout/workout.html?workout_name=${workoutName}&date=${formattedDate}`;
+                                });
+                                calendar.render();
+                            } else {
+                                console.log("Nessuna sessione trovata per l'utente.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Errore nel recupero delle sessioni:", error);
+                        });
+                }
+            });
         });
     </script>
 </body>

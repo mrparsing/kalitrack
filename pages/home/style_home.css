@@ -42,7 +42,7 @@ header {
 
 /* Sidebar */
 .sidebar {
-    width: 250px;
+    width: 330px;;
     background-color: #2c2c2c;
     padding: 20px;
     display: flex;
@@ -88,14 +88,6 @@ header {
     margin: 15px 0;
 }
 
-/* Main Content Area */
-.main-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Two columns */
-    grid-template-rows: auto; /* Row heights will adapt */
-    gap: 20px; /* Space between grid items */
-    padding: 20px;
-}
 
 /* Profile Section */
 .profile-section {
@@ -133,37 +125,6 @@ header {
     background-color: #e14a2a;
 }
 
-/* Mobile Layout */
-@media (max-width: 768px) {
-    .menu-btn {
-        display: block;
-    }
-
-    .dashboard-container {
-        flex-direction: column;
-    }
-
-    .sidebar {
-        position: fixed;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 300px;
-        background-color: #2c2c2c;
-        transform: translateX(-100%);
-        z-index: 900;
-        padding-top: 60px;
-    }
-
-    .sidebar.active {
-        transform: translateX(0);
-    }
-
-    .main-content {
-        padding: 20px;
-    }
-}
-
 .overlay {
     display: none;
     /* Nasconde l'overlay */
@@ -194,10 +155,11 @@ header {
 /* Impostazione della griglia per il main-content */
 .main-content {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 4fr 6fr;
+    grid-template-rows: 2fr 1fr;
     gap: 20px;
     padding: 20px;
+    width: 100%;
 }
 
 /* Stili generali per ogni sezione */
@@ -209,30 +171,52 @@ header {
 }
 
 .workout-of-the-day {
-    grid-column: 1 / 2; /* Left column */
-    grid-row: 1 / 2; /* First row */
+    grid-column: 1 / 2;
+    /* Left column */
+    grid-row: 1 / 2;
+    /* First row */
 }
 
 .calendar {
-    grid-column: 2 / 3; /* Right column */
-    grid-row: 1 / 2; /* First row */
+    grid-column: 2 / 3;
+    /* Right column */
+    grid-row: 1 / 2;
+    /* First row */
     padding: 10px;
-    overflow-y: auto; /* Permette lo scroll se il contenuto eccede */
+    overflow-y: auto;
+    /* Permette lo scroll se il contenuto eccede */
+}
+
+.session-item {
+    background-color: #444;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.session-item:hover {
+    background-color: #515050;
 }
 
 .calendar {
-    min-height: 200px; /* Adjust as necessary */
+    min-height: 200px;
+    /* Adjust as necessary */
     width: 100%;
 }
 
 .goals-and-progress {
-    grid-column: 1 / 2; /* Left column */
-    grid-row: 2 / 3; /* Second row */
+        grid-column: 2 / 3;
+    /* Right column */
+    grid-row: 2 / 3;
+
+    /* Second row */
 }
 
 .challenges {
-    grid-column: 2 / 3; /* Right column */
-    grid-row: 2 / 3; /* Second row */
+    grid-column: 1 / 2;
+    /* Left column */
+    grid-row: 2 / 3;
+    /* Second row */
 }
 
 
@@ -252,7 +236,10 @@ header {
 }
 
 /* Stili per progressi */
-.goals-and-progress ul, .workout-of-the-day ul, .challenges ul, .calendar ul {
+.goals-and-progress ul,
+.workout-of-the-day ul,
+.challenges ul,
+.calendar ul {
     list-style-type: none;
     padding: 0;
 }
@@ -279,23 +266,56 @@ header {
 
 @media (max-width: 768px) {
     .main-content {
-        grid-template-columns: 1fr; /* Single column on smaller screens */
-        grid-template-rows: auto; /* Rows adapt to content */
+        grid-template-columns: 1fr;
+        /* Single column on smaller screens */
+        grid-template-rows: auto;
+        display: flex;
+        flex-direction: column
+        /* Rows adapt to content */
     }
 
     .workout-of-the-day {
-        grid-column: 1; /* Full width */
+        grid-column: 1;
+        /* Full width */
     }
 
     .calendar {
-        grid-column: 1; /* Full width */
+        grid-column: 1;
+        /* Full width */
     }
 
     .goals-and-progress {
-        grid-column: 1; /* Full width */
+        grid-column: 1;
+        /* Full width */
     }
 
     .challenges {
-        grid-column: 1; /* Full width */
+        grid-column: 1;
+        /* Full width */
+    }
+
+    .menu-btn {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .dashboard-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 300px;
+        background-color: #2c2c2c;
+        transform: translateX(-100%);
+        z-index: 900;
+        padding-top: 60px;
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
     }
 }

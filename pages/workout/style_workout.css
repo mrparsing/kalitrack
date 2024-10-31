@@ -13,10 +13,18 @@
     margin-bottom: 1rem;
 }
 
+.main-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center; /* Centra gli elementi orizzontalmente */
+    width: 100%;
+}
+
+
 /* Sezione del dettaglio sessione */
 #sessionDetails {
-    margin-bottom: 1rem;
-    width: 150px;
+    /* margin-bottom: 1rem; */
+    /* width: 150px; */
 }
 
 #sessionDetails h2 {
@@ -25,7 +33,7 @@
 }
 
 #sessionDate {
-    color: #858585;
+    color: #afafaf;
 }
 
 /* Stile per la lista degli esercizi */
@@ -74,7 +82,7 @@
 }
 
 .details {
-    width: 20%;
+    width: 80%;
     padding: 15px;
     border-radius: 5px;
     background-color: #333; /* Colore di sfondo */
@@ -83,14 +91,9 @@
 .workout {
     width: 80%;
     padding: 15px;
-        max-height: 700px; /* Limita l'altezza della lista */
+    max-height: 700px; /* Limita l'altezza della lista */
     overflow-y: auto; /* Aggiunge la barra di scorrimento verticale */
 
-}
-
-/* Aggiungere un po' di padding e margine */
-#sessionDetails {
-    margin-bottom: 15px;
 }
 
 /* Stile per la sidebar su schermi più piccoli */

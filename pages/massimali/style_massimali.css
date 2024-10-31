@@ -5,6 +5,13 @@
     padding: 20px; /* Padding interno */
 }
 
+.main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra gli elementi orizzontalmente */
+    width: 100%;
+}
+
 /* Stile per il modulo di aggiunta massimale */
 .add-max {
     flex: 1; /* Occupare lo spazio disponibile */

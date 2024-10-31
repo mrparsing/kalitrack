@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dettaglio Sessione - KaliFit</title>
+    <title>Dettaglio Sessione - KaliTrack</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="../home/style_home.css">
     <link rel="stylesheet" type="text/css" href="style_workout.css">
@@ -23,29 +23,29 @@
 
     <div class="dashboard-container">
         <aside class="sidebar">
-            <a href="home.html" class="sidebar-btn">
+            <a href="../home/home.html" class="sidebar-btn">
                 <span class="icon-container"><i class="fas fa-home"></i></span>
                 <span class="text">Dashboard</span>
             </a>
-            <a href="aggiungi_sessione.html" class="sidebar-btn">
+            <a href="../aggiungi_sessione/aggiungi_sessione.html" class="sidebar-btn">
                 <span class="icon-container"><i class="fas fa-plus"></i></span>
                 <span class="text">Aggiungi Sessioni</span>
             </a>
-            <a href="storico_sessioni.html" class="sidebar-btn active">
+            <a href="../storico_sessioni/storico_sessioni.html" class="sidebar-btn active">
                 <span class="icon-container"><i class="fas fa-history"></i></span>
                 <span class="text">Storico Sessioni</span>
             </a>
-            <a href="storico_sessioni.html" class="sidebar-btn active">
+            <a href="../massimali/massimali.html" class="sidebar-btn active">
                 <span class="icon-container"><i class="fas fa-dumbbell"></i></span>
                 <span class="text">Massimali</span>
             </a>
-            <a href="storico_sessioni.html" class="sidebar-btn active">
+            <a href="../sfide/sfide.html" class="sidebar-btn active">
                 <span class="icon-container"><i class="fas fa-trophy"></i></span>
                 <span class="text">Sfide</span>
             </a>
-            <a href="storico_sessioni.html" class="sidebar-btn active">
+            <a href="../sessioni_successive/sessioni_successive.html" class="sidebar-btn active">
                 <span class="icon-container"><i class="fas fa-calendar-alt"></i></span>
-                <span class="text">Sessione del mese</span>
+                <span class="text">Sessione successive</span>
             </a>
             <div class="sidebar-divider"></div>
             <a href="../profilo/profile.html" class="sidebar-btn">
@@ -262,7 +262,21 @@
                 const recovery = exerciseItem.recovery; // Supponendo che tu abbia questa informazione
                 populateExerciseDetails(detailsContainer, series, repetitions, recovery);
             }
-        }    </script>
+        }
+        async function logout() {
+            try {
+                await auth.signOut();
+                alert("Logout effettuato con successo!");
+                window.location.href = "../../index.html";
+            } catch (error) {
+                console.error("Errore durante il logout:", error);
+                alert("Si è verificato un errore durante il logout.");
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+    </script>
 </body>
 
 </html>

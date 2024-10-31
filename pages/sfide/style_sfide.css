@@ -1,9 +1,16 @@
+.main-content {
+    align-items: center; /* Centra gli elementi orizzontalmente */
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
 .session-form {
     background-color: #2c2c2c;
     padding: 20px;
     border-radius: 10px;
     width: 100%;
-    max-width: 500px;
+    max-width: 600px;
 }
 
 .session-form label {
@@ -34,12 +41,6 @@
 
 .session-form button:hover {
     background-color: #e14a2a;
-}
-
-.main-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
 }
 
 /* Stili per la lista della sessione */
@@ -88,8 +89,9 @@
     align-items: center; /* Allineamento verticale */
 }
 
+
 #challengeList {
-    margin-right: 100px;
+    margin-right: 120px;
     width: 100%;
     max-height: 500px; /* Altezza massima della lista */
     overflow-y: auto; /* Abilita lo scorrimento verticale per la lista */
