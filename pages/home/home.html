@@ -6,9 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - KaliFit</title>
     <link rel="stylesheet" type="text/css" href="style_home.css">
+    <!-- FullCalendar CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.css">
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- FullCalendar e Firebase -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.js"></script>
 </head>
 
 <body>
@@ -89,9 +99,45 @@
 
         <!-- Main Content for "Allenamento del Giorno" -->
         <main class="main-content">
+            <!-- Allenamento del Giorno (Top Left) -->
             <section class="workout-of-the-day">
                 <h2>Allenamento del Giorno</h2>
-                <p>Descrizione dell'allenamento del giorno...</p>
+                <p>Ecco il workout suggerito per oggi:</p>
+                <ul>
+                    <li>Push-ups: 3x15</li>
+                    <li>Pull-ups: 3x10</li>
+                    <li>Dips: 3x12</li>
+                    <li>Plank: 3x1 minuto</li>
+                </ul>
+                <button onclick="playVideo()">Video dimostrativo</button>
+            </section>
+
+            <!-- Calendario (Top Right) -->
+            <section class="calendar">
+                <h2>Calendario</h2>
+                <div id="calendar"></div>
+            </section>
+
+            <!-- Obiettivi e Progressi (Bottom Left) -->
+            <section class="goals-and-progress">
+                <h2>Obiettivi e Progressi</h2>
+                <p>Obiettivi attuali:</p>
+                <ul>
+                    <li>Muscle-up: <progress value="60" max="100"></progress> 60%</li>
+                    <li>Front Lever: <progress value="40" max="100"></progress> 40%</li>
+                    <li>10 Pull-ups di fila: <progress value="80" max="100"></progress> 80%</li>
+                </ul>
+            </section>
+
+            <!-- Sfide Settimanali (Bottom Right) -->
+            <section class="challenges">
+                <h2>Sfide Settimanali</h2>
+                <p>Partecipa a una sfida per migliorare le tue abilità!</p>
+                <ul>
+                    <li><strong>30 giorni di Push-up</strong> - <button
+                            onclick="joinChallenge('pushup')">Partecipa</button></li>
+                    <li><strong>Sfida Plank</strong> - <button onclick="joinChallenge('plank')">Partecipa</button></li>
+                </ul>
             </section>
         </main>
     </div>
@@ -100,13 +146,13 @@
 
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyB2qNYCMQMjm6pAqTEWvP-1FWfPfKaQCi8",
+            apiKey: "YOUR_API_KEY",
             authDomain: "kalitrack.firebaseapp.com",
             projectId: "kalitrack",
             storageBucket: "kalitrack.appspot.com",
-            messagingSenderId: "253824979149",
-            appId: "1:253824979149:web:21f3085e86bb3a41821984",
-            measurementId: "G-498X9RNHLC"
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID",
+            measurementId: "YOUR_MEASUREMENT_ID"
         };
 
         // Inizializza Firebase
@@ -121,32 +167,69 @@
             sidebar.classList.toggle('active');
             overlay.classList.toggle('visible');
 
-            // Cambia l'icona del pulsante in base allo stato del menu
             if (sidebar.classList.contains('active')) {
-                menuButton.innerHTML = '<i class="fas fa-times"></i>'; // Icona "X" quando il menu è aperto
+                menuButton.innerHTML = '<i class="fas fa-times"></i>';
             } else {
-                menuButton.innerHTML = '<i class="fas fa-bars"></i>'; // Icona di hamburger quando il menu è chiuso
+                menuButton.innerHTML = '<i class="fas fa-bars"></i>';
             }
         }
 
         document.getElementById('overlay').addEventListener('click', () => {
-            toggleSidebar(); // Chiudi il menu quando si clicca sull'overlay
+            toggleSidebar();
         });
 
-        // Funzione per il logout
-        window.logout = async function () {
+        async function logout() {
             try {
                 await auth.signOut();
                 alert("Logout effettuato con successo!");
-                window.location.href = "../../index.html"; // Redirect to the home page after logout
+                window.location.href = "../../index.html";
             } catch (error) {
                 console.error("Errore durante il logout:", error);
                 alert("Si è verificato un errore durante il logout.");
             }
         }
 
-        // Aggiungi l'evento di clic al pulsante di logout
         document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        // FullCalendar Initialization
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'it',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: [
+                    {
+                        title: 'Allenamento gambe',
+                        start: '2024-11-01',
+                        description: 'Sessione di allenamento focalizzata sulle gambe.'
+                    },
+                    {
+                        title: 'Test di resistenza',
+                        start: '2024-11-05',
+                        description: 'Test per valutare i progressi di resistenza.'
+                    },
+                    {
+                        title: 'Allenamento spalle',
+                        start: '2024-11-10',
+                        description: 'Sessione di allenamento per rafforzare le spalle.'
+                    },
+                    {
+                        title: 'Cardio intenso',
+                        start: '2024-11-15',
+                        description: 'Allenamento cardio per migliorare la resistenza.'
+                    }
+                ],
+                eventClick: function (info) {
+                    alert("Dettagli dell'evento:\n" + info.event.title + "\n" + info.event.start.toLocaleDateString() + "\n" + info.event.extendedProps.description);
+                }
+            });
+            calendar.render();
+        });
     </script>
 </body>
 
