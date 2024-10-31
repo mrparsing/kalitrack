@@ -11,7 +11,6 @@
 .main-content h2 {
     align-self: flex-start; /* Posiziona il titolo in alto a sinistra */
     margin-left: 20px; /* Margine a sinistra per allontanare il titolo dal bordo */
-    margin-top: -100px; /* Margine superiore per avvicinare il titolo all'header */
 }
 
 /* Stile per la lista di sessioni future */
@@ -20,11 +19,14 @@
     margin: 20px auto; /* Margine verticale per separare dal titolo */
     max-width: 800px;
     width: 100%; /* Assicura che la lista occupi il 100% della larghezza disponibile */
+    max-height: 500px; /* Limita l'altezza della lista */
+    overflow-y: auto; /* Aggiunge la barra di scorrimento verticale */
+    border-radius: 8px; /* Aggiunge angoli arrotondati */
 }
 
 /* Stile per ogni sessione */
 .session-item {
-    background-color: #ccc;
+    background-color: #444;
     border-radius: 5px;
     margin-bottom: 15px;
     padding: 15px;
@@ -33,7 +35,7 @@
 
 /* Stile per il nome della sessione */
 .session-item h3 {
-    color: #333;
+    color: #28a745;
     font-size: 18px;
     margin-bottom: 10px;
 }
@@ -47,12 +49,25 @@
 /* Stile per ogni esercizio */
 .session-item li {
     padding: 5px 0;
-    color: #555;
 }
 
 /* Effetto hover per le sessioni */
 .session-item:hover {
-    background-color: #999999; /* Cambia il colore di sfondo */
+    background-color: #515050; /* Cambia il colore di sfondo */
     color: #fff; /* Cambia il colore del testo */
     transform: scale(1.02); /* Leggera ingrandimento dell'elemento */
+}
+
+/* Stile per la scrollbar personalizzata */
+.session-list::-webkit-scrollbar {
+    width: 10px;
+}
+
+.session-list::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 5px;
+}
+
+.session-list::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
 }

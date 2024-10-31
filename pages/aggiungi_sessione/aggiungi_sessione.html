@@ -50,10 +50,11 @@
             document.getElementById('addExerciseBtn').addEventListener('click', function () {
                 const exercise = document.getElementById('exercise').value;
                 const series = document.getElementById('series').value;
+                const repetitions = document.getElementById('repetitions').value;
                 const recovery = document.getElementById('recovery').value;
 
-                if (exercise && series && recovery) {
-                    const exerciseItem = { exercise, series, recovery };
+                if (exercise && series && recovery && repetitions) {
+                    const exerciseItem = { exercise, series, repetitions, recovery };
                     exercises.push(exerciseItem);
 
                     // Aggiorna la lista visiva
@@ -63,7 +64,7 @@
                     // Crea un contenitore per l'esercizio e il pulsante
                     const itemContent = document.createElement('div');
                     itemContent.className = 'item-content';
-                    itemContent.innerText = `${exercise} - ${series} serie - Recupero: ${recovery}s`;
+                    itemContent.innerText = `${exercise} - ${series}x${repetitions} - Recupero: ${recovery}s`;
 
                     // Crea il pulsante di rimozione
                     const removeBtn = document.createElement('button');
@@ -86,6 +87,7 @@
                     // Reset input
                     document.getElementById('exercise').value = '';
                     document.getElementById('series').value = '';
+                    document.getElementById('repetitions').value = '';
                     document.getElementById('recovery').value = '';
                 }
             });
@@ -160,7 +162,7 @@
     <div class="dashboard-container">
         <!-- Sidebar with Buttons -->
         <aside class="sidebar">
-            <a href="home.html" class="sidebar-btn">
+            <a href="../home/home.html" class="sidebar-btn">
                 <span class="icon-container">
                     <i class="fas fa-home"></i>
                 </span>
@@ -233,8 +235,16 @@
                 <label for="exercise">Esercizio:</label>
                 <input type="text" id="exercise" name="exercise" placeholder="Nome esercizio" required>
 
-                <label for="series">Serie e Ripetizioni:</label>
-                <input type="text" id="series" name="series" placeholder="E.g., 4x10" required>
+                <div class="flex-row">
+                    <div class="flex-item">
+                        <label for="series">Serie:</label>
+                        <input type="text" id="series" name="series" required>
+                    </div>
+                    <div class="flex-item">
+                        <label for="repetitions">Ripetizioni:</label>
+                        <input type="text" id="repetitions" name="repetitions" required>
+                    </div>
+                </div>
 
                 <label for="recovery">Recupero (s):</label>
                 <input type="number" id="recovery" name="recovery" placeholder="Tempo di recupero in secondi" required>
@@ -279,21 +289,23 @@
             document.getElementById('addExerciseBtn').addEventListener('click', function () {
                 const exercise = document.getElementById('exercise').value;
                 const series = document.getElementById('series').value;
+                const repetitions = document.getElementById('repetitions').value;
                 const recovery = document.getElementById('recovery').value;
 
-                if (exercise && series && recovery) {
-                    const exerciseItem = { exercise, series, recovery };
+                if (exercise && series && repetitions && recovery) {
+                    const exerciseItem = { exercise, series, repetitions, recovery };
                     exercises.push(exerciseItem);
 
                     // Aggiorna la lista visiva
                     const itemEl = document.createElement('div');
                     itemEl.className = 'session-item';
-                    itemEl.innerText = `${exercise} - ${series} serie - Recupero: ${recovery}s`;
+                    itemEl.innerText = `${exercise} - ${series}x${repetitions} - Recupero: ${recovery}s`;
                     exerciseListEl.appendChild(itemEl);
 
                     // Reset input
                     document.getElementById('exercise').value = '';
                     document.getElementById('series').value = '';
+                    document.getElementById('repetitions').value = '';
                     document.getElementById('recovery').value = '';
                 }
             });

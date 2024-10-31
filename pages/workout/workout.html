@@ -60,17 +60,20 @@
             </button>
         </aside>
         <main class="main-content">
-            <section id="sessionDetails">
-                <h2 id="sessionName">Nome Sessione</h2>
-                <p id="sessionDate">Data: --</p>
-            </section>
-
-            <section id="exerciseList" class="exercise-list">
-                <h3 id="list">Esercizi</h3>
-                <div id="exercisesContainer">
-                    <!-- Gli esercizi verranno caricati qui -->
-                </div>
-            </section>
+            <div class="details">
+                <section id="sessionDetails">
+                    <h2 id="sessionName">Nome Sessione</h2>
+                    <p id="sessionDate">Data: --</p>
+                </section>
+            </div>
+            <div class="workout">
+                <section id="exerciseList" class="exercise-list">
+                    <h3 id="list">Esercizi</h3>
+                    <div id="exercisesContainer">
+                        <!-- Gli esercizi verranno caricati qui -->
+                    </div>
+                </section>
+            </div>
         </main>
     </div>
     <div class="overlay" id="overlay"></div>
@@ -127,12 +130,79 @@
                                         const exerciseItem = document.createElement("div");
                                         exerciseItem.className = "exercise-item";
                                         exerciseItem.innerHTML = `
-                                    <h4>${exercise.exercise}</h4>
-                                    <p>Serie: ${exercise.series}, Ripetizioni: ${exercise.repetitions}</p>
-                                    <p>Recupero: ${exercise.recovery} sec</p>
-                                `;
+        <h3 class="exercise-title">${exercise.exercise}</h3>
+        <p>Serie: ${exercise.series}, Ripetizioni: ${exercise.repetitions} - Recupero: ${exercise.recovery} sec</p>
+        <div class="exercise-details" style="display: none;"></div>
+    `;
+
+                                        // Aggiungi l'evento click per espandere/collassare i dettagli
+                                        const exerciseTitle = exerciseItem.querySelector(".exercise-title");
+                                        const exerciseDetails = exerciseItem.querySelector(".exercise-details");
+
+                                        exerciseTitle.addEventListener("click", () => {
+                                            // Toggles the display property between none and block
+                                            const isVisible = exerciseDetails.style.display === "block";
+                                            exerciseDetails.style.display = isVisible ? "none" : "block";
+
+                                            // Se i dettagli non sono già stati popolati, creali
+                                            if (!isVisible) {
+                                                populateExerciseDetails(exerciseDetails, exercise.series, exercise.repetitions, exercise.recovery);
+                                            }
+                                        });
+
                                         exercisesContainer.appendChild(exerciseItem);
                                     });
+
+                                    // Funzione per popolare i dettagli dell'esercizio
+                                    function populateExerciseDetails(container, series, repetitions, recovery) {
+                                        if (container.innerHTML.trim() !== "") {
+                                            return;
+                                        }
+
+                                        for (let i = 1; i <= series; i++) {
+                                            const detailRow = document.createElement("div");
+                                            detailRow.className = "exercise-detail-row";
+
+                                            detailRow.innerHTML = `
+            <span class="text-element">
+                Serie ${i}: Ripetizioni: ${repetitions}, Recupero: ${recovery} sec
+            </span>
+            <button class="play-btn" id="play-${i}">Avvia recupero</button>
+        `;
+
+                                            container.appendChild(detailRow);
+
+                                            const textElement = detailRow.querySelector(".text-element");
+
+                                            document.getElementById(`play-${i}`).addEventListener('click', () => {
+                                                startTimer(recovery, document.getElementById(`play-${i}`), textElement);
+                                                document.getElementById(`play-${i}`).disabled = true;
+                                            });
+                                        }
+                                    }
+
+                                    function startTimer(duration, display, textElement) {
+                                        let timer = duration, minutes, seconds;
+
+                                        // Cambia il colore del testo in rosso all'avvio del timer
+                                        textElement.style.color = "red";
+
+                                        const countdown = setInterval(() => {
+                                            minutes = parseInt(timer / 60, 10);
+                                            seconds = parseInt(timer % 60, 10);
+
+                                            // Formatta il tempo come MM:SS
+                                            seconds = seconds < 10 ? "0" + seconds : seconds;
+                                            display.textContent = `${minutes}:${seconds}`;
+
+                                            if (--timer < 0) {
+                                                clearInterval(countdown);
+                                                display.textContent = "Tempo Scaduto!";
+                                                textElement.style.color = "gray"; // Cambia il colore del testo a grigio
+                                            }
+                                        }, 1000);
+                                    }
+
                                 } else {
                                     console.log("Nessun workout trovato con i criteri specificati.");
                                     alert("Sessione non trovata.");
@@ -176,7 +246,23 @@
         }
 
         document.getElementById('overlay').addEventListener('click', () => toggleSidebar());
-    </script>
+
+        function toggleExerciseDetails(exerciseItem) {
+            const detailsContainer = exerciseItem.querySelector(".exercise-details");
+
+            // Alterna la visibilità del contenitore dei dettagli
+            detailsContainer.classList.toggle("visible");
+
+            // Se i dettagli non sono visibili, rimuovi i contenuti
+            if (!detailsContainer.classList.contains("visible")) {
+                detailsContainer.innerHTML = ""; // Rimuovi i dettagli esistenti
+            } else {
+                const series = exerciseItem.series; // Supponendo che tu abbia questa informazione
+                const repetitions = exerciseItem.repetitions; // Supponendo che tu abbia questa informazione
+                const recovery = exerciseItem.recovery; // Supponendo che tu abbia questa informazione
+                populateExerciseDetails(detailsContainer, series, repetitions, recovery);
+            }
+        }    </script>
 </body>
 
 </html>

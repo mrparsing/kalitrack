@@ -44,7 +44,10 @@
 
 /* Stile per la lista dei massimali */
 .max-list {
-    width: 100%; /* Larghezza della lista */
+    width: 100%;
+    max-width: 600px;
+    max-height: 500px; /* Altezza massima della lista */
+    overflow-y: auto; /* Abilita lo scorrimento verticale per la lista */
 }
 
 /* Stile per ogni massimale */

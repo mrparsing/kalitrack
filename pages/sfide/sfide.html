@@ -51,7 +51,7 @@
                 <span class="text">Storico Sessioni</span>
             </a>
 
-            <a href="aggiungi_sessione.html" class="sidebar-btn">
+            <a href="../aggiungi_sessione/aggiungi_sessione.html" class="sidebar-btn">
                 <span class="icon-container">
                     <i class="fas fa-plus"></i>
                 </span>
@@ -65,7 +65,7 @@
                 <span class="text">Massimali</span>
             </a>
 
-            <a href="../sfide/sfide.html" class="sidebar-btn">
+            <a href="sfide.html" class="sidebar-btn">
                 <span class="icon-container">
                     <i class="fas fa-trophy"></i>
                 </span>
@@ -89,29 +89,39 @@
         <!-- Contenuto principale: Sfide -->
         <main class="main-content">
             <!-- Form per aggiungere esercizi -->
-            <form class="session-form" id="sessionForm">
-                <label for="workoutName">Nome Allenamento:</label>
-                <input type="text" id="workoutName" name="workoutName" required>
+            <div>
+                <h2 style="margin-bottom: 10px;">Registra sfida</h2>
+                <form class="session-form" id="sessionForm">
+                    <label for="workoutName">Nome Allenamento:</label>
+                    <input type="text" id="workoutName" name="workoutName" required>
 
-                <label for="exercise">Esercizio:</label>
-                <input type="text" id="exercise" name="exercise" placeholder="Nome esercizio" required>
+                    <label for="exercise">Esercizio:</label>
+                    <input type="text" id="exercise" name="exercise" placeholder="Nome esercizio" required>
 
-                <label for="series">Serie e Ripetizioni:</label>
-                <input type="text" id="series" name="series" placeholder="E.g., 4x10" required>
+                    <div class="flex-row">
+                        <div class="flex-item">
+                            <label for="series">Serie:</label>
+                            <input type="text" id="series" name="series" required>
+                        </div>
+                        <div class="flex-item">
+                            <label for="repetitions">Ripetizioni:</label>
+                            <input type="text" id="repetitions" name="repetitions" required>
+                        </div>
+                    </div>
+                    <label for="recoveryTime">Recupero (s):</label>
+                    <input type="number" id="recoveryTime" name="recoveryTime"
+                        placeholder="Tempo di recupero in secondi" required>
 
-                <label for="recoveryTime">Recupero (s):</label>
-                <input type="number" id="recoveryTime" name="recoveryTime" placeholder="Tempo di recupero in secondi"
-                    required>
+                    <button type="button" id="addExerciseBtn">Memorizza Esercizio</button>
 
-                <button type="button" id="addExerciseBtn">Memorizza Esercizio</button>
-
-                <!-- Lista della sessione e pulsante di aggiunta -->
-                <div id="sessionList">
-                    <h3>Sessione Corrente</h3>
-                    <div id="exerciseList"></div>
-                    <button type="button" id="saveSessionBtn" style="margin-top: 15px;">Aggiungi Sessione</button>
-                </div>
-            </form>
+                    <!-- Lista della sessione e pulsante di aggiunta -->
+                    <div id="sessionList">
+                        <h3>Sessione Corrente</h3>
+                        <div id="exerciseList"></div>
+                        <button type="button" id="saveSessionBtn" style="margin-top: 15px;">Aggiungi Sessione</button>
+                    </div>
+                </form>
+            </div>
 
             <section class="sfide" id="sfide">
                 <h2>Sfide Registrate</h2>
@@ -157,14 +167,14 @@
         document.getElementById('overlay').addEventListener('click', toggleSidebar);
 
         // Funzione per aggiungere un esercizio alla lista temporanea
-        // Funzione per aggiungere un esercizio alla lista temporanea
         document.getElementById('addExerciseBtn').addEventListener('click', function () {
             const exercise = document.getElementById("exercise").value.trim();
             const series = document.getElementById("series").value.trim();
+            const repetitions = document.getElementById('repetitions').value.trim();
             const recoveryTime = document.getElementById("recoveryTime").value.trim();
 
-            if (exercise && series && recoveryTime) {
-                const exerciseItem = { exercise, series, recoveryTime };
+            if (exercise && series && repetitions && recoveryTime) {
+                const exerciseItem = { exercise, series, repetitions, recoveryTime };
                 exercises.push(exerciseItem);
 
                 // Aggiorna la lista visiva
@@ -174,7 +184,7 @@
                 // Crea un contenitore per l'esercizio e il pulsante
                 const itemContent = document.createElement('div')
                 itemContent.className = 'item-content';
-                itemContent.innerText = `${exercise} - ${series} serie - Recupero: ${recoveryTime}s`;
+                itemContent.innerText = `${exercise} - ${series}x${repetitions} - Recupero: ${recoveryTime}s`;
 
                 // Crea il pulsante di rimozione
                 const removeBtn = document.createElement('button');
@@ -197,6 +207,7 @@
                 // Reset input
                 document.getElementById("exercise").value = '';
                 document.getElementById("series").value = '';
+                document.getElementById("repetitions").value = '';
                 document.getElementById("recoveryTime").value = '';
             } else {
                 alert("Per favore, completa tutti i campi.");
@@ -237,6 +248,9 @@
                         document.getElementById('sessionForm').reset();
                         exerciseListEl.innerHTML = '';
                         exercises.length = 0;
+
+                        // **Aggiorna la lista delle sfide registrate**
+                        loadChallenges(); // Chiama la funzione per ricaricare le sfide registrate
                     } else {
                         alert("Devi essere loggato per salvare la sessione.");
                     }
@@ -244,9 +258,7 @@
             } else {
                 alert("Per favore, inserisci un nome per l'allenamento e aggiungi esercizi.");
             }
-        });
-
-        // Funzione per caricare le sfide dal DB
+        });        // Funzione per caricare le sfide dal DB
         async function loadChallenges() {
             const user = auth.currentUser;
 
@@ -265,7 +277,7 @@
                     workouts.forEach(workout => {
                         const workoutEl = document.createElement('div');
                         workoutEl.className = 'challenge-item';
-                        workoutEl.innerHTML = `<strong>${workout.workoutName}</strong><br><br>${workout.exercises.map(e => `${e.exercise} - ${e.series} serie - Recupero: ${e.recoveryTime}s`).join('<br>')}`;
+                        workoutEl.innerHTML = `<strong>${workout.workoutName}</strong><br><br>${workout.exercises.map(e => `${e.exercise} - ${e.series}x${e.repetitions} - Recupero: ${e.recoveryTime}s`).join('<br>')}`;
                         challengeListEl.appendChild(workoutEl);
                     });
                 } else {

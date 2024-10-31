@@ -1,3 +1,12 @@
+:root {
+    --primary-color: #28a745; /* Colore primario */
+    --accent-color: #218838; /* Colore per accenti */
+    --background-color: #444; /* Sfondo per elementi */
+    --text-color-light: #ffffff; /* Testo chiaro */
+    --text-color-dark: #000000; /* Testo scuro */
+    --border-color: #ccc; /* Colore dei bordi */
+}
+
 .main-content h2 {
     font-size: 1.5rem;
     color: var(--primary-color);
@@ -7,38 +16,41 @@
 /* Sezione del dettaglio sessione */
 #sessionDetails {
     margin-bottom: 1rem;
+    width: 150px;
 }
 
 #sessionDetails h2 {
     font-size: 1.8rem;
-    color: var(--accent-color);
+    color: var(--primary-color);
 }
 
 #sessionDate {
-    color: #555;
+    color: #858585;
 }
 
 /* Stile per la lista degli esercizi */
 .exercise-list {
     margin-top: 1.5rem;
+    max-height: 600px;
+    overflow-y: auto; /* Barra di scorrimento */
 }
 
 .exercise-item {
     background-color: var(--background-color);
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     border-radius: 5px;
     padding: 1rem;
     margin-bottom: 1rem;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-.exercise-item h4 {
-    color: var(--secondary-color);
+.exercise-item h3 {
+    color: var(--primary-color);
     margin-bottom: 0.5rem;
 }
 
 .exercise-item p {
-    color: #666;
+    color: var(--text-color-light);
 }
 
 /* Overlay per sidebar mobile */
@@ -59,25 +71,112 @@
 
 .main-content {
     display: flex;
-    flex-direction: column;
+}
+
+.details {
+    width: 20%;
+    padding: 15px;
+    border-radius: 5px;
+    background-color: #333; /* Colore di sfondo */
+}
+
+.workout {
+    width: 80%;
+    padding: 15px;
+        max-height: 700px; /* Limita l'altezza della lista */
+    overflow-y: auto; /* Aggiunge la barra di scorrimento verticale */
+
+}
+
+/* Aggiungere un po' di padding e margine */
+#sessionDetails {
+    margin-bottom: 15px;
 }
 
 /* Stile per la sidebar su schermi più piccoli */
 @media (max-width: 768px) {
-    .dashboard-container {
+    .main-content {
         flex-direction: column;
-    }
-
-    .sidebar {
-        position: fixed;
-        left: -100%;
-        top: 0;
-        height: 100%;
-        transition: left 0.3s ease;
-        z-index: 10;
     }
 
     .sidebar.active {
         left: 0;
     }
+}
+
+/* Stile per i dettagli delle serie */
+.exercise-details {
+    display: none;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.exercise-details p {
+    margin: 0.3rem 0;
+    color: #444;
+}
+
+/* Stile del pulsante per mostrare/nascondere i dettagli */
+.toggle-details {
+    cursor: pointer;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    text-align: right;
+}
+
+.exercise-item {
+    margin-bottom: 15px;
+    border: 1px solid var(--border-color); 
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.exercise-title {
+    margin: 0;
+}
+
+.exercise-details {
+    margin-top: 10px;
+}
+
+/* Stile della riga per distribuire il testo e il pulsante */
+.exercise-detail-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Mantiene il testo a sinistra e il pulsante a destra */
+    padding: 5px 0;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+
+/* Pulsante "Avvia Timer" stilizzato */
+.play-btn {
+    background-color: #28a745; /* Verde acceso */
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.play-btn:hover {
+    background-color: #218838; /* Verde più scuro per hover */
+    transform: scale(1.05); /* Leggera espansione */
+}
+
+.play-btn:active {
+    background-color: #1e7e34; /* Ancora più scuro per il click */
+    transform: scale(0.95); /* Leggera riduzione al click */
+}
+
+.play-btn:disabled {
+    background-color: #c3e6cb; /* Colore disabilitato */
+    cursor: not-allowed;
 }

@@ -31,7 +31,7 @@
                 <span class="text">Dashboard</span>
             </a>
 
-            <a href="../sessioni_successive/sessioni_successive.html" class="sidebar-btn">
+            <a href="sessioni_successive.html" class="sidebar-btn">
                 <span class="icon-container">
                     <i class="fas fa-calendar-alt"></i>
                 </span>
@@ -45,20 +45,20 @@
                 <span class="text">Storico Sessioni</span>
             </a>
 
-            <a href="aggiungi_sessione.html" class="sidebar-btn">
+            <a href="../aggiungi_sessione/aggiungi_sessione.html" class="sidebar-btn">
                 <span class="icon-container">
                     <i class="fas fa-plus"></i>
                 </span>
                 <span class="text">Aggiungi sessioni</span>
             </a>
-            
+
             <a href="../massimali/massimali.html" class="sidebar-btn">
                 <span class="icon-container">
                     <i class="fas fa-dumbbell"></i>
                 </span>
                 <span class="text">Massimali</span>
             </a>
-            
+
             <a href="../sfide/sfide.html" class="sidebar-btn">
                 <span class="icon-container">
                     <i class="fas fa-trophy"></i>
@@ -68,7 +68,7 @@
 
             <!-- Altri link della sidebar -->
             <div class="sidebar-divider"></div>
-            
+
             <a href="../profilo/profile.html" class="sidebar-btn">
                 <span class="icon-container"><i class="fas fa-user-circle"></i></span>
                 <span class="text">Profilo</span>
@@ -130,9 +130,9 @@
                                                 <li>${ex.exercise} - ${ex.series} serie - Recupero: ${ex.recovery}s</li>
                                             `).join('')}</ul>
                                         `;
-                                        sessionEl.onclick = function() {
+                                        sessionEl.onclick = function () {
                                             // Reindirizza alla pagina di dettagli della sessione
-                                            window.location.href = `session_detail.html?sessionId=${session.id}`;
+                                            window.location.href = `../workout/workout.html?workout_name=${session.workoutName}&date=${session.date}`;
                                         };
                                         futureSessionsEl.appendChild(sessionEl);
                                     });
