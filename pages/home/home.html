@@ -119,9 +119,6 @@
                     <h2 style="color: #ff5733;">Obiettivi e Progressi</h2>
                     <p>Obiettivi attuali:</p>
                     <ul>
-                        <li>Muscle-up: <progress value="60" max="100"></progress> 60%</li>
-                        <li>Front Lever: <progress value="40" max="100"></progress> 40%</li>
-                        <li>10 Pull-ups di fila: <progress value="80" max="100"></progress> 80%</li>
                     </ul>
                 </a>
             </section>
@@ -131,9 +128,7 @@
                 <h2 style="color: #ff5733;">Sfide Settimanali</h2>
                 <p>Partecipa a una sfida per migliorare le tue abilità!</p>
                 <ul>
-                    <li><strong>30 giorni di Push-up</strong> - <button
-                            onclick="joinChallenge('pushup')">Partecipa</button></li>
-                    <li><strong>Sfida Plank</strong> - <button onclick="joinChallenge('plank')">Partecipa</button></li>
+
                 </ul>
             </section>
         </main>
@@ -156,6 +151,137 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
+
+        document.addEventListener("DOMContentLoaded", function () {
+            function createDailyChallenge() {
+                const dailyExercises = [
+                    "1 minuto totale di L-sit",
+                    "50 push-ups",
+                    "2 minuti totali di plank",
+                    "30 dip consecutivi",
+                    "15 pull-ups",
+                    "10 secondi di L-sit dead-hang",
+                    "20 burpees",
+                    "3 minuti totali di wall sit",
+                    "40 jumping squats",
+                    "25 leg raises",
+                    "2 minuti di mountain climbers",
+                    "5 minuti di camminata dell'orso"
+                ];
+
+                function createWeeklyChallenge() {
+                    const weeklyChallenge = [
+                        "3 minuti di L-sit (totale)",
+                        "100 push-ups (in serie da tua scelta)",
+                        "5 minuti di plank (totale)",
+                        "50 dip consecutivi (puoi dividerli in serie)",
+                        "30 pull-ups (in serie da tua scelta)",
+                        "30 secondi di L-sit dead-hang",
+                        "10 minuti totali di wall sit",
+                        "100 jumping squats (in serie da tua scelta)"
+                    ];
+                    return weeklyChallenge[Math.floor(Math.random() * weeklyChallenge.length)];
+                }
+
+                // Ottieni la data di oggi
+                const today = new Date();
+                const todayKey = today.toISOString().split('T')[0]; // Chiave per memorizzare la sfida, es: "2024-11-01"
+                const dayOfWeek = today.getDay(); // 0 = Domenica, 6 = Sabato
+
+                let challengeTitle = "Sfida Giornaliera";
+                let challenge;
+
+                // Controlla se esiste già una sfida salvata per oggi
+                if (localStorage.getItem("challengeDate") === todayKey) {
+                    // Recupera la sfida salvata
+                    challenge = localStorage.getItem("challenge");
+                    challengeTitle = localStorage.getItem("challengeTitle");
+                } else {
+                    // Se non esiste, crea una nuova sfida
+                    if (dayOfWeek === 6) { // Se è sabato
+                        challenge = createWeeklyChallenge();
+                        challengeTitle = "Sfida Settimanale";
+                    } else {
+                        challenge = dailyExercises[Math.floor(Math.random() * dailyExercises.length)];
+                        challengeTitle = "Sfida Giornaliera";
+                    }
+
+                    // Salva la sfida e la data nel localStorage
+                    localStorage.setItem("challengeDate", todayKey);
+                    localStorage.setItem("challenge", challenge);
+                    localStorage.setItem("challengeTitle", challengeTitle);
+                }
+
+                // Aggiorna l'UI con la sfida e il titolo
+                const challengeContainer = document.querySelector('.challenges ul');
+                challengeContainer.innerHTML = ''; // Pulisci la lista esistente
+
+                const challengeItem = document.createElement('li');
+                challengeItem.style.marginTop = '40px';
+                challengeItem.style.fontSize = "1.5em"; // Aumenta la dimensione del font
+                challengeItem.innerHTML = `
+            <strong>${challenge}</strong> 
+            <span class="motivational-icon" title="Sei pronto a conquistare questa sfida?">&#128170;</span>
+        `;
+                challengeContainer.appendChild(challengeItem);
+
+                // Aggiorna il titolo della sezione
+                const challengeTitleEl = document.querySelector('.challenges h2');
+                challengeTitleEl.textContent = challengeTitle;
+            }
+
+            // Chiamata per creare o mostrare la sfida quando la pagina è caricata
+            createDailyChallenge();
+        });
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Inizializzazione delle variabili Firebase
+            const db = firebase.firestore();
+            const auth = firebase.auth();
+
+            // Funzione per aggiornare la sezione "Obiettivi e Progressi"
+            function updateGoalsSection(goals) {
+                const goalsContainer = document.querySelector('.goals-and-progress ul');
+                goalsContainer.innerHTML = ''; // Pulisci l'elenco esistente
+
+                if (goals.length > 0) {
+                    goals.forEach(goal => {
+                        // Crea l'elemento per ciascun obiettivo
+                        const goalItem = document.createElement('li');
+                        goalItem.innerHTML = `
+                    ${goal.name}: 
+                    <progress value="${goal.progress}" max="${goal.target}"></progress> 
+                    ${Math.round((goal.progress / goal.target) * 100)}%
+                `;
+                        goalsContainer.appendChild(goalItem);
+                    });
+                } else {
+                    goalsContainer.innerHTML = '<p>Non hai obiettivi impostati.</p>';
+                }
+            }
+
+            // Controlla lo stato di autenticazione dell'utente
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    // Ottieni gli obiettivi dal database Firestore
+                    db.collection("obiettivi").doc(user.uid).get()
+                        .then(doc => {
+                            if (doc.exists) {
+                                const goals = doc.data().obiettivi || []; // Ottieni gli obiettivi o un array vuoto
+                                updateGoalsSection(goals); // Aggiorna la sezione "Obiettivi e Progressi"
+                            } else {
+                                console.log("Nessun obiettivo trovato per l'utente.");
+                                updateGoalsSection([]); // Mostra un messaggio se non ci sono obiettivi
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Errore nel recupero degli obiettivi:", error);
+                            updateGoalsSection([]); // Mostra un messaggio se c'è un errore
+                        });
+                }
+            });
+        });
 
         document.addEventListener("DOMContentLoaded", function () {
             const div_workout = document.getElementsByClassName('workout-of-the-day')

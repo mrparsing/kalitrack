@@ -6,15 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profilo</title>
     <link rel="stylesheet" type="text/css" href="../home/style_home.css">
+    <link rel="stylesheet" type="text/css" href="style_profile.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <!-- Firebase Configuration -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-        // Configurazione di Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyB2qNYCMQMjm6pAqTEWvP-1FWfPfKaQCi8",
             authDomain: "kalitrack.firebaseapp.com",
@@ -25,36 +25,64 @@
             measurementId: "G-498X9RNHLC"
         };
 
-        // Inizializza Firebase
+        // Inizializzazione di Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth();
 
-        // Funzione per caricare le informazioni del profilo
-        function loadProfile(user) {
+        // Definizione della funzione per caricare il profilo utente
+        window.loadProfile = function(user) {
             if (!user) {
                 console.log("Utente non autenticato.");
                 return;
             }
 
             const userDocRef = doc(db, "userProfiles", user.uid);
-            console.log(user.uid);
-
             getDoc(userDocRef)
                 .then((doc) => {
                     if (doc.exists()) {
                         const userData = doc.data();
-                        document.getElementById("name").innerText = userData.name || "Non disponibile";
-                        document.getElementById("email").innerText = userData.email || "Non disponibile";
-                        document.getElementById("age").innerText = userData.age || "Non disponibile";
-                        document.getElementById("gender").innerText = userData.gender || "Non disponibile";
-                        document.getElementById("weight").innerText = userData.weight || "Non disponibile";
+                        document.getElementById("name").value = userData.name || "";
+                        document.getElementById("email").value = userData.email || "";
+                        document.getElementById("age").value = userData.age || "";
+                        document.getElementById("gender").value = userData.gender || "Maschio";
+                        document.getElementById("weight").value = userData.weight || "";
                     } else {
                         console.log("Nessun documento trovato!");
                     }
                 })
                 .catch((error) => {
                     console.error("Errore nel recupero del documento:", error);
+                });
+        }
+
+        // Definizione della funzione per salvare il profilo utente
+        window.saveProfile = function() {
+            const user = auth.currentUser;
+            if (!user) {
+                console.log("Utente non autenticato.");
+                return;
+            }
+
+            const userDocRef = doc(db, "userProfiles", user.uid);
+
+            // Raccoglie i dati dai campi di input
+            const updatedData = {
+                name: document.getElementById("name").value,
+                email: document.getElementById("email").value,
+                age: parseInt(document.getElementById("age").value) || null,
+                gender: document.getElementById("gender").value,
+                weight: parseFloat(document.getElementById("weight").value) || null,
+            };
+
+            // Aggiorna il documento in Firestore
+            updateDoc(userDocRef, updatedData)
+                .then(() => {
+                    alert("Profilo aggiornato con successo!");
+                })
+                .catch((error) => {
+                    console.error("Errore durante l'aggiornamento del profilo:", error);
+                    alert("Si è verificato un errore durante l'aggiornamento del profilo.");
                 });
         }
 
@@ -146,53 +174,24 @@
             <section class="profile-section" id="profile-section">
                 <h2>Profilo Utente</h2>
                 <div id="profile-info">
-                    <p><strong>Nome:</strong> <span id="name">Caricamento...</span></p>
-                    <p><strong>Email:</strong> <span id="email">Caricamento...</span></p>
-                    <p><strong>Età:</strong> <span id="age">Caricamento...</span></p>
-                    <p><strong>Sesso:</strong> <span id="gender">Caricamento...</span></p>
-                    <p><strong>Peso:</strong> <span id="weight">Caricamento...</span></p>
+                    <p><strong>Nome:</strong> <input type="text" id="name" placeholder="Caricamento..."></p>
+                    <p><strong>Email:</strong> <input type="email" id="email" placeholder="Caricamento..."></p>
+                    <p><strong>Età:</strong> <input type="number" id="age" placeholder="Caricamento..."></p>
+                    <p><strong>Sesso:</strong>
+                        <select id="gender">
+                            <option value="Maschio">Maschio</option>
+                            <option value="Femmina">Femmina</option>
+                            <option value="Altro">Altro</option>
+                        </select>
+                    </p>
+                    <p><strong>Peso:</strong> <input type="number" id="weight" placeholder="Caricamento..."></p>
                 </div>
-                <button class="sidebar-btn" onclick="editProfile()">Modifica Profilo</button>
+                <button class="save-btn" onclick="saveProfile()">Salva Modifiche</button>
             </section>
         </main>
     </div>
 
     <div class="overlay" id="overlay"></div>
-
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.querySelector('.sidebar');
-            const overlay = document.getElementById('overlay');
-            const menuButton = document.getElementById('menuButton');
-
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('visible');
-
-            if (sidebar.classList.contains('active')) {
-                menuButton.innerHTML = '<i class="fas fa-times"></i>';
-            } else {
-                menuButton.innerHTML = '<i class="fas fa-bars"></i>';
-            }
-        }
-
-        document.getElementById('overlay').addEventListener('click', () => {
-            toggleSidebar();
-        });
-
-        async function logout() {
-            try {
-                await auth.signOut();
-                alert("Logout effettuato con successo!");
-                window.location.href = "../../index.html";
-            } catch (error) {
-                console.error("Errore durante il logout:", error);
-                alert("Si è verificato un errore durante il logout.");
-            }
-        }
-
-        document.getElementById('logoutBtn').addEventListener('click', logout);
-
-    </script>
 </body>
 
 </html>
