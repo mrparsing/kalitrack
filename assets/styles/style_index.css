@@ -56,7 +56,7 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 80hv;
+    height: 100hv;
     padding: 0 20px;
 }
 
@@ -99,6 +99,7 @@ main {
 .image img {
     width: 600px;
     height: auto;
+    margin-top: 10px;
     border-radius: 20px;
     opacity: 0.9;
     transition: transform 0.3s ease;
@@ -141,6 +142,9 @@ a:hover {
         margin: 10px 0;
         display: flex; /* Per centrare l'immagine */
         justify-content: center;
+    }
+    .auth-buttons button {
+    padding: 10px;
     }
 
     .image img {
