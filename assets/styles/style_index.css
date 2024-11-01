@@ -43,6 +43,7 @@ header {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    z-index: 1000;
 }
 
 .auth-buttons button:hover {
@@ -55,6 +56,7 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 80hv;
     padding: 0 20px;
 }
 

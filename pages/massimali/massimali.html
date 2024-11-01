@@ -11,6 +11,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -84,11 +85,14 @@
         <main class="main-content">
             <div class="content-wrapper">
                 <!-- Sinistra: Modulo per aggiungere un massimale -->
+                <!-- Sinistra: Modulo per aggiungere un massimale -->
                 <div class="add-max">
                     <h2>Aggiungi Massimale</h2>
                     <form id="maxForm">
                         <input type="text" id="exercise" placeholder="Esercizio" required>
                         <input type="number" id="maxValue" placeholder="Massimale (kg)" required>
+                        <!-- Campo di input per la data -->
+                        <input type="date" id="date" required>
                         <button type="submit">Salva Massimale</button>
                     </form>
                 </div>
@@ -126,22 +130,38 @@
             e.preventDefault();
             const exercise = document.getElementById("exercise").value;
             const maxValue = document.getElementById("maxValue").value;
-            saveMax(exercise, maxValue);
+            const date = document.getElementById("date").value; // Legge la data
+            saveMax(exercise, maxValue, date);
         });
 
+
         // Funzione per salvare il massimale nel DB
-        function saveMax(exercise, maxValue) {
+        function saveMax(exercise, maxValue, date) {
             auth.onAuthStateChanged(user => {
                 if (user) {
                     const maxRef = db.collection("massimali").doc(user.uid);
-                    maxRef.set({
-                        [exercise]: maxValue
-                    }, { merge: true }).then(() => {
+
+                    // Usa arrayUnion per aggiungere il nuovo massimale
+                    maxRef.update({
+                        [exercise]: firebase.firestore.FieldValue.arrayUnion({
+                            value: parseFloat(maxValue), // Assicurati che il valore sia un numero
+                            date: date
+                        })
+                    }).then(() => {
                         alert("Massimale salvato!");
                         document.getElementById("maxForm").reset();
                         loadMax(); // Ricarica la lista dopo il salvataggio
                     }).catch(error => {
-                        console.error("Errore nel salvataggio del massimale:", error);
+                        // Se il documento non esiste, lo crea e poi salva il massimale
+                        maxRef.set({
+                            [exercise]: [{ value: parseFloat(maxValue), date: date }]
+                        }, { merge: true }).then(() => {
+                            alert("Massimale salvato!");
+                            document.getElementById("maxForm").reset();
+                            loadMax();
+                        }).catch(error => {
+                            console.error("Errore nel salvataggio del massimale:", error);
+                        });
                     });
                 } else {
                     alert("Devi essere loggato per salvare i massimali.");
@@ -157,17 +177,41 @@
                     maxRef.get().then((doc) => {
                         const maxListEl = document.getElementById("maxList");
                         maxListEl.innerHTML = ""; // Pulisce la lista precedente
+
                         if (doc.exists) {
                             const data = doc.data();
+
+                            // Itera su ciascun esercizio
                             for (const exercise in data) {
-                                const maxValue = data[exercise];
-                                const maxItem = document.createElement("div");
-                                maxItem.className = "max-item";
-                                maxItem.innerHTML = `
-    <div class="text"><strong>${exercise}</strong>: <input type="number" value="${maxValue}" id="max-${exercise}" style="width: 80px;" /></div>
-    <button onclick="updateMax('${exercise}')">Aggiorna</button>
+                                const records = data[exercise]; // Array di oggetti { value, date }
+
+                                if (Array.isArray(records) && records.length > 0) {
+                                    // Ordina i record per data in ordine decrescente
+                                    records.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                                    // Prende il record con la data più recente
+                                    const { value, date } = records[0];
+
+                                    // Crea l'elemento HTML per l'esercizio
+                                    const maxItem = document.createElement("div");
+                                    maxItem.className = "max-item";
+                                    maxItem.innerHTML = `
+    <div class="text">
+        <strong>${exercise}</strong>: 
+        <input type="number" value="${value}" id="max-${exercise}" style="width: 80px;" /> kg - 
+        <input type="date" value="${date}" id="date-${exercise}" />
+    </div>
+    <button onclick="updateMax('${exercise}')">Aggiungi</button>
     <button onclick="deleteMax('${exercise}')">Elimina</button>
-`; maxListEl.appendChild(maxItem);
+    <button onclick="toggleProgress('${exercise}')">Visualizza progresso</button>
+    <div id="progress-${exercise}" class="progress-section" style="display:none;">
+        <canvas id="chart-${exercise}" width="400" height="200"></canvas>
+    </div>
+`;
+                                    maxListEl.appendChild(maxItem);
+                                } else {
+                                    maxListEl.innerHTML += "<p>Nessun massimale trovato per " + exercise + ".</p>";
+                                }
                             }
                         } else {
                             maxListEl.innerHTML = "<p>Nessun massimale trovato.</p>";
@@ -181,22 +225,28 @@
 
         // Funzione per aggiornare un massimale
         function updateMax(exercise) {
-            const newValue = document.getElementById(`max-${exercise}`).value;
+            const newValue = parseFloat(document.getElementById(`max-${exercise}`).value);
+            const newDate = document.getElementById(`date-${exercise}`).value; // Legge la nuova data
+
             auth.onAuthStateChanged(user => {
                 if (user) {
                     const maxRef = db.collection("massimali").doc(user.uid);
+
+                    // Aggiunge un nuovo oggetto { value, date } all'array esistente
                     maxRef.update({
-                        [exercise]: newValue
+                        [exercise]: firebase.firestore.FieldValue.arrayUnion({
+                            value: newValue,
+                            date: newDate
+                        })
                     }).then(() => {
-                        alert("Massimale aggiornato!");
+                        alert("Massimale aggiunto!");
                         loadMax(); // Ricarica la lista dopo l'aggiornamento
                     }).catch(error => {
-                        console.error("Errore nell'aggiornamento del massimale:", error);
+                        console.error("Errore nell'aggiunta del massimale:", error);
                     });
                 }
             });
         }
-
         // Funzione per eliminare un massimale
         function deleteMax(exercise) {
             auth.onAuthStateChanged(user => {
@@ -243,6 +293,60 @@
 
         document.getElementById('logoutBtn').addEventListener('click', logout);
 
+
+        function toggleProgress(exercise) {
+            const progressSection = document.getElementById(`progress-${exercise}`);
+            const chartCanvas = document.getElementById(`chart-${exercise}`);
+
+            progressSection.style.display = progressSection.style.display === "none" ? "block" : "none";
+
+            if (progressSection.style.display === "block") {
+                loadChart(exercise, chartCanvas);
+            }
+        }
+
+        function loadChart(exercise, canvas) {
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    const maxRef = db.collection("massimali").doc(user.uid);
+                    maxRef.get().then((doc) => {
+                        if (doc.exists) {
+                            const data = doc.data();
+                            const records = data[exercise];
+
+                            if (Array.isArray(records)) {
+                                const labels = records.map(record => record.date);
+                                const values = records.map(record => record.value);
+
+                                const ctx = canvas.getContext('2d');
+                                new Chart(ctx, {
+                                    type: 'line',
+                                    data: {
+                                        labels: labels,
+                                        datasets: [{
+                                            label: exercise,
+                                            data: values,
+                                            borderColor: 'rgba(75, 192, 192, 1)',
+                                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                            borderWidth: 1
+                                        }]
+                                    },
+                                    options: {
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }).catch(error => {
+                        console.error("Errore nel caricamento dei massimali:", error);
+                    });
+                }
+            });
+        }
     </script>
 </body>
 

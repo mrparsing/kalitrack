@@ -1,0 +1,102 @@
+.goal-setting {
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.goal-setting input[type="text"],
+.goal-setting input[type="number"]
+{
+    width: 80%;
+    padding: 10px;
+    margin: 10px;
+    color: white;
+    background-color: #444;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.goal-setting button {
+    padding: 10px 15px;
+    background-color: #ff5733;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.goal-setting button:hover {
+    background-color: #ff5733;
+}
+
+.goal-list {
+    margin: 20px;
+}
+
+.goal-item {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.progress-container {
+    margin: 10px 0;
+    width: 100%;
+}
+
+.progress {
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    overflow: hidden;
+    height: 30px;
+    width: 100%;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #ff5733;
+    width: 0%;
+    /* Modificato via JavaScript */
+    text-align: center;
+    color: white;
+    line-height: 30px;
+    /* Centrato verticalmente il testo */
+}
+
+.modal {
+    display: none;
+    position: absolute;
+    /* Cambiato da fixed ad absolute */
+    background-color: #444;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    border-radius: 5px;
+}
+
+.modal-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+button {
+    padding: 5px;
+    margin: 5px;
+    background-color: #ff5733;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#editGoalNameInput, #editGoalInput, #editProgressInput{
+    padding: 5px;
+    margin: 10px;
+    color: white;
+    background-color: #444;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}

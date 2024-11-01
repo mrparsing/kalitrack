@@ -313,6 +313,7 @@ header {
         transform: translateX(-100%);
         z-index: 900;
         padding-top: 60px;
+        overflow-y: auto;
     }
 
     .sidebar.active {

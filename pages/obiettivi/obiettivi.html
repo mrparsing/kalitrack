@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dettaglio Sessione - KaliTrack</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="../home/style_home.css">
+    <link rel="stylesheet" type="text/css" href="style_obiettivi.css">
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+</head>
+
+<body>
+    <header>
+        <button class="menu-btn" id="menuButton" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="logo">KaliTrack - Obiettivi</div>
+    </header>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <a href="../home/home.html" class="sidebar-btn">
+                <span class="icon-container"><i class="fas fa-home"></i></span>
+                <span class="text">Dashboard</span>
+            </a>
+            <a href="../aggiungi_sessione/aggiungi_sessione.html" class="sidebar-btn">
+                <span class="icon-container"><i class="fas fa-plus"></i></span>
+                <span class="text">Aggiungi Sessioni</span>
+            </a>
+            <a href="../storico_sessioni/storico_sessioni.html" class="sidebar-btn active">
+                <span class="icon-container"><i class="fas fa-history"></i></span>
+                <span class="text">Storico Sessioni</span>
+            </a>
+            <a href="../massimali/massimali.html" class="sidebar-btn active">
+                <span class="icon-container"><i class="fas fa-dumbbell"></i></span>
+                <span class="text">Massimali</span>
+            </a>
+            <a href="../sfide/sfide.html" class="sidebar-btn active">
+                <span class="icon-container"><i class="fas fa-trophy"></i></span>
+                <span class="text">Sfide</span>
+            </a>
+            <a href="../sessioni_successive/sessioni_successive.html" class="sidebar-btn active">
+                <span class="icon-container"><i class="fas fa-calendar-alt"></i></span>
+                <span class="text">Sessioni successive</span>
+            </a>
+            <div class="sidebar-divider"></div>
+            <a href="../profilo/profile.html" class="sidebar-btn">
+                <span class="icon-container"><i class="fas fa-user-circle"></i></span>
+                <span class="text">Profilo</span>
+            </a>
+            <button class="sidebar-btn">
+                <i class="fas fa-cog"></i><span>Impostazioni</span>
+            </button>
+            <button class="sidebar-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+            </button>
+        </aside>
+
+        <main class="main-content">
+            <div class="goal-setting">
+                <h2>Imposta Obiettivo e Progresso</h2>
+                <input type="text" id="goalNameInput" placeholder="Nome dell'obiettivo">
+                <input type="number" id="goalInput" placeholder="Obiettivo da raggiungere" min="1">
+                <input type="number" id="progressInput" placeholder="Progresso attuale" min="0">
+                <button id="saveGoals">Aggiungi Obiettivo</button>
+            </div>
+
+            <div class="goal-list" id="goalList">
+                <h2>Obiettivi Aggiunti</h2>
+                <!-- Qui verranno aggiunti dinamicamente gli obiettivi -->
+            </div>
+
+            <!-- Modulo di modifica (inizialmente nascosto) -->
+            <div id="editGoalModal" class="modal">
+                <div class="modal-content">
+                    <h2>Modifica Obiettivo</h2>
+                    <input type="text" id="editGoalNameInput" placeholder="Nome dell'obiettivo">
+                    <input type="number" id="editGoalInput" placeholder="Obiettivo da raggiungere" min="1">
+                    <input type="number" id="editProgressInput" placeholder="Progresso attuale" min="0">
+                    <button id="updateGoalBtn">Aggiorna Obiettivo</button>
+                    <button id="cancelEditBtn">Annulla</button>
+                </div>
+            </div>
+        </main>
+    </div>
+    <div class="overlay" id="overlay"></div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2qNYCMQMjm6pAqTEWvP-1FWfPfKaQCi8",
+            authDomain: "kalitrack.firebaseapp.com",
+            projectId: "kalitrack",
+            storageBucket: "kalitrack.appspot.com",
+            messagingSenderId: "253824979149",
+            appId: "1:253824979149:web:21f3085e86bb3a41821984",
+            measurementId: "G-498X9RNHLC"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        let goals = []; // Array per memorizzare gli obiettivi
+
+        async function logout() {
+            try {
+                await auth.signOut();
+                alert("Logout effettuato con successo!");
+                window.location.href = "../../index.html";
+            } catch (error) {
+                console.error("Errore durante il logout:", error);
+                alert("Si è verificato un errore durante il logout.");
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        // Funzione per aggiungere un obiettivo
+        document.getElementById('saveGoals').addEventListener('click', async function () {
+            const goalNameInput = document.getElementById('goalNameInput').value;
+            const goalInput = parseInt(document.getElementById('goalInput').value);
+            const progressInput = parseInt(document.getElementById('progressInput').value);
+
+            if (!goalNameInput || isNaN(goalInput) || isNaN(progressInput)) {
+                alert("Compila tutti i campi correttamente!");
+                return;
+            }
+
+            // Crea il nuovo obiettivo senza serverTimestamp
+            const newGoal = {
+                name: goalNameInput,
+                target: goalInput,
+                progress: progressInput
+            };
+
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    const userRef = db.collection('obiettivi').doc(user.uid);
+
+                    try {
+                        // Aggiungi prima l'obiettivo senza il timestamp
+                        await userRef.update({
+                            obiettivi: firebase.firestore.FieldValue.arrayUnion(newGoal)
+                        });
+
+                        goals.push(newGoal); // Aggiorna la lista locale di obiettivi
+                        displayGoals(); // Rendi visibile il nuovo obiettivo
+                        clearInputs();
+                        alert(`Obiettivo "${goalNameInput}" aggiunto!`);
+                    } catch (error) {
+                        if (error.code === 'not-found') {
+                            // Inizializza il documento con un array contenente l'obiettivo e il timestamp
+                            await userRef.set({
+                                obiettivi: [newGoal]
+                            });
+                            goals = [newGoal]; // Inizializza la lista locale di obiettivi
+                            displayGoals();
+                            alert(`Obiettivo "${goalNameInput}" aggiunto!`);
+                        } else {
+                            console.error("Errore durante il salvataggio dell'obiettivo:", error);
+                            alert("Errore durante il salvataggio dell'obiettivo.");
+                        }
+                    }
+                } else {
+                    alert("Devi essere loggato per salvare l'obiettivo.");
+                }
+            });
+        });
+
+        // Funzione per caricare gli obiettivi dal database
+        async function loadGoals() {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = db.collection('obiettivi').doc(user.uid);
+                const doc = await userRef.get();
+
+                if (doc.exists) {
+                    goals = doc.data().obiettivi || []; // Salva gli obiettivi recuperati in 'goals'
+                    displayGoals();
+                } else {
+                    console.log("Nessun obiettivo trovato per l'utente.");
+                }
+            } else {
+                console.log("Nessun utente loggato.");
+            }
+        }
+
+        // Funzione per visualizzare tutti gli obiettivi
+        function displayGoals() {
+            const goalList = document.getElementById('goalList');
+            goalList.innerHTML = ''; // Reset della lista
+
+            if (goals.length === 0) {
+                goalList.innerHTML = '<p>Nessun obiettivo disponibile.</p>';
+                return;
+            }
+
+            goals.forEach((goal, index) => {
+                const goalItem = document.createElement('div');
+                goalItem.classList.add('goal-item');
+
+                const progressPercent = calculateProgress(goal.progress, goal.target);
+
+                goalItem.innerHTML = `
+            <strong>${goal.name}</strong>
+            <div class="progress-container">
+                <div class="progress">
+                    <div class="progress-bar" style="width: ${progressPercent};">
+                        ${Math.round(progressPercent.replace('%', ''))}%
+                    </div>
+                </div>
+            </div>
+            <p>Progresso: ${goal.progress} / ${goal.target}</p>
+            <button onclick="editGoal(${index})">Modifica</button>
+        `;
+                goalList.appendChild(goalItem);
+            });
+        }
+
+        // Funzione per calcolare la percentuale di progresso
+        function calculateProgress(current, target) {
+            if (target <= 0) return '0%';
+            return Math.min((current / target) * 100, 100) + '%';
+        }
+
+        // Funzione per pulire gli input
+        function clearInputs() {
+            document.getElementById('goalNameInput').value = '';
+            document.getElementById('goalInput').value = '';
+            document.getElementById('progressInput').value = '';
+        }
+
+        // Carica gli obiettivi all'avvio della pagina
+        document.addEventListener("DOMContentLoaded", () => {
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    loadGoals();
+                } else {
+                    console.log("Utente non autenticato.");
+                }
+            });
+        });
+
+        function editGoal(index) {
+            const goal = goals[index];
+
+            document.getElementById('editGoalNameInput').value = goal.name;
+            document.getElementById('editGoalInput').value = goal.target;
+            document.getElementById('editProgressInput').value = goal.progress;
+
+            const modal = document.getElementById('editGoalModal');
+            const editButton = document.querySelector(`.goal-item:nth-child(${index + 1}) button`);
+
+            // Ottieni la posizione del bottone
+            const buttonRect = editButton.getBoundingClientRect();
+            const modalTop = window.scrollY + buttonRect.bottom + 10; // 10px di spazio tra bottone e popup
+            const modalLeft = window.scrollX + buttonRect.left;
+
+            // Posiziona il popup sotto il bottone
+            modal.style.top = `${modalTop}px`;
+            modal.style.left = `${modalLeft}px`;
+
+            modal.style.display = 'block';
+
+            document.getElementById('updateGoalBtn').onclick = function () {
+                updateGoal(index);
+            };
+            document.getElementById('cancelEditBtn').onclick = function () {
+                modal.style.display = 'none';
+            };
+        }
+        async function updateGoal(index) {
+            const updatedName = document.getElementById('editGoalNameInput').value;
+            const updatedTarget = parseInt(document.getElementById('editGoalInput').value);
+            const updatedProgress = parseInt(document.getElementById('editProgressInput').value);
+
+            if (!updatedName || isNaN(updatedTarget) || isNaN(updatedProgress)) {
+                alert("Compila tutti i campi correttamente!");
+                return;
+            }
+
+            goals[index].name = updatedName;
+            goals[index].target = updatedTarget;
+            goals[index].progress = updatedProgress;
+
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = db.collection('obiettivi').doc(user.uid);
+
+                try {
+                    await userRef.update({
+                        obiettivi: goals
+                    });
+                    displayGoals();
+                    document.getElementById('editGoalModal').style.display = 'none';
+                    alert("Obiettivo aggiornato con successo!");
+                } catch (error) {
+                    console.error("Errore durante l'aggiornamento dell'obiettivo:", error);
+                    alert("Errore durante l'aggiornamento dell'obiettivo.");
+                }
+            } else {
+                alert("Devi essere loggato per aggiornare l'obiettivo.");
+            }
+        }
+    </script>
+</body>
+
+</html>
