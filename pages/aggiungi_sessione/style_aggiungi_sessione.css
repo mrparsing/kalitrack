@@ -7,7 +7,9 @@
     padding: 20px;
     border-radius: 10px;
     width: 100%;
-    max-width: 550px;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
 }
 
 .session-form label {

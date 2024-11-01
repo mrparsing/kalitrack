@@ -27,3 +27,16 @@
 .save-btn:hover {
     background-color: #45a049;
 }
+
+input, select {
+    background-color: #444; /* Cambia il colore del testo degli input */
+    color: white;
+    border: 1px solid #ccc; /* Un bordo di esempio per contrasto */
+    padding: 10px; /* Spaziatura interna */
+    font-size: 16px; /* Dimensione del testo */
+    border-radius: 4px; /* Arrotonda i bordi se preferisci */
+}
+
+input::placeholder {
+    color: #888; /* Colore del testo del placeholder */
+}

@@ -11,7 +11,7 @@
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
         // Your web app's Firebase configuration
         const firebaseConfig = {
@@ -46,24 +46,6 @@
                 const errorMessage = error.message;
                 console.error("Errore durante l'accesso:", errorCode, errorMessage);
                 alert("Errore durante l'accesso: " + errorMessage);
-            }
-        }
-
-        // Funzione per gestire l'accesso con Google
-        window.loginWithGoogle = async function () { // Attach function to window
-            const provider = new GoogleAuthProvider();
-            try {
-                const result = await signInWithPopup(auth, provider);
-                // Accesso riuscito
-                const user = result.user;
-                console.log("Accesso con Google effettuato:", user);
-                // Reindirizza l'utente alla dashboard (o un'altra pagina)
-                window.location.href = '../home/home.html'; // Cambia URL se necessario
-            } catch (error) {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.error("Errore durante l'accesso con Google:", errorCode, errorMessage);
-                alert("Errore durante l'accesso con Google: " + errorMessage);
             }
         }
 
@@ -107,8 +89,8 @@
 
             <button type="submit" class="login-btn">Login</button>
         </form>
-        <button class="google-btn" onclick="loginWithGoogle()">Accedi con Google</button>
         <p class="signup-link">Non hai un account? <a href="../registrazione/registrazione.html">Registrati</a></p>
+        <p class="password-recovery"><a href="../registrazione/registrazione.html">Recupera password</a></p>
     </div>
 </body>
 

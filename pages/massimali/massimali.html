@@ -8,10 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="../home/style_home.css">
     <link rel="stylesheet" type="text/css" href="style_massimali.css">
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.css">
 </head>
 
 <body>
@@ -26,49 +23,30 @@
         <!-- Sidebar con i pulsanti -->
         <aside class="sidebar">
             <a href="../home/home.html" class="sidebar-btn">
-                <span class="icon-container">
-                    <i class="fas fa-home"></i>
-                </span>
+                <span class="icon-container"><i class="fas fa-home"></i></span>
                 <span class="text">Dashboard</span>
             </a>
-
             <a href="../sessioni_successive/sessioni_successive.html" class="sidebar-btn">
-                <span class="icon-container">
-                    <i class="fas fa-calendar-alt"></i>
-                </span>
+                <span class="icon-container"><i class="fas fa-calendar-alt"></i></span>
                 <span class="text">Sessioni future</span>
             </a>
-
             <a href="../storico_sessioni/storico_sessioni.html" class="sidebar-btn">
-                <span class="icon-container">
-                    <i class="fas fa-history"></i>
-                </span>
+                <span class="icon-container"><i class="fas fa-history"></i></span>
                 <span class="text">Storico Sessioni</span>
             </a>
-
             <a href="aggiungi_sessione.html" class="sidebar-btn">
-                <span class="icon-container">
-                    <i class="fas fa-plus"></i>
-                </span>
+                <span class="icon-container"><i class="fas fa-plus"></i></span>
                 <span class="text">Aggiungi sessioni</span>
             </a>
-
             <a href="massimali.html" class="sidebar-btn">
-                <span class="icon-container">
-                    <i class="fas fa-dumbbell"></i>
-                </span>
+                <span class="icon-container"><i class="fas fa-dumbbell"></i></span>
                 <span class="text">Massimali</span>
             </a>
-
             <a href="../sfide/sfide.html" class="sidebar-btn">
-                <span class="icon-container">
-                    <i class="fas fa-trophy"></i>
-                </span>
+                <span class="icon-container"><i class="fas fa-trophy"></i></span>
                 <span class="text">Sfide</span>
             </a>
-
             <div class="sidebar-divider"></div>
-
             <a href="../profilo/profile.html" class="sidebar-btn">
                 <span class="icon-container"><i class="fas fa-user-circle"></i></span>
                 <span class="text">Profilo</span>
@@ -85,14 +63,12 @@
         <main class="main-content">
             <div class="content-wrapper">
                 <!-- Sinistra: Modulo per aggiungere un massimale -->
-                <!-- Sinistra: Modulo per aggiungere un massimale -->
                 <div class="add-max">
                     <h2>Aggiungi Massimale</h2>
                     <form id="maxForm">
                         <input type="text" id="exercise" placeholder="Esercizio" required>
                         <input type="number" id="maxValue" placeholder="Massimale (kg)" required>
-                        <!-- Campo di input per la data -->
-                        <input type="date" id="date" required>
+                        <input type="text" id="date" placeholder="Seleziona una data" required>
                         <button type="submit">Salva Massimale</button>
                     </form>
                 </div>
@@ -107,6 +83,12 @@
     </div>
 
     <div class="overlay" id="overlay"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
         // Configurazione di Firebase
@@ -125,12 +107,24 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Inizializza il selettore di data per il campo con id "date"
+            flatpickr("#date", {
+                dateFormat: "Y-m-d",   // Formato della data
+                altInput: true,        // Mostra un campo di input alternativo
+                altFormat: "F j, Y",   // Formato leggibile per l'utente
+                defaultDate: new Date() // Imposta la data predefinita ad oggi
+            });
+            loadMax(); // Carica i massimali quando la pagina viene caricata
+        });
+
         // Funzione per gestire l'invio del modulo
         document.getElementById("maxForm").addEventListener("submit", function (e) {
             e.preventDefault();
             const exercise = document.getElementById("exercise").value;
             const maxValue = document.getElementById("maxValue").value;
-            const date = document.getElementById("date").value; // Legge la data
+            const date = document.getElementById("date").value;
             saveMax(exercise, maxValue, date);
         });
 
@@ -141,18 +135,16 @@
                 if (user) {
                     const maxRef = db.collection("massimali").doc(user.uid);
 
-                    // Usa arrayUnion per aggiungere il nuovo massimale
                     maxRef.update({
                         [exercise]: firebase.firestore.FieldValue.arrayUnion({
-                            value: parseFloat(maxValue), // Assicurati che il valore sia un numero
+                            value: parseFloat(maxValue),
                             date: date
                         })
                     }).then(() => {
                         alert("Massimale salvato!");
                         document.getElementById("maxForm").reset();
-                        loadMax(); // Ricarica la lista dopo il salvataggio
+                        loadMax();
                     }).catch(error => {
-                        // Se il documento non esiste, lo crea e poi salva il massimale
                         maxRef.set({
                             [exercise]: [{ value: parseFloat(maxValue), date: date }]
                         }, { merge: true }).then(() => {
@@ -176,23 +168,18 @@
                     const maxRef = db.collection("massimali").doc(user.uid);
                     maxRef.get().then((doc) => {
                         const maxListEl = document.getElementById("maxList");
-                        maxListEl.innerHTML = ""; // Pulisce la lista precedente
+                        maxListEl.innerHTML = "";
 
                         if (doc.exists) {
                             const data = doc.data();
 
-                            // Itera su ciascun esercizio
                             for (const exercise in data) {
-                                const records = data[exercise]; // Array di oggetti { value, date }
+                                const records = data[exercise];
 
                                 if (Array.isArray(records) && records.length > 0) {
-                                    // Ordina i record per data in ordine decrescente
                                     records.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-                                    // Prende il record con la data più recente
                                     const { value, date } = records[0];
 
-                                    // Crea l'elemento HTML per l'esercizio
                                     const maxItem = document.createElement("div");
                                     maxItem.className = "max-item";
                                     maxItem.innerHTML = `
@@ -204,49 +191,64 @@
     <button onclick="updateMax('${exercise}')">Aggiungi</button>
     <button onclick="deleteMax('${exercise}')">Elimina</button>
     <button onclick="toggleProgress('${exercise}')">Visualizza progresso</button>
-    <div id="progress-${exercise}" class="progress-section" style="display:none;">
-        <canvas id="chart-${exercise}" width="400" height="200"></canvas>
-    </div>
 `;
                                     maxListEl.appendChild(maxItem);
-                                } else {
-                                    maxListEl.innerHTML += "<p>Nessun massimale trovato per " + exercise + ".</p>";
                                 }
                             }
                         } else {
                             maxListEl.innerHTML = "<p>Nessun massimale trovato.</p>";
                         }
-                    }).catch(error => {
+                    }).catch((error) => {
                         console.error("Errore nel caricamento dei massimali:", error);
                     });
+                } else {
+                    alert("Devi essere loggato per visualizzare i massimali.");
                 }
             });
         }
 
         // Funzione per aggiornare un massimale
         function updateMax(exercise) {
-            const newValue = parseFloat(document.getElementById(`max-${exercise}`).value);
-            const newDate = document.getElementById(`date-${exercise}`).value; // Legge la nuova data
+    const newValue = parseFloat(document.getElementById(`max-${exercise}`).value);
+    const newDate = document.getElementById(`date-${exercise}`).value; // Nuova data
 
-            auth.onAuthStateChanged(user => {
-                if (user) {
-                    const maxRef = db.collection("massimali").doc(user.uid);
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            const maxRef = db.collection("massimali").doc(user.uid);
 
-                    // Aggiunge un nuovo oggetto { value, date } all'array esistente
+            // Recupera l'array esistente
+            maxRef.get().then((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    const records = data[exercise] || [];
+
+                    // Trova l'indice dell'elemento da aggiornare o lo aggiunge come nuovo
+                    const existingIndex = records.findIndex(record => record.date === newDate);
+
+                    if (existingIndex > -1) {
+                        // Se la data esiste già, aggiorna il valore
+                        records[existingIndex].value = newValue;
+                    } else {
+                        // Altrimenti, aggiungi un nuovo oggetto
+                        records.push({ value: newValue, date: newDate });
+                    }
+
+                    // Salva di nuovo l'array aggiornato
                     maxRef.update({
-                        [exercise]: firebase.firestore.FieldValue.arrayUnion({
-                            value: newValue,
-                            date: newDate
-                        })
+                        [exercise]: records
                     }).then(() => {
-                        alert("Massimale aggiunto!");
-                        loadMax(); // Ricarica la lista dopo l'aggiornamento
+                        alert("Massimale aggiornato!");
+                        loadMax(); // Ricarica la lista
                     }).catch(error => {
-                        console.error("Errore nell'aggiunta del massimale:", error);
+                        console.error("Errore nell'aggiornamento del massimale:", error);
                     });
                 }
+            }).catch(error => {
+                console.error("Errore nel recupero del massimale:", error);
             });
         }
+    });
+}
         // Funzione per eliminare un massimale
         function deleteMax(exercise) {
             auth.onAuthStateChanged(user => {

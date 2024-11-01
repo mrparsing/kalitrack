@@ -97,17 +97,17 @@ h2 {
 }
 
 /* Link di registrazione */
-.signup-link {
+.signup-link, .password-recovery {
     margin-top: 15px;
     font-size: 14px;
 }
 
-.signup-link a {
+.signup-link a, .password-recovery a {
     color: #ff5733;
     text-decoration: none;
 }
 
-.signup-link a:hover {
+.signup-link a:hover, .password-recovery a:hover {
     color: #e14a2a;
 }
 
