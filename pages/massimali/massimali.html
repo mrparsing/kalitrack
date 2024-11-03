@@ -152,14 +152,14 @@
                             date: date
                         })
                     }).then(() => {
-                        alert("Massimale salvato!");
+                        showNotification("Massimale salvato!", "green");
                         document.getElementById("maxForm").reset();
                         loadMax();
                     }).catch(error => {
                         maxRef.set({
                             [exercise]: [{ value: parseFloat(maxValue), date: date }]
                         }, { merge: true }).then(() => {
-                            alert("Massimale salvato!");
+                            showNotification("Massimale salvato!", "green");
                             document.getElementById("maxForm").reset();
                             loadMax();
                         }).catch(error => {
@@ -167,7 +167,7 @@
                         });
                     });
                 } else {
-                    alert("Devi essere loggato per salvare i massimali.");
+                    showNotification("Devi essere loggato per salvare i massimali.", "red");
                 }
             });
         }
@@ -221,7 +221,7 @@
                         console.error("Errore nel caricamento dei massimali:", error);
                     });
                 } else {
-                    alert("Devi essere loggato per visualizzare i massimali.");
+                    showNotification("Devi essere loggato per visualizzare i massimali.", "red");
                 }
                 hideLoader();
             });
@@ -257,7 +257,7 @@
                             maxRef.update({
                                 [exercise]: records
                             }).then(() => {
-                                alert("Massimale aggiornato!");
+                                showNotification("Massimale aggiornato!", "green");
                                 loadMax(); // Ricarica la lista
                             }).catch(error => {
                                 console.error("Errore nell'aggiornamento del massimale:", error);
@@ -277,7 +277,7 @@
                     maxRef.update({
                         [exercise]: firebase.firestore.FieldValue.delete()
                     }).then(() => {
-                        alert("Massimale eliminato!");
+                        showNotification("Massimale eliminato!", "green");
                         loadMax(); // Ricarica la lista dopo l'eliminazione
                     }).catch(error => {
                         console.error("Errore nell'eliminazione del massimale:", error);
@@ -305,11 +305,11 @@
         async function logout() {
             try {
                 await auth.signOut();
-                alert("Logout effettuato con successo!");
+                showNotification("Logout effettuato con successo!", "green");
                 window.location.href = "../../index.html";
             } catch (error) {
                 console.error("Errore durante il logout:", error);
-                alert("Si è verificato un errore durante il logout.");
+                showNotification("Si è verificato un errore durante il logout.", "red");
             }
         }
 
@@ -368,6 +368,32 @@
                     });
                 }
             });
+        }
+
+        function showNotification(message, backgroundColor) {
+            // Crea l'elemento della notifica
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerText = message;
+
+            // Applica i colori personalizzati
+            notification.style.backgroundColor = backgroundColor;
+
+            // Aggiungi la notifica al body
+            document.body.appendChild(notification);
+
+            // Usa un timeout per aggiungere la classe 'show' per la transizione di visibilità e opacità
+            setTimeout(() => {
+                notification.classList.add('show'); // Aggiungi la classe 'show'
+            }, 10); // Piccolo timeout per assicurarsi che la classe venga applicata dopo essere aggiunta al DOM
+
+            // Fai svanire la notifica dopo 3 secondi
+            setTimeout(() => {
+                notification.classList.remove('show'); // Rimuovi la classe 'show'
+                setTimeout(() => {
+                    document.body.removeChild(notification); // Rimuovila dal DOM
+                }, 500); // Attendi la transizione di fade-out
+            }, 3000); // Notifica visibile per 3 secondi
         }
     </script>
 </body>

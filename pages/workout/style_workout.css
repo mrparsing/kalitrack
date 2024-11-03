@@ -162,8 +162,8 @@
     background-color: #28a745; /* Verde acceso */
     color: white;
     border: none;
-    padding: 6px 12px;
-    font-size: 12px;
+    padding: 15px;
+    font-size: 15px;
     font-weight: bold;
     border-radius: 4px;
     cursor: pointer;
@@ -175,12 +175,26 @@
     transform: scale(1.05); /* Leggera espansione */
 }
 
-.play-btn:active {
-    background-color: #1e7e34; /* Ancora più scuro per il click */
-    transform: scale(0.95); /* Leggera riduzione al click */
+/* Stile per evidenziare il pulsante quando il timer è attivo */
+.play-btn.active {
+    background-color: #ff4b4b; /* Rosso acceso per evidenziare */
+    color: #fff; /* Testo bianco per il contrasto */
+    font-size: 30px;
+    margin-right: 28px;
+    transform: scale(1.1); /* Espansione per enfatizzare */
+    box-shadow: 0 4px 15px rgba(255, 75, 75, 0.6); /* Ombra per dare profondità */
+}
+
+/* Stile per evidenziare il testo del timer */
+.text-element.active {
+    padding: 25px;
+    color: #ff4b4b; /* Rosso per il timer attivo */
+    font-weight: bold; /* Testo in grassetto per enfatizzare */
+    font-size: 25px;
 }
 
 .play-btn:disabled {
     background-color: #4d6653; /* Colore disabilitato */
+    padding: 5px;
     cursor: not-allowed;
 }

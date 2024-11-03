@@ -299,7 +299,7 @@
             const div_workout = document.getElementsByClassName('workout-of-the-day')
             div_workout.onclick = function () {
                 // Reindirizza alla pagina di dettagli della sessione
-                window.location.href = `../workout/workout.html?workout_name=${session.workoutName}&date=${session.date}`;
+                window.location.href = `../workout/workout.html?workout_name=${session.workoutName}&date=${session.date}&page=sessions`;
             };
             auth.onAuthStateChanged(user => {
                 if (user) {
@@ -319,12 +319,12 @@
                                         sessionEl.innerHTML = `
             <h3>${session.workoutName} - ${session.date}</h3>
             <ul>${session.exercises.map(ex => `
-                <li>${ex.exercise} - ${ex.series} serie - Recupero: ${ex.recovery}s</li>
+                <li>${ex.exercise} - ${ex.series}x${ex.repetitions} - Recupero: ${ex.recovery}s</li>
             `).join('')}</ul>
             `;
                                         sessionEl.onclick = function () {
                                             // Reindirizza alla pagina di dettagli della sessione
-                                            window.location.href = `../workout/workout.html?workout_name=${session.workoutName}&date=${session.date}`;
+                                            window.location.href = `../workout/workout.html?workout_name=${session.workoutName}&date=${session.date}&page=sessions`;
                                         };
                                         workout_of_the_day.appendChild(sessionEl);
                                     });
@@ -364,11 +364,11 @@
         async function logout() {
             try {
                 await auth.signOut();
-                alert("Logout effettuato con successo!");
+                showNotification("Logout effettuato con successo!", "green");
                 window.location.href = "../../index.html";
             } catch (error) {
                 console.error("Errore durante il logout:", error);
-                alert("Si è verificato un errore durante il logout.");
+                showNotification("Si è verificato un errore durante il logout.", "red");
             }
         }
 
@@ -418,7 +418,7 @@
                                     const workoutName = info.event.title;
 
                                     // Reindirizza alla pagina di dettagli della sessione
-                                    window.location.href = `../workout/workout.html?workout_name=${workoutName}&date=${formattedDate}`;
+                                    window.location.href = `../workout/workout.html?workout_name=${workoutName}&date=${formattedDate}&page=sessions`;
                                 });
                                 calendar.render();
                             } else {
@@ -442,6 +442,32 @@
         function hideLoader() {
             const loader = document.getElementById('loader');
             loader.style.display = 'none';
+        }
+
+        function showNotification(message, backgroundColor) {
+            // Crea l'elemento della notifica
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerText = message;
+
+            // Applica i colori personalizzati
+            notification.style.backgroundColor = backgroundColor;
+
+            // Aggiungi la notifica al body
+            document.body.appendChild(notification);
+
+            // Usa un timeout per aggiungere la classe 'show' per la transizione di visibilità e opacità
+            setTimeout(() => {
+                notification.classList.add('show'); // Aggiungi la classe 'show'
+            }, 10); // Piccolo timeout per assicurarsi che la classe venga applicata dopo essere aggiunta al DOM
+
+            // Fai svanire la notifica dopo 3 secondi
+            setTimeout(() => {
+                notification.classList.remove('show'); // Rimuovi la classe 'show'
+                setTimeout(() => {
+                    document.body.removeChild(notification); // Rimuovila dal DOM
+                }, 500); // Attendi la transizione di fade-out
+            }, 3000); // Notifica visibile per 3 secondi
         }
     </script>
 </body>

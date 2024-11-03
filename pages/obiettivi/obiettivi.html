@@ -120,11 +120,11 @@
         async function logout() {
             try {
                 await auth.signOut();
-                alert("Logout effettuato con successo!");
+                showNotification("Logout effettuato con successo!", "green");
                 window.location.href = "../../index.html";
             } catch (error) {
                 console.error("Errore durante il logout:", error);
-                alert("Si è verificato un errore durante il logout.");
+                showNotification("Si è verificato un errore durante il logout.", "red");
             }
         }
 
@@ -137,7 +137,7 @@
             const progressInput = parseInt(document.getElementById('progressInput').value);
 
             if (!goalNameInput || isNaN(goalInput) || isNaN(progressInput)) {
-                alert("Compila tutti i campi correttamente!");
+                showNotification("Compila tutti i campi correttamente!", "red");
                 return;
             }
 
@@ -161,7 +161,7 @@
                         goals.push(newGoal); // Aggiorna la lista locale di obiettivi
                         displayGoals(); // Rendi visibile il nuovo obiettivo
                         clearInputs();
-                        alert(`Obiettivo "${goalNameInput}" aggiunto!`);
+                        showNotification(`Obiettivo "${goalNameInput}" aggiunto!`, "green");
                     } catch (error) {
                         if (error.code === 'not-found') {
                             // Inizializza il documento con un array contenente l'obiettivo e il timestamp
@@ -170,14 +170,14 @@
                             });
                             goals = [newGoal]; // Inizializza la lista locale di obiettivi
                             displayGoals();
-                            alert(`Obiettivo "${goalNameInput}" aggiunto!`);
+                            showNotification(`Obiettivo "${goalNameInput}" aggiunto!`, "green");
                         } else {
                             console.error("Errore durante il salvataggio dell'obiettivo:", error);
-                            alert("Errore durante il salvataggio dell'obiettivo.");
+                            showNotification("Errore durante il salvataggio dell'obiettivo.", "red");
                         }
                     }
                 } else {
-                    alert("Devi essere loggato per salvare l'obiettivo.");
+                    showNotification("Devi essere loggato per salvare l'obiettivo.", "red");
                 }
             });
         });
@@ -257,13 +257,13 @@
                             obiettivi: goals
                         });
                         displayGoals(); // Rendi visibile la lista aggiornata
-                        alert("Obiettivo eliminato con successo!");
+                        showNotification("Obiettivo eliminato con successo!", "green");
                     } catch (error) {
                         console.error("Errore durante l'eliminazione dell'obiettivo:", error);
-                        alert("Errore durante l'eliminazione dell'obiettivo.");
+                        showNotification("Errore durante l'eliminazione dell'obiettivo.", "red");
                     }
                 } else {
-                    alert("Devi essere loggato per eliminare l'obiettivo.");
+                    showNotification("Devi essere loggato per eliminare l'obiettivo.", "red");
                 }
             }
         }
@@ -310,7 +310,7 @@
             const updatedProgress = parseInt(document.getElementById(`editGoalProgress-${index}`).value);
 
             if (!updatedName || isNaN(updatedTarget) || isNaN(updatedProgress)) {
-                alert("Compila tutti i campi correttamente!");
+                showNotification("Compila tutti i campi correttamente!", "red");
                 return;
             }
 
@@ -327,13 +327,13 @@
                         obiettivi: goals
                     });
                     displayGoals();
-                    alert("Obiettivo aggiornato con successo!");
+                    showNotification("Obiettivo aggiornato con successo!", "green");
                 } catch (error) {
                     console.error("Errore durante l'aggiornamento dell'obiettivo:", error);
-                    alert("Errore durante l'aggiornamento dell'obiettivo.");
+                    showNotification("Errore durante l'aggiornamento dell'obiettivo.", "red");
                 }
             } else {
-                alert("Devi essere loggato per aggiornare l'obiettivo.");
+                showNotification("Devi essere loggato per aggiornare l'obiettivo.", "red");
             }
         }
 
@@ -351,6 +351,32 @@
                 }
             });
         });
+
+        function showNotification(message, backgroundColor) {
+            // Crea l'elemento della notifica
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerText = message;
+
+            // Applica i colori personalizzati
+            notification.style.backgroundColor = backgroundColor;
+
+            // Aggiungi la notifica al body
+            document.body.appendChild(notification);
+
+            // Usa un timeout per aggiungere la classe 'show' per la transizione di visibilità e opacità
+            setTimeout(() => {
+                notification.classList.add('show'); // Aggiungi la classe 'show'
+            }, 10); // Piccolo timeout per assicurarsi che la classe venga applicata dopo essere aggiunta al DOM
+
+            // Fai svanire la notifica dopo 3 secondi
+            setTimeout(() => {
+                notification.classList.remove('show'); // Rimuovi la classe 'show'
+                setTimeout(() => {
+                    document.body.removeChild(notification); // Rimuovila dal DOM
+                }, 500); // Attendi la transizione di fade-out
+            }, 3000); // Notifica visibile per 3 secondi
+        }
     </script>
 </body>
 

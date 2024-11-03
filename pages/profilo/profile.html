@@ -78,11 +78,11 @@
             // Aggiorna il documento in Firestore
             updateDoc(userDocRef, updatedData)
                 .then(() => {
-                    alert("Profilo aggiornato con successo!");
+                    showNotification("Profilo aggiornato con successo!", "green");
                 })
                 .catch((error) => {
                     console.error("Errore durante l'aggiornamento del profilo:", error);
-                    alert("Si è verificato un errore durante l'aggiornamento del profilo.");
+                    showNotification("Si è verificato un errore durante l'aggiornamento del profilo.", "red");
                 });
         }
 
@@ -90,6 +90,32 @@
         onAuthStateChanged(auth, (user) => {
             loadProfile(user);
         });
+
+        function showNotification(message, backgroundColor) {
+            // Crea l'elemento della notifica
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerText = message;
+
+            // Applica i colori personalizzati
+            notification.style.backgroundColor = backgroundColor;
+
+            // Aggiungi la notifica al body
+            document.body.appendChild(notification);
+
+            // Usa un timeout per aggiungere la classe 'show' per la transizione di visibilità e opacità
+            setTimeout(() => {
+                notification.classList.add('show'); // Aggiungi la classe 'show'
+            }, 10); // Piccolo timeout per assicurarsi che la classe venga applicata dopo essere aggiunta al DOM
+
+            // Fai svanire la notifica dopo 3 secondi
+            setTimeout(() => {
+                notification.classList.remove('show'); // Rimuovi la classe 'show'
+                setTimeout(() => {
+                    document.body.removeChild(notification); // Rimuovila dal DOM
+                }, 500); // Attendi la transizione di fade-out
+            }, 3000); // Notifica visibile per 3 secondi
+        }
     </script>
 </head>
 
@@ -126,7 +152,7 @@
                 <span class="text">Storico Sessioni</span>
             </a>
 
-            <a href="aggiungi_sessione.html" class="sidebar-btn">
+            <a href="../aggiungi_sessione/aggiungi_sessione.html" class="sidebar-btn">
                 <span class="icon-container">
                     <i class="fas fa-plus"></i>
                 </span>

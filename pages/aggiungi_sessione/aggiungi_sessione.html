@@ -126,21 +126,21 @@
                                 exerciseListEl.innerHTML = '';
                                 exercises.length = 0;
 
-                                alert("Sessione salvata con successo!");
+                                showNotification("Sessione salvata con successo!", "green");
                             } catch (error) {
                                 // Se il campo 'workouts' non esiste ancora, usa `.set()` per crearlo
                                 if (error.code === 'not-found') {
                                     await userRef.set({
                                         workouts: [sessionData]
                                     });
-                                    alert("Sessione salvata con successo!");
+                                    showNotification("Sessione salvata con successo!", "green");
                                 } else {
                                     console.error("Errore durante il salvataggio della sessione:", error);
-                                    alert("Errore durante il salvataggio della sessione.");
+                                    showNotification("Errore durante il salvataggio della sessione.", "red");
                                 }
                             }
                         } else {
-                            alert("Devi essere loggato per salvare la sessione.");
+                            showNotification("Devi essere loggato per salvare la sessione.", "red");
                         }
                     });
                 }
@@ -360,17 +360,42 @@
         async function logout() {
             try {
                 await auth.signOut();
-                alert("Logout effettuato con successo!");
+                showNotification("Logout effettuato con successo!", "green");
                 window.location.href = "../../index.html";
             } catch (error) {
                 console.error("Errore durante il logout:", error);
-                alert("Si è verificato un errore durante il logout.");
+                showNotification("Si è verificato un errore durante il logout.", "red");
             }
         }
 
         document.getElementById('logoutBtn').addEventListener('click', logout);
 
-    </script>
+        // Function to show notification
+        function showNotification(message, backgroundColor) {
+            // Crea l'elemento della notifica
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerText = message;
+
+            // Applica i colori personalizzati
+            notification.style.backgroundColor = backgroundColor;
+
+            // Aggiungi la notifica al body
+            document.body.appendChild(notification);
+
+            // Usa un timeout per aggiungere la classe 'show' per la transizione di visibilità e opacità
+            setTimeout(() => {
+                notification.classList.add('show'); // Aggiungi la classe 'show'
+            }, 10); // Piccolo timeout per assicurarsi che la classe venga applicata dopo essere aggiunta al DOM
+
+            // Fai svanire la notifica dopo 3 secondi
+            setTimeout(() => {
+                notification.classList.remove('show'); // Rimuovi la classe 'show'
+                setTimeout(() => {
+                    document.body.removeChild(notification); // Rimuovila dal DOM
+                }, 500); // Attendi la transizione di fade-out
+            }, 3000); // Notifica visibile per 3 secondi
+        }    </script>
 
 </body>
 

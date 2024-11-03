@@ -97,11 +97,12 @@
             const params = new URLSearchParams(window.location.search);
             return {
                 workoutName: params.get("workout_name"),
-                date: params.get("date")
+                date: params.get("date"),
+                page: params.get('page')
             };
         }
 
-        function loadSessionDetails(workoutName, date) {
+        function loadSessionDetails_sessions(workoutName, date, page) {
             auth.onAuthStateChanged(user => {
                 if (user) {
                     db.collection("sessions").doc(user.uid).get()
@@ -153,85 +154,148 @@
                                         exercisesContainer.appendChild(exerciseItem);
                                     });
 
-                                    // Funzione per popolare i dettagli dell'esercizio
-                                    function populateExerciseDetails(container, series, repetitions, recovery) {
-                                        if (container.innerHTML.trim() !== "") {
-                                            return;
-                                        }
+                                } else {
+                                    console.log("Nessun workout trovato con i criteri specificati.");
+                                    showNotification("Sessione non trovata.", "red");
+                                }
+                            } else {
+                                console.log("Documento utente non trovato.");
+                                showNotification("Nessun dato trovato per questo utente.", "red");
+                            }
+                        }).catch(error => {
+                            console.error("Errore nel caricamento della sessione:", error);
+                        });
+                } else {
+                    showNotification("Devi essere loggato per visualizzare i dettagli della sessione.", "red");
+                }
+            });
+        }
+        function populateExerciseDetails(container, series, repetitions, recovery) {
+            if (container.innerHTML.trim() !== "") {
+                return;
+            }
 
-                                        for (let i = 1; i <= series; i++) {
-                                            const detailRow = document.createElement("div");
-                                            detailRow.className = "exercise-detail-row";
+            for (let i = 1; i <= series; i++) {
+                const detailRow = document.createElement("div");
+                detailRow.className = "exercise-detail-row";
 
-                                            detailRow.innerHTML = `
+                detailRow.innerHTML = `
             <span class="text-element">
                 Serie ${i}: Ripetizioni: ${repetitions}, Recupero: ${recovery} sec
             </span>
             <button class="play-btn" id="play-${i}">Avvia recupero</button>
         `;
 
-                                            container.appendChild(detailRow);
+                container.appendChild(detailRow);
 
-                                            const textElement = detailRow.querySelector(".text-element");
+                const textElement = detailRow.querySelector(".text-element");
 
-                                            document.getElementById(`play-${i}`).addEventListener('click', () => {
-                                                startTimer(recovery, document.getElementById(`play-${i}`), textElement);
-                                                document.getElementById(`play-${i}`).disabled = true;
-                                            });
-                                        }
-                                    }
+                document.getElementById(`play-${i}`).addEventListener('click', () => {
+                    startTimer(recovery, document.getElementById(`play-${i}`), textElement);
+                    document.getElementById(`play-${i}`).disabled = true;
+                });
+            }
+        }
 
-                                    function startTimer(duration, display, textElement) {
-                                        let timer = duration, minutes, seconds;
+        function startTimer(duration, display, textElement) {
+            let timer = duration, minutes, seconds;
 
-                                        // Cambia il colore del testo in rosso all'avvio del timer
-                                        textElement.style.color = "red";
+            // Cambia il colore del testo in rosso all'avvio del timer
+            textElement.style.color = "red";
 
-                                        const countdown = setInterval(() => {
-                                            minutes = parseInt(timer / 60, 10);
-                                            seconds = parseInt(timer % 60, 10);
+            display.classList.add('active');
+            textElement.classList.add('active');
 
-                                            // Formatta il tempo come MM:SS
-                                            seconds = seconds < 10 ? "0" + seconds : seconds;
-                                            display.textContent = `${minutes}:${seconds}`;
 
-                                            if (--timer < 0) {
-                                                clearInterval(countdown);
-                                                display.textContent = "Tempo Scaduto!";
-                                                textElement.style.color = "gray"; // Cambia il colore del testo a grigio
+            const countdown = setInterval(() => {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                // Formatta il tempo come MM:SS
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+                display.textContent = `${minutes}:${seconds}`;
+
+                if (--timer < 0) {
+                    clearInterval(countdown);
+                    display.textContent = "Tempo Scaduto!";
+                    textElement.style.color = "gray"; // Cambia il colore del testo a grigio
+
+                    // Rimuovi la classe 'active' quando il timer termina
+                    display.classList.remove('active');
+                    textElement.classList.remove('active');
+                }
+            }, 1000);
+        }
+
+        function loadSessionDetails_sfide(challengeName) {
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    db.collection("sfide").doc(user.uid).get()
+                        .then(docSnapshot => {
+                            if (docSnapshot.exists) {
+                                const challengeData = docSnapshot.data().workouts || [];
+                                console.log("Lista sfide trovate:", challengeData);
+
+                                // Cerca la sfida basata sul nome
+                                const selectedChallenge = challengeData.find(challenge => challenge.workoutName === challengeName);
+
+                                if (selectedChallenge) {
+                                    document.getElementById("sessionName").textContent = selectedChallenge.workoutName || "Sfida senza nome";
+
+                                    // Popola gli esercizi
+                                    const exercisesContainer = document.getElementById("exercisesContainer");
+                                    exercisesContainer.innerHTML = "";
+
+                                    selectedChallenge.exercises.forEach(exercise => {
+                                        const exerciseItem = document.createElement("div");
+                                        exerciseItem.className = "exercise-item";
+                                        exerciseItem.innerHTML = `
+                                    <h3 class="exercise-title">${exercise.exercise}</h3>
+                                    <p>Obiettivo: ${exercise.series}x${exercise.repetitions} - Recupero: ${exercise.recoveryTime}</p>
+                                    <div class="exercise-details" style="display: none;"></div>
+                                `;
+
+                                        // Aggiungi l'evento click per espandere/collassare i dettagli
+                                        const exerciseTitle = exerciseItem.querySelector(".exercise-title");
+                                        exerciseTitle.addEventListener("click", () => {
+                                            const detailsContainer = exerciseItem.querySelector(".exercise-details");
+                                            detailsContainer.style.display = detailsContainer.style.display === "block" ? "none" : "block";
+                                            if (detailsContainer.style.display === "block") {
+                                                populateExerciseDetails(detailsContainer, exercise.series, exercise.repetitions, exercise.recoveryTime);
                                             }
-                                        }, 1000);
-                                    }
+                                        });
 
+                                        exercisesContainer.appendChild(exerciseItem);
+                                    });
                                 } else {
-                                    console.log("Nessun workout trovato con i criteri specificati.");
-                                    alert("Sessione non trovata.");
+                                    showNotification("Sfida non trovata.", "red");
                                 }
                             } else {
-                                console.log("Documento utente non trovato.");
-                                alert("Nessun dato trovato per questo utente.");
+                                showNotification("Nessun dato trovato per questo utente.", "red");
                             }
                         }).catch(error => {
-                            console.error("Errore nel caricamento della sessione:", error);
+                            console.error("Errore nel caricamento della sfida:", error);
                         });
                 } else {
-                    alert("Devi essere loggato per visualizzare i dettagli della sessione.");
+                    showNotification("Devi essere loggato per visualizzare i dettagli della sfida.", "red");
                 }
             });
         }
-        const { workoutName, date } = getUrlParams();
-        if (workoutName && date) {
-            loadSessionDetails(workoutName, date);
+        const { workoutName, date, page } = getUrlParams();
+        if (page === "sessions" && workoutName && date) {
+            loadSessionDetails_sessions(workoutName, date);
+        } else if (page === "sfide") {
+            loadSessionDetails_sfide(workoutName);
         }
 
         document.getElementById('logoutBtn').addEventListener('click', async function () {
             try {
                 await auth.signOut();
-                alert("Logout effettuato con successo!");
+                showNotification("Logout effettuato con successo!", "green");
                 window.location.href = "../../index.html";
             } catch (error) {
                 console.error("Errore durante il logout:", error);
-                alert("Si è verificato un errore durante il logout.");
+                showNotification("Si è verificato un errore durante il logout.", "red");
             }
         });
 
@@ -266,16 +330,41 @@
         async function logout() {
             try {
                 await auth.signOut();
-                alert("Logout effettuato con successo!");
+                showNotification("Logout effettuato con successo!", "green");
                 window.location.href = "../../index.html";
             } catch (error) {
                 console.error("Errore durante il logout:", error);
-                alert("Si è verificato un errore durante il logout.");
+                showNotification("Si è verificato un errore durante il logout.", "red");
             }
         }
 
         document.getElementById('logoutBtn').addEventListener('click', logout);
 
+        function showNotification(message, backgroundColor) {
+            // Crea l'elemento della notifica
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerText = message;
+
+            // Applica i colori personalizzati
+            notification.style.backgroundColor = backgroundColor;
+
+            // Aggiungi la notifica al body
+            document.body.appendChild(notification);
+
+            // Usa un timeout per aggiungere la classe 'show' per la transizione di visibilità e opacità
+            setTimeout(() => {
+                notification.classList.add('show'); // Aggiungi la classe 'show'
+            }, 10); // Piccolo timeout per assicurarsi che la classe venga applicata dopo essere aggiunta al DOM
+
+            // Fai svanire la notifica dopo 3 secondi
+            setTimeout(() => {
+                notification.classList.remove('show'); // Rimuovi la classe 'show'
+                setTimeout(() => {
+                    document.body.removeChild(notification); // Rimuovila dal DOM
+                }, 500); // Attendi la transizione di fade-out
+            }, 3000); // Notifica visibile per 3 secondi
+        }
     </script>
 </body>
 

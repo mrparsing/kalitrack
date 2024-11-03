@@ -127,7 +127,7 @@
                         .then((doc) => {
                             if (doc.exists) {
                                 const allSessions = doc.data().workouts;
-                                const futureSessions = allSessions.filter(session => session.date > today);
+                                const futureSessions = allSessions.filter(session => session.date >= today);
 
                                 const futureSessionsEl = document.getElementById("futureSessions");
 
@@ -135,16 +135,17 @@
                                     futureSessions.forEach((session, index) => {
                                         const sessionEl = document.createElement("div");
                                         sessionEl.className = "session-item";
+                                        sessionEl.setAttribute('data-workout', session.workoutName); // Aggiungi attributo personalizzato
                                         sessionEl.innerHTML = `
-                                            <h3>${session.workoutName} - ${session.date}</h3>
-                                            <ul>${session.exercises.map(ex => `
-                                                <li>${ex.exercise} - ${ex.series} serie - Recupero: ${ex.recovery}s</li>
-                                            `).join('')}</ul>
-                                            <button class="delete-btn">Elimina</button>
-                                        `;
+    <h3>${session.workoutName} - ${session.date}</h3>
+    <ul>${session.exercises.map(ex => `
+        <li>${ex.exercise} - ${ex.series} serie - Recupero: ${ex.recovery}s</li>
+    `).join('')}</ul>
+    <button class="delete-btn">Elimina</button>
+`;
                                         sessionEl.onclick = function () {
                                             // Reindirizza alla pagina di dettagli della sessione
-                                            window.location.href = `../workout/workout.html?workout_name=${session.workoutName}&date=${session.date}`;
+                                            window.location.href = `../workout/workout.html?workout_name=${session.workoutName}&date=${session.date}&page=sessions`;
                                         };
                                         // Gestore del click per il pulsante "Elimina"
                                         const deleteBtn = sessionEl.querySelector(".delete-btn");
@@ -164,7 +165,7 @@
                             futureSessionsEl.innerHTML = "<p>Errore nel caricamento delle sessioni.</p>";
                         });
                 } else {
-                    alert("Devi essere loggato per vedere le sessioni future.");
+                    showNotification("Devi essere loggato per vedere le sessioni future.", "red");
                 }
                 hideLoader()
             });
@@ -177,43 +178,69 @@
                         .then(doc => {
                             if (doc.exists) {
                                 const sessions = doc.data().workouts;
-                                const today = new Date().toISOString().split('T')[0];
 
-                                // Filtra solo le sessioni passate
-                                const pastSessions = sessions.filter(session => session.date < today);
-
-                                // Trova la sessione da eliminare basata sul workoutName
+                                // Trova l'indice della sessione da eliminare
                                 const correctIndex = sessions.findIndex(session =>
                                     session.workoutName === workoutName
                                 );
 
                                 if (correctIndex !== -1) {
-                                    // Rimuovi la sessione all'indice corretto
+                                    // Rimuovi la sessione dal database
                                     sessions.splice(correctIndex, 1);
-
-                                    // Aggiorna il database
                                     db.collection("sessions").doc(user.uid).update({
                                         workouts: sessions
                                     }).then(() => {
-                                        alert("Sessione eliminata con successo!");
-                                        window.location.reload(); // Ricarica la pagina per aggiornare la lista
+                                        // Rimuovi l'elemento dal DOM
+                                        const futureSessionsEl = document.getElementById("futureSessions");
+                                        const sessionItem = futureSessionsEl.querySelector(`[data-workout="${workoutName}"]`);
+                                        if (sessionItem) {
+                                            futureSessionsEl.removeChild(sessionItem);
+                                        }
+                                        showNotification("Sessione eliminata con successo!", "green"); // Call the notification here
                                     }).catch(error => {
                                         console.error("Errore nell'eliminazione della sessione:", error);
-                                        alert("Errore durante l'eliminazione della sessione.");
+                                        showNotification("Errore durante l'eliminazione della sessione.", "red");
                                     });
                                 } else {
                                     console.error("Sessione non trovata. Impossibile eliminare.");
-                                    alert("Errore: sessione non trovata.");
+                                    showNotification("Errore: sessione non trovata.", "red");
                                 }
                             }
                         }).catch(error => {
                             console.error("Errore nel recupero delle sessioni:", error);
                         });
                 } else {
-                    alert("Devi essere loggato per eliminare una sessione.");
+                    showNotification("Devi essere loggato per eliminare una sessione.", "red");
                 }
             });
         }
+
+        function showNotification(message, backgroundColor) {
+            // Crea l'elemento della notifica
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerText = message;
+
+            // Applica i colori personalizzati
+            notification.style.backgroundColor = backgroundColor;
+
+            // Aggiungi la notifica al body
+            document.body.appendChild(notification);
+
+            // Usa un timeout per aggiungere la classe 'show' per la transizione di visibilità e opacità
+            setTimeout(() => {
+                notification.classList.add('show'); // Aggiungi la classe 'show'
+            }, 10); // Piccolo timeout per assicurarsi che la classe venga applicata dopo essere aggiunta al DOM
+
+            // Fai svanire la notifica dopo 3 secondi
+            setTimeout(() => {
+                notification.classList.remove('show'); // Rimuovi la classe 'show'
+                setTimeout(() => {
+                    document.body.removeChild(notification); // Rimuovila dal DOM
+                }, 500); // Attendi la transizione di fade-out
+            }, 3000); // Notifica visibile per 3 secondi
+        }
+
 
         // Funzione per mostrare/nascondere la sidebar
         function toggleSidebar() {
@@ -231,16 +258,15 @@
         async function logout() {
             try {
                 await auth.signOut();
-                alert("Logout effettuato con successo!");
+                showNotification("Logout effettuato con successo!", "green");
                 window.location.href = "../../index.html";
             } catch (error) {
                 console.error("Errore durante il logout:", error);
-                alert("Si è verificato un errore durante il logout.");
+                showNotification("Si è verificato un errore durante il logout.", "red");
             }
         }
 
         document.getElementById('logoutBtn').addEventListener('click', logout);
-
     </script>
 </body>
 

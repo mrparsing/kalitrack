@@ -346,3 +346,25 @@ header {
         transform: rotate(360deg);
     }
 }
+
+/* Add this CSS to style_sessioni_successive.css */
+.notification {
+    position: fixed;
+    top: 20px; /* Distance from the top */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    padding: 15px 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    opacity: 0; /* Start invisible */
+    transition: opacity 0.5s ease; /* Transition effect for fading */
+    visibility: hidden; /* Initially hidden */
+}
+
+.notification.show {
+    opacity: 1; /* Visible */
+    visibility: visible; /* Set to visible for interaction */
+}
