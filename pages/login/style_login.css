@@ -97,17 +97,20 @@ h2 {
 }
 
 /* Link di registrazione */
-.signup-link, .password-recovery {
+.signup-link,
+.password-recovery {
     margin-top: 15px;
     font-size: 14px;
 }
 
-.signup-link a, .password-recovery a {
+.signup-link a,
+.password-recovery a {
     color: #ff5733;
     text-decoration: none;
 }
 
-.signup-link a:hover, .password-recovery a:hover {
+.signup-link a:hover,
+.password-recovery a:hover {
     color: #e14a2a;
 }
 
@@ -126,4 +129,27 @@ h2 {
 .google-btn:hover {
     background-color: #c13528;
     /* Darker Red on hover */
+}
+
+.loader {
+    display: none;
+    border: 4px solid #f3f3f3;
+    /* Colore di sfondo */
+    border-top: 4px solid #444;
+    /* Colore della rotellina */
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+    margin: 10px auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }

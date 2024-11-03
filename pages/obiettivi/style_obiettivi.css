@@ -85,4 +85,28 @@
 
 button {
     margin-top: 10px;
+    padding: 8px;
+    background-color: #ff5733;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.edit-section input[type="number"],
+.edit-section input[type="text"] {
+    padding: 8px;
+    margin-top: 8px;
+    color: white;
+    background-color: #444;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#button-elimina {
+    background-color: red;
+}
+
+#button-modifica {
+    background-color: #218838;
 }

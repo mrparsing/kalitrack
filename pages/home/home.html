@@ -105,16 +105,19 @@
             <section class="workout-of-the-day">
                 <h2 style="color: #ff5733;">Allenamento del Giorno</h2>
                 <div id="workout-of-the-day" class="workout-list" style="margin-top: 15px;"></div>
+                <div class="loader" id="loader"></div>
             </section>
 
             <!-- Calendario (Top Right) -->
             <section class="calendar">
                 <h2 style="color: #ff5733;">Calendario</h2>
+                <div class="loader" id="loader"></div>
                 <div id="calendar"></div>
             </section>
 
             <!-- Obiettivi e Progressi (Bottom Left) -->
             <section class="goals-and-progress">
+                <div class="loader" id="loader"></div>
                 <a href="../obiettivi/obiettivi.html" style="text-decoration: none; color: inherit;">
                     <h2 style="color: #ff5733;">Obiettivi e Progressi</h2>
                     <p>Obiettivi attuali:</p>
@@ -239,7 +242,7 @@
             // Inizializzazione delle variabili Firebase
             const db = firebase.firestore();
             const auth = firebase.auth();
-
+            showLoader();
             // Funzione per aggiornare la sezione "Obiettivi e Progressi"
             function updateGoalsSection(goals) {
                 const goalsContainer = document.querySelector('.goals-and-progress ul');
@@ -259,31 +262,40 @@
                 } else {
                     goalsContainer.innerHTML = '<p>Non hai obiettivi impostati.</p>';
                 }
+                hideLoader();
             }
 
             // Controlla lo stato di autenticazione dell'utente
             auth.onAuthStateChanged(user => {
                 if (user) {
-                    // Ottieni gli obiettivi dal database Firestore
+                    console.log("MOSTRA ROTELLINA");
+                    showLoader(); // Mostra la rotellina prima di iniziare il recupero dei dati
+                    console.log("HO MOSTRATO LA ROTELLINA");
                     db.collection("obiettivi").doc(user.uid).get()
                         .then(doc => {
                             if (doc.exists) {
-                                const goals = doc.data().obiettivi || []; // Ottieni gli obiettivi o un array vuoto
-                                updateGoalsSection(goals); // Aggiorna la sezione "Obiettivi e Progressi"
+                                const goals = doc.data().obiettivi || [];
+                                updateGoalsSection(goals);
                             } else {
                                 console.log("Nessun obiettivo trovato per l'utente.");
-                                updateGoalsSection([]); // Mostra un messaggio se non ci sono obiettivi
+                                updateGoalsSection([]);
                             }
                         })
                         .catch(error => {
                             console.error("Errore nel recupero degli obiettivi:", error);
-                            updateGoalsSection([]); // Mostra un messaggio se c'è un errore
+                            updateGoalsSection([]);
+                        })
+                        .finally(() => {
+                            hideLoader(); // Nascondi la rotellina alla fine
                         });
                 }
             });
         });
 
         document.addEventListener("DOMContentLoaded", function () {
+            // Mostra la rotellina di caricamento
+            showLoader();
+
             const div_workout = document.getElementsByClassName('workout-of-the-day')
             div_workout.onclick = function () {
                 // Reindirizza alla pagina di dettagli della sessione
@@ -324,6 +336,7 @@
                         }
                         )
                 }
+                hideLoader()
             })
         });
 
@@ -362,6 +375,9 @@
         document.getElementById('logoutBtn').addEventListener('click', logout);
 
         document.addEventListener("DOMContentLoaded", function () {
+            // Mostra la rotellina di caricamento
+            showLoader("calendario");
+
             const calendarEl = document.getElementById('calendar');
             const calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
@@ -413,8 +429,20 @@
                             console.error("Errore nel recupero delle sessioni:", error);
                         });
                 }
+                hideLoader();
             });
         });
+
+        function showLoader(ciao) {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'block';
+            console.log(ciao);
+        }
+
+        function hideLoader() {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'none';
+        }
     </script>
 </body>
 

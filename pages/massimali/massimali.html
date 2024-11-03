@@ -34,7 +34,7 @@
                 <span class="icon-container"><i class="fas fa-history"></i></span>
                 <span class="text">Storico Sessioni</span>
             </a>
-            <a href="aggiungi_sessione.html" class="sidebar-btn">
+            <a href="../aggiungi_sessione/aggiungi_sessione.html" class="sidebar-btn">
                 <span class="icon-container"><i class="fas fa-plus"></i></span>
                 <span class="text">Aggiungi sessioni</span>
             </a>
@@ -76,6 +76,7 @@
                 <!-- Destra: Lista dei massimali -->
                 <div class="max-list-container">
                     <h2>Massimali Registrati</h2>
+                    <div class="loader" id="loader"></div>
                     <div id="maxList" class="max-list"></div>
                 </div>
             </div>
@@ -91,6 +92,16 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
+        function showLoader() {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'block';
+        }
+
+        function hideLoader() {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'none';
+        }
+
         // Configurazione di Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyB2qNYCMQMjm6pAqTEWvP-1FWfPfKaQCi8",
@@ -163,6 +174,7 @@
 
         // Funzione per caricare i massimali dal DB
         function loadMax() {
+            showLoader()
             auth.onAuthStateChanged(user => {
                 if (user) {
                     const maxRef = db.collection("massimali").doc(user.uid);
@@ -183,14 +195,21 @@
                                     const maxItem = document.createElement("div");
                                     maxItem.className = "max-item";
                                     maxItem.innerHTML = `
+                                    <div class="button-massimali">
     <div class="text">
         <strong>${exercise}</strong>: 
-        <input type="number" value="${value}" id="max-${exercise}" style="width: 80px;" /> kg - 
-        <input type="date" value="${date}" id="date-${exercise}" />
+        <input type="number" value="${value}" id="max-${exercise}" style="width: 80px; background-color: #444; color: white; border-radius: 5px; padding: 5px;" /> - 
+        <input type="date" value="${date}" id="date-${exercise}" style="background-color: #444; color: white; border-radius: 5px; padding: 5px;" />
     </div>
-    <button onclick="updateMax('${exercise}')">Aggiungi</button>
-    <button onclick="deleteMax('${exercise}')">Elimina</button>
-    <button onclick="toggleProgress('${exercise}')">Visualizza progresso</button>
+    <div class="button-modifica">
+        <button class="edit-btn" onclick="updateMax('${exercise}')" style="padding: 10px;">Modifica</button>
+        <button class="delete-btn" onclick="deleteMax('${exercise}')">Elimina</button>
+        <button class="progress-btn" onclick="toggleProgress('${exercise}')" style="padding: 10px; margin: 5px;">Visualizza progresso</button>
+    </div>
+</div>
+<div id="progress-${exercise}" class="progress-section" style="display:none;">
+    <canvas id="chart-${exercise}" width="400" height="200"></canvas>
+</div>
 `;
                                     maxListEl.appendChild(maxItem);
                                 }
@@ -204,51 +223,52 @@
                 } else {
                     alert("Devi essere loggato per visualizzare i massimali.");
                 }
+                hideLoader();
             });
         }
 
         // Funzione per aggiornare un massimale
         function updateMax(exercise) {
-    const newValue = parseFloat(document.getElementById(`max-${exercise}`).value);
-    const newDate = document.getElementById(`date-${exercise}`).value; // Nuova data
+            const newValue = parseFloat(document.getElementById(`max-${exercise}`).value);
+            const newDate = document.getElementById(`date-${exercise}`).value; // Nuova data
 
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            const maxRef = db.collection("massimali").doc(user.uid);
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    const maxRef = db.collection("massimali").doc(user.uid);
 
-            // Recupera l'array esistente
-            maxRef.get().then((doc) => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    const records = data[exercise] || [];
+                    // Recupera l'array esistente
+                    maxRef.get().then((doc) => {
+                        if (doc.exists) {
+                            const data = doc.data();
+                            const records = data[exercise] || [];
 
-                    // Trova l'indice dell'elemento da aggiornare o lo aggiunge come nuovo
-                    const existingIndex = records.findIndex(record => record.date === newDate);
+                            // Trova l'indice dell'elemento da aggiornare o lo aggiunge come nuovo
+                            const existingIndex = records.findIndex(record => record.date === newDate);
 
-                    if (existingIndex > -1) {
-                        // Se la data esiste già, aggiorna il valore
-                        records[existingIndex].value = newValue;
-                    } else {
-                        // Altrimenti, aggiungi un nuovo oggetto
-                        records.push({ value: newValue, date: newDate });
-                    }
+                            if (existingIndex > -1) {
+                                // Se la data esiste già, aggiorna il valore
+                                records[existingIndex].value = newValue;
+                            } else {
+                                // Altrimenti, aggiungi un nuovo oggetto
+                                records.push({ value: newValue, date: newDate });
+                            }
 
-                    // Salva di nuovo l'array aggiornato
-                    maxRef.update({
-                        [exercise]: records
-                    }).then(() => {
-                        alert("Massimale aggiornato!");
-                        loadMax(); // Ricarica la lista
+                            // Salva di nuovo l'array aggiornato
+                            maxRef.update({
+                                [exercise]: records
+                            }).then(() => {
+                                alert("Massimale aggiornato!");
+                                loadMax(); // Ricarica la lista
+                            }).catch(error => {
+                                console.error("Errore nell'aggiornamento del massimale:", error);
+                            });
+                        }
                     }).catch(error => {
-                        console.error("Errore nell'aggiornamento del massimale:", error);
+                        console.error("Errore nel recupero del massimale:", error);
                     });
                 }
-            }).catch(error => {
-                console.error("Errore nel recupero del massimale:", error);
             });
         }
-    });
-}
         // Funzione per eliminare un massimale
         function deleteMax(exercise) {
             auth.onAuthStateChanged(user => {

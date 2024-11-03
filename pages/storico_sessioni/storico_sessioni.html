@@ -83,6 +83,7 @@
         <!-- Contenuto principale: Storico Sessioni -->
         <main class="main-content">
             <h2>Sessioni Passate</h2>
+            <div class="loader" id="loader"></div>
             <div id="sessionHistory" class="session-list"></div>
         </main>
     </div>
@@ -90,6 +91,16 @@
     <div class="overlay" id="overlay"></div>
 
     <script>
+        function showLoader() {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'block';
+        }
+
+        function hideLoader() {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'none';
+        }
+
         // Configurazione di Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyB2qNYCMQMjm6pAqTEWvP-1FWfPfKaQCi8",
@@ -108,6 +119,8 @@
 
         // Funzione per visualizzare le sessioni precedenti alla data odierna
         document.addEventListener("DOMContentLoaded", function () {
+            showLoader();
+            const sessionHistoryEl = document.getElementById("sessionHistory"); // Definisci `sessionHistoryEl` all'inizio
             auth.onAuthStateChanged(user => {
                 if (user) {
                     const today = new Date().toISOString().split('T')[0];
@@ -115,24 +128,34 @@
                         .then((doc) => {
                             if (doc.exists) {
                                 const allSessions = doc.data().workouts;
-                                const pastSessions = allSessions.filter(session => session.date < today);
-
-                                const sessionHistoryEl = document.getElementById("sessionHistory");
+                                const pastSessions = allSessions.filter(session => session.date < today); // Definisci `pastSessions` qui
 
                                 if (pastSessions.length > 0) {
-                                    pastSessions.forEach(session => {
+                                    pastSessions.forEach((session, index) => {
                                         const sessionEl = document.createElement("div");
                                         sessionEl.className = "session-item";
                                         sessionEl.innerHTML = `
-                                            <h3>${session.workoutName} - ${session.date}</h3>
-                                            <ul>${session.exercises.map(ex => `
-                                                <li>${ex.exercise} - ${ex.series} serie - Recupero: ${ex.recovery}s</li>
-                                            `).join('')}</ul>
-                                        `;
+                                    <h3>${session.workoutName} - ${session.date}</h3>
+                                    <ul>
+                                        ${session.exercises.map(ex => `
+                                            <li>${ex.exercise} - ${ex.series} serie - Recupero: ${ex.recovery}s</li>
+                                        `).join('')}
+                                    </ul>
+                                    <button class="delete-btn">Elimina</button>
+                                `;
+
+                                        // Gestore del click per l'intero elemento della sessione
                                         sessionEl.onclick = function () {
-                                            // Reindirizza alla pagina di dettagli della sessione
                                             window.location.href = `../workout/workout.html?workout_name=${session.workoutName}&date=${session.date}`;
                                         };
+
+                                        // Gestore del click per il pulsante "Elimina"
+                                        const deleteBtn = sessionEl.querySelector(".delete-btn");
+                                        deleteBtn.onclick = function (event) {
+                                            event.stopPropagation(); // Ferma la propagazione dell'evento click
+                                            deleteSession(session.workoutName); // Passa il workoutName alla funzione
+                                        };
+
                                         sessionHistoryEl.appendChild(sessionEl);
                                     });
                                 } else {
@@ -147,9 +170,54 @@
                 } else {
                     alert("Devi essere loggato per vedere lo storico delle sessioni.");
                 }
+                hideLoader();
             });
         });
 
+        function deleteSession(workoutName) {
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    db.collection("sessions").doc(user.uid).get()
+                        .then(doc => {
+                            if (doc.exists) {
+                                const sessions = doc.data().workouts;
+                                const today = new Date().toISOString().split('T')[0];
+
+                                // Filtra solo le sessioni passate
+                                const pastSessions = sessions.filter(session => session.date < today);
+
+                                // Trova la sessione da eliminare basata sul workoutName
+                                const correctIndex = sessions.findIndex(session =>
+                                    session.workoutName === workoutName
+                                );
+
+                                if (correctIndex !== -1) {
+                                    // Rimuovi la sessione all'indice corretto
+                                    sessions.splice(correctIndex, 1);
+
+                                    // Aggiorna il database
+                                    db.collection("sessions").doc(user.uid).update({
+                                        workouts: sessions
+                                    }).then(() => {
+                                        alert("Sessione eliminata con successo!");
+                                        window.location.reload(); // Ricarica la pagina per aggiornare la lista
+                                    }).catch(error => {
+                                        console.error("Errore nell'eliminazione della sessione:", error);
+                                        alert("Errore durante l'eliminazione della sessione.");
+                                    });
+                                } else {
+                                    console.error("Sessione non trovata. Impossibile eliminare.");
+                                    alert("Errore: sessione non trovata.");
+                                }
+                            }
+                        }).catch(error => {
+                            console.error("Errore nel recupero delle sessioni:", error);
+                        });
+                } else {
+                    alert("Devi essere loggato per eliminare una sessione.");
+                }
+            });
+        }
         // Funzione per mostrare/nascondere la sidebar
         function toggleSidebar() {
             const sidebar = document.querySelector('.sidebar');

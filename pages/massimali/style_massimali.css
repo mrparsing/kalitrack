@@ -139,4 +139,15 @@
 
 .progress-section {
     margin-top: 15px;
+    background-color: #e6e6e6;
+    border-radius: 5px;
+}
+
+.button-massimali {
+    display: flex; /* Layout flessibile */
+    flex-direction: column; /* Disposizione verticale per i pulsanti */
+    align-items: center; /* Allinea i pulsanti al centro */
+    width: 100%; /* Larghezza al 100% */
+    margin-top: 15px; /* Margine superiore per separare dagli input */
+    gap: 10px; /* Spazio tra i pulsanti */
 }

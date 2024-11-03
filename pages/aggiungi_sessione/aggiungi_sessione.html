@@ -34,7 +34,6 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Inizializza il calendario
             const calendarEl = document.getElementById('calendar');
             const calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
@@ -43,25 +42,18 @@
             });
             calendar.render();
 
-            // Configura flatpickr
-            flatpickr("#date", {
-                dateFormat: "Y-m-d",
-                altInput: true,
-                altFormat: "F j, Y",
-                defaultDate: new Date()
-            });
-
-            // Gestione degli esercizi
+            flatpickr("#date", { dateFormat: "Y-m-d" });
             const exerciseListEl = document.getElementById('exerciseList');
             const exercises = [];
 
+            // Aggiungi esercizio alla lista
             document.getElementById('addExerciseBtn').addEventListener('click', function () {
                 const exercise = document.getElementById('exercise').value;
                 const series = document.getElementById('series').value;
                 const repetitions = document.getElementById('repetitions').value;
                 const recovery = document.getElementById('recovery').value;
 
-                if (exercise && series && repetitions && recovery) {
+                if (exercise && series && recovery && repetitions) {
                     const exerciseItem = { exercise, series, repetitions, recovery };
                     exercises.push(exerciseItem);
 
@@ -69,25 +61,29 @@
                     const itemEl = document.createElement('div');
                     itemEl.className = 'session-item';
 
+                    // Crea un contenitore per l'esercizio e il pulsante
                     const itemContent = document.createElement('div');
                     itemContent.className = 'item-content';
                     itemContent.innerText = `${exercise} - ${series}x${repetitions} - Recupero: ${recovery}s`;
 
+                    // Crea il pulsante di rimozione
                     const removeBtn = document.createElement('button');
                     removeBtn.innerText = 'Rimuovi';
                     removeBtn.className = 'remove-exercise-btn';
+
+                    // Aggiungi evento al pulsante di rimozione
                     removeBtn.addEventListener('click', function () {
                         const index = exercises.indexOf(exerciseItem);
                         if (index > -1) {
-                            exercises.splice(index, 1);
-                            itemEl.remove();
+                            exercises.splice(index, 1); // Rimuove l'esercizio dall'array
+                            itemEl.remove(); // Rimuove l'elemento dalla lista visiva
                         }
                     });
 
+                    // Aggiungi contenuto e pulsante all'elemento della lista
                     itemEl.appendChild(itemContent);
                     itemEl.appendChild(removeBtn);
                     exerciseListEl.appendChild(itemEl);
-
                     // Reset input
                     document.getElementById('exercise').value = '';
                     document.getElementById('series').value = '';
@@ -95,82 +91,62 @@
                     document.getElementById('recovery').value = '';
                 }
             });
-
-            document.getElementById('saveSessionBtn').addEventListener('click', function () {
+            // Aggiungi la sessione a Firestore e al calendario
+            document.getElementById('saveSessionBtn').addEventListener('click', async function () {
                 const workoutName = document.getElementById('workoutName').value;
                 const date = document.getElementById('date').value;
 
                 if (workoutName && date && exercises.length > 0) {
-                    const description = exercises.map(ex => `${ex.exercise} (${ex.series}, recupero ${ex.recovery}s)`).join(', ');
+                    const sessionData = {
+                        workoutName,
+                        date,
+                        exercises
+                    };
 
-                    // Aggiungi evento al calendario
-                    calendar.addEvent({
-                        title: workoutName,
-                        start: date,
-                        description: description
-                    });
-
-                    // Salva la sessione su Firestore
                     auth.onAuthStateChanged(async (user) => {
                         if (user) {
                             const userRef = db.collection('sessions').doc(user.uid);
-                            const sessionData = { workoutName, date, exercises };
+
                             try {
-                                await userRef.set({ workouts: firebase.firestore.FieldValue.arrayUnion(sessionData) }, { merge: true });
+                                // Usa arrayUnion per aggiungere la nuova sessione all'array workouts
+                                await userRef.update({
+                                    workouts: firebase.firestore.FieldValue.arrayUnion(sessionData)
+                                });
+
+                                // Aggiunge la sessione al calendario
+                                const description = exercises.map(ex => `${ex.exercise} (${ex.series}, recupero ${ex.recovery}s)`).join(', ');
+                                calendar.addEvent({
+                                    title: workoutName,
+                                    start: date,
+                                    description: description
+                                });
+
+                                // Reset del form e della lista
+                                document.getElementById('sessionForm').reset();
+                                exerciseListEl.innerHTML = '';
+                                exercises.length = 0;
+
                                 alert("Sessione salvata con successo!");
                             } catch (error) {
-                                console.error("Errore durante il salvataggio della sessione:", error);
-                                alert("Errore durante il salvataggio della sessione.");
+                                // Se il campo 'workouts' non esiste ancora, usa `.set()` per crearlo
+                                if (error.code === 'not-found') {
+                                    await userRef.set({
+                                        workouts: [sessionData]
+                                    });
+                                    alert("Sessione salvata con successo!");
+                                } else {
+                                    console.error("Errore durante il salvataggio della sessione:", error);
+                                    alert("Errore durante il salvataggio della sessione.");
+                                }
                             }
                         } else {
                             alert("Devi essere loggato per salvare la sessione.");
                         }
                     });
-
-                    // Reset del form e della lista
-                    document.getElementById('sessionForm').reset();
-                    exerciseListEl.innerHTML = '';
-                    exercises.length = 0;
                 }
             });
-
-            // Sidebar toggle
-            function toggleSidebar() {
-                const sidebar = document.querySelector('.sidebar');
-                const overlay = document.getElementById('overlay');
-                const menuButton = document.getElementById('menuButton');
-
-                sidebar.classList.toggle('active');
-                overlay.classList.toggle('visible');
-
-                if (sidebar.classList.contains('active')) {
-                    menuButton.innerHTML = '<i class="fas fa-times"></i>';
-                } else {
-                    menuButton.innerHTML = '<i class="fas fa-bars"></i>';
-                }
-            }
-
-            document.getElementById('overlay').addEventListener('click', toggleSidebar);
-            document.getElementById('menuButton').addEventListener('click', toggleSidebar);
-
-            // Logout
-            async function logout() {
-                try {
-                    await auth.signOut();
-                    alert("Logout effettuato con successo!");
-                    window.location.href = "../../index.html";
-                } catch (error) {
-                    console.error("Errore durante il logout:", error);
-                    alert("Si è verificato un errore durante il logout.");
-                }
-            }
-
-            document.querySelector('.sidebar-btn:last-child').addEventListener('click', logout);
         });
     </script>
-
-
-
 </head>
 
 <body>

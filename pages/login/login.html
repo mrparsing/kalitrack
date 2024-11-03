@@ -30,21 +30,31 @@
 
         // Funzione per gestire il login
         async function login(event) {
-            event.preventDefault(); // Prevenire il comportamento di invio predefinito del modulo
+            event.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
+            // Mostra la rotellina di caricamento
+            const loader = document.getElementById('loader');
+            loader.style.display = 'block';
+
             try {
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                // Accesso riuscito
                 const user = userCredential.user;
                 console.log("Accesso effettuato:", user);
-                // Reindirizza l'utente alla dashboard (o un'altra pagina)
-                window.location.href = '../home/home.html'; // Cambia URL se necessario
+
+                // Nascondi la rotellina di caricamento
+                loader.style.display = 'none';
+
+                // Reindirizza l'utente alla dashboard
+                window.location.href = '../home/home.html';
             } catch (error) {
-                const errorCode = error.code;
                 const errorMessage = error.message;
-                console.error("Errore durante l'accesso:", errorCode, errorMessage);
+                console.error("Errore durante l'accesso:", errorMessage);
+
+                // Nascondi la rotellina di caricamento in caso di errore
+                loader.style.display = 'none';
+
                 alert("Errore durante l'accesso: " + errorMessage);
             }
         }
@@ -88,6 +98,7 @@
             <input type="password" id="password" name="password" placeholder="Inserisci la tua password" required>
 
             <button type="submit" class="login-btn">Login</button>
+            <div class="loader" id="loader"></div>
         </form>
         <p class="signup-link">Non hai un account? <a href="../registrazione/registrazione.html">Registrati</a></p>
         <p class="password-recovery"><a href="../registrazione/registrazione.html">Recupera password</a></p>

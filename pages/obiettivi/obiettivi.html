@@ -71,6 +71,7 @@
 
             <div class="goal-list" id="goalList">
                 <h2>Obiettivi Aggiunti</h2>
+                <div class="loader" id="loader"></div>
                 <!-- Qui verranno aggiunti dinamicamente gli obiettivi -->
             </div>
 
@@ -90,6 +91,16 @@
     <div class="overlay" id="overlay"></div>
 
     <script>
+        function showLoader() {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'block';
+        }
+
+        function hideLoader() {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'none';
+        }
+
         const firebaseConfig = {
             apiKey: "AIzaSyB2qNYCMQMjm6pAqTEWvP-1FWfPfKaQCi8",
             authDomain: "kalitrack.firebaseapp.com",
@@ -173,6 +184,7 @@
 
         // Funzione per caricare gli obiettivi dal database
         async function loadGoals() {
+            showLoader();
             const user = auth.currentUser;
             if (user) {
                 const userRef = db.collection('obiettivi').doc(user.uid);
@@ -187,12 +199,13 @@
             } else {
                 console.log("Nessun utente loggato.");
             }
+            hideLoader();
         }
 
         // Funzione per visualizzare tutti gli obiettivi
         function displayGoals() {
             const goalList = document.getElementById('goalList');
-            goalList.innerHTML = ''; // Reset della lista
+            goalList.innerHTML = '';
 
             if (goals.length === 0) {
                 goalList.innerHTML = '<p>Nessun obiettivo disponibile.</p>';
@@ -206,20 +219,55 @@
                 const progressPercent = calculateProgress(goal.progress, goal.target);
 
                 goalItem.innerHTML = `
-            <strong>${goal.name}</strong>
-            <div class="progress-container">
-                <div class="progress">
-                    <div class="progress-bar" style="width: ${progressPercent};">
-                        ${Math.round(progressPercent.replace('%', ''))}%
+                    <div class="goal-header">
+                        <strong>${goal.name}</strong>
+                        <div class="progress-container">
+                            <div class="progress">
+                                <div class="progress-bar" style="width: ${progressPercent};">
+                                    ${Math.round(progressPercent.replace('%', ''))}%
+                                </div>
+                            </div>
+                        </div>
+                        <p>Progresso: ${goal.progress} / ${goal.target}</p>
+                        <button onclick="editGoal(${index})" id="button-modifica">Modifica</button>
+                        <button onclick="deleteGoal(${index})" id="button-elimina">Elimina</button>
                     </div>
-                </div>
-            </div>
-            <p>Progresso: ${goal.progress} / ${goal.target}</p>
-            <button onclick="editGoal(${index})">Modifica</button>
-        `;
+                    <div class="edit-section" id="editSection-${index}" style="display: none;">
+                        <input type="text" id="editGoalName-${index}" value="${goal.name}">
+                        <input type="number" id="editGoalTarget-${index}" value="${goal.target}" min="1">
+                        <input type="number" id="editGoalProgress-${index}" value="${goal.progress}" min="0">
+                        <button onclick="updateGoal(${index})">Aggiorna</button>
+                        <button onclick="cancelEdit(${index})">Annulla</button>
+                    </div>
+                `;
                 goalList.appendChild(goalItem);
             });
         }
+
+
+        async function deleteGoal(index) {
+            if (confirm("Sei sicuro di voler eliminare questo obiettivo?")) {
+                const user = auth.currentUser;
+                if (user) {
+                    goals.splice(index, 1); // Rimuovi l'obiettivo dall'array locale
+                    const userRef = db.collection('obiettivi').doc(user.uid);
+
+                    try {
+                        await userRef.update({
+                            obiettivi: goals
+                        });
+                        displayGoals(); // Rendi visibile la lista aggiornata
+                        alert("Obiettivo eliminato con successo!");
+                    } catch (error) {
+                        console.error("Errore durante l'eliminazione dell'obiettivo:", error);
+                        alert("Errore durante l'eliminazione dell'obiettivo.");
+                    }
+                } else {
+                    alert("Devi essere loggato per eliminare l'obiettivo.");
+                }
+            }
+        }
+
 
         // Funzione per calcolare la percentuale di progresso
         function calculateProgress(current, target) {
@@ -246,37 +294,20 @@
         });
 
         function editGoal(index) {
-            const goal = goals[index];
-
-            document.getElementById('editGoalNameInput').value = goal.name;
-            document.getElementById('editGoalInput').value = goal.target;
-            document.getElementById('editProgressInput').value = goal.progress;
-
-            const modal = document.getElementById('editGoalModal');
-            const editButton = document.querySelector(`.goal-item:nth-child(${index + 1}) button`);
-
-            // Ottieni la posizione del bottone
-            const buttonRect = editButton.getBoundingClientRect();
-            const modalTop = window.scrollY + buttonRect.bottom + 10; // 10px di spazio tra bottone e popup
-            const modalLeft = window.scrollX + buttonRect.left;
-
-            // Posiziona il popup sotto il bottone
-            modal.style.top = `${modalTop}px`;
-            modal.style.left = `${modalLeft}px`;
-
-            modal.style.display = 'block';
-
-            document.getElementById('updateGoalBtn').onclick = function () {
-                updateGoal(index);
-            };
-            document.getElementById('cancelEditBtn').onclick = function () {
-                modal.style.display = 'none';
-            };
+            const editSection = document.getElementById(`editSection-${index}`);
+            editSection.style.display = editSection.style.display === 'none' ? 'block' : 'none';
         }
+
+        function cancelEdit(index) {
+            const editSection = document.getElementById(`editSection-${index}`);
+            editSection.style.display = 'none';
+        }
+
+
         async function updateGoal(index) {
-            const updatedName = document.getElementById('editGoalNameInput').value;
-            const updatedTarget = parseInt(document.getElementById('editGoalInput').value);
-            const updatedProgress = parseInt(document.getElementById('editProgressInput').value);
+            const updatedName = document.getElementById(`editGoalName-${index}`).value;
+            const updatedTarget = parseInt(document.getElementById(`editGoalTarget-${index}`).value);
+            const updatedProgress = parseInt(document.getElementById(`editGoalProgress-${index}`).value);
 
             if (!updatedName || isNaN(updatedTarget) || isNaN(updatedProgress)) {
                 alert("Compila tutti i campi correttamente!");
@@ -296,7 +327,6 @@
                         obiettivi: goals
                     });
                     displayGoals();
-                    document.getElementById('editGoalModal').style.display = 'none';
                     alert("Obiettivo aggiornato con successo!");
                 } catch (error) {
                     console.error("Errore durante l'aggiornamento dell'obiettivo:", error);
@@ -306,6 +336,21 @@
                 alert("Devi essere loggato per aggiornare l'obiettivo.");
             }
         }
+
+        function calculateProgress(current, target) {
+            if (target <= 0) return '0%';
+            return Math.min((current / target) * 100, 100) + '%';
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    loadGoals();
+                } else {
+                    console.log("Utente non autenticato.");
+                }
+            });
+        });
     </script>
 </body>
 
