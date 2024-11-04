@@ -31,7 +31,7 @@
         const auth = getAuth();
 
         // Definizione della funzione per caricare il profilo utente
-        window.loadProfile = function(user) {
+        window.loadProfile = function (user) {
             if (!user) {
                 console.log("Utente non autenticato.");
                 return;
@@ -57,7 +57,7 @@
         }
 
         // Definizione della funzione per salvare il profilo utente
-        window.saveProfile = function() {
+        window.saveProfile = function () {
             const user = auth.currentUser;
             if (!user) {
                 console.log("Utente non autenticato.");
@@ -116,6 +116,20 @@
                 }, 500); // Attendi la transizione di fade-out
             }, 3000); // Notifica visibile per 3 secondi
         }
+
+        async function logout() {
+            try {
+                await auth.signOut();
+                showNotification("Logout effettuato con successo!", "green");
+                window.location.href = "../../index.html";
+            } catch (error) {
+                console.error("Errore durante il logout:", error);
+                showNotification("Si è verificato un errore durante il logout.", "red");
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
     </script>
 </head>
 
@@ -189,7 +203,7 @@
                 <span>Impostazioni</span>
             </button>
 
-            <button class="sidebar-btn">
+            <button class="sidebar-btn" id="logoutBtn">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Logout</span>
             </button>
@@ -201,10 +215,11 @@
                 <h2>Profilo Utente</h2>
                 <div id="profile-info">
                     <p><strong>Nome:</strong> <input type="text" id="name" placeholder="Caricamento..."></p>
-                    <p><strong>Email:</strong> <input type="email" id="email" placeholder="Caricamento..."></p>
+                    <p><strong>Email:</strong> <input type="email" id="email" placeholder="Caricamento..." disabled
+                            style="color: gray;"></p>
                     <p><strong>Età:</strong> <input type="number" id="age" placeholder="Caricamento..."></p>
                     <p><strong>Sesso:</strong>
-                        <select id="gender">
+                        <select id="gender" disabled style="color: gray;">
                             <option value="Maschio">Maschio</option>
                             <option value="Femmina">Femmina</option>
                             <option value="Altro">Altro</option>

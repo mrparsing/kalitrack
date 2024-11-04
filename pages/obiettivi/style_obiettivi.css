@@ -110,3 +110,65 @@ button {
 #button-modifica {
     background-color: #218838;
 }
+
+/* Stili per schermi con larghezza massima di 768px */
+@media (max-width: 768px) {
+    .goal-setting {
+        margin: 10px;
+        align-items: flex-start; /* Allinea gli elementi a sinistra */
+    }
+
+    .goal-setting input[type="text"],
+    .goal-setting input[type="number"] {
+        width: 100%; /* Occupano tutta la larghezza */
+        padding: 8px; /* Riduci leggermente il padding */
+        margin: 5px 0; /* Riduci il margine */
+    }
+
+    .goal-setting button {
+        width: 100%; /* Pulsante a tutta larghezza */
+        padding: 10px; /* Padding uniforme */
+        margin-top: 10px; /* Spazio sopra il pulsante */
+    }
+
+    .goal-list {
+        margin: 10px;
+        height: auto; /* Adatta l'altezza in base al contenuto */
+        max-height: 400px; /* Limita l'altezza per un layout compatto */
+        overflow-y: auto;
+    }
+
+    .goal-item {
+        padding: 8px; /* Riduci il padding */
+        margin: 5px 0; /* Riduci il margine */
+    }
+
+    .progress-container {
+        margin: 5px 0;
+        width: 100%;
+    }
+
+    .modal {
+        width: 90%; /* Modal più compatta */
+        padding: 15px; /* Riduci il padding */
+    }
+
+    .modal-content {
+        flex-direction: column;
+        gap: 10px; /* Spazio tra gli elementi */
+    }
+
+    /* Ridimensiona i bottoni e modifica il layout */
+    #button-elimina,
+    #button-modifica, input[type="text"], input[type="number"] {
+        width: 100%; /* Bottoni a tutta larghezza */
+        margin: 5px 0; /* Spazio uniforme tra i bottoni */
+        padding: 10px; /* Padding uniforme */
+    }
+
+    .button-modifica {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+}

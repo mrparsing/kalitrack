@@ -74,16 +74,19 @@
                 <div class="loader" id="loader"></div>
                 <!-- Qui verranno aggiunti dinamicamente gli obiettivi -->
             </div>
-
             <!-- Modulo di modifica (inizialmente nascosto) -->
             <div id="editGoalModal" class="modal">
                 <div class="modal-content">
+                    <div class="sidebar-divider"></div>
+
                     <h2>Modifica Obiettivo</h2>
                     <input type="text" id="editGoalNameInput" placeholder="Nome dell'obiettivo">
                     <input type="number" id="editGoalInput" placeholder="Obiettivo da raggiungere" min="1">
                     <input type="number" id="editProgressInput" placeholder="Progresso attuale" min="0">
-                    <button id="updateGoalBtn">Aggiorna Obiettivo</button>
-                    <button id="cancelEditBtn">Annulla</button>
+                    <div class="button-modifica">
+                        <button id="updateGoalBtn">Aggiorna Obiettivo</button>
+                        <button id="cancelEditBtn">Annulla</button>
+                    </div>
                 </div>
             </div>
         </main>
@@ -236,8 +239,10 @@
                         <input type="text" id="editGoalName-${index}" value="${goal.name}">
                         <input type="number" id="editGoalTarget-${index}" value="${goal.target}" min="1">
                         <input type="number" id="editGoalProgress-${index}" value="${goal.progress}" min="0">
+                        <div class="button-modifica">
                         <button onclick="updateGoal(${index})">Aggiorna</button>
                         <button onclick="cancelEdit(${index})">Annulla</button>
+                    </div>
                     </div>
                 `;
                 goalList.appendChild(goalItem);

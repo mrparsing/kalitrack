@@ -106,6 +106,36 @@
     .sidebar.active {
         left: 0;
     }
+
+    .exercise-detail-row {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-between; /* Mantiene il testo a sinistra e il pulsante a destra */
+    padding: 5px 0;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.9rem;
+    width: 100%;
+}
+
+    /* Stile per evidenziare il pulsante quando il timer è attivo */
+.play-btn.active {
+    background-color: #ff4b4b; /* Rosso acceso per evidenziare */
+    color: #fff; /* Testo bianco per il contrasto */
+    font-size: 30px;
+    width: 90%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 15px rgba(255, 75, 75, 0.6); /* Ombra per dare profondità */
+}
+
+/* Stile per evidenziare il testo del timer */
+.text-element.active {
+    color: #ff4b4b; /* Rosso per il timer attivo */
+    font-weight: bold; /* Testo in grassetto per enfatizzare */
+    font-size: 25px;
+
+}
 }
 
 /* Stile per i dettagli delle serie */
@@ -155,6 +185,7 @@
     padding: 5px 0;
     border-top: 1px solid var(--border-color);
     font-size: 0.9rem;
+    width: 100%;
 }
 
 /* Pulsante "Avvia Timer" stilizzato */
@@ -168,6 +199,8 @@
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .play-btn:hover {
@@ -180,17 +213,17 @@
     background-color: #ff4b4b; /* Rosso acceso per evidenziare */
     color: #fff; /* Testo bianco per il contrasto */
     font-size: 30px;
-    margin-right: 28px;
-    transform: scale(1.1); /* Espansione per enfatizzare */
+    margin-top: 10px;
+    margin-bottom: 10px;
     box-shadow: 0 4px 15px rgba(255, 75, 75, 0.6); /* Ombra per dare profondità */
 }
 
 /* Stile per evidenziare il testo del timer */
 .text-element.active {
-    padding: 25px;
     color: #ff4b4b; /* Rosso per il timer attivo */
     font-weight: bold; /* Testo in grassetto per enfatizzare */
     font-size: 25px;
+
 }
 
 .play-btn:disabled {
