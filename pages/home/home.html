@@ -268,9 +268,7 @@
             // Controlla lo stato di autenticazione dell'utente
             auth.onAuthStateChanged(user => {
                 if (user) {
-                    console.log("MOSTRA ROTELLINA");
                     showLoader(); // Mostra la rotellina prima di iniziare il recupero dei dati
-                    console.log("HO MOSTRATO LA ROTELLINA");
                     db.collection("obiettivi").doc(user.uid).get()
                         .then(doc => {
                             if (doc.exists) {
@@ -376,7 +374,7 @@
 
         document.addEventListener("DOMContentLoaded", function () {
             // Mostra la rotellina di caricamento
-            showLoader("calendario");
+            showLoader();
 
             const calendarEl = document.getElementById('calendar');
             const calendar = new FullCalendar.Calendar(calendarEl, {

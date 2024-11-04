@@ -128,8 +128,24 @@
             }
         }
 
-        document.getElementById('logoutBtn').addEventListener('click', logout);
+        window.toggleSidebar = function() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('overlay');
+            const menuButton = document.getElementById('menuButton');
 
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('visible');
+
+            if (sidebar.classList.contains('active')) {
+                menuButton.innerHTML = '<i class="fas fa-times"></i>';
+            } else {
+                menuButton.innerHTML = '<i class="fas fa-bars"></i>';
+            }
+        }
+
+        document.getElementById('overlay').addEventListener('click', () => {
+            toggleSidebar();
+        });
     </script>
 </head>
 

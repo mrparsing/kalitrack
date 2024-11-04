@@ -207,10 +207,11 @@
         <button class="delete-btn" onclick="deleteMax('${exercise}')">Elimina</button>
         <button class="progress-btn" onclick="toggleProgress('${exercise}')" style="padding: 10px; margin: 5px;">Visualizza progresso</button>
     </div>
-</div>
 <div id="progress-${exercise}" class="progress-section" style="display:none;">
-    <canvas id="chart-${exercise}" width="400" height="200"></canvas>
+    <canvas id="chart-${exercise}" width="300" height="200"></canvas>
 </div>
+</div>
+
 `;
                                     maxListEl.appendChild(maxItem);
                                 }

@@ -10,6 +10,11 @@
     flex-direction: column;
     align-items: center; /* Centra gli elementi orizzontalmente */
     width: 100%;
+    margin: 5px;
+}
+
+h2 {
+    margin-left: 10px;
 }
 
 /* Stile per il modulo di aggiunta massimale */
@@ -69,6 +74,8 @@
     align-items: center; /* Allinea verticalmente */
     flex-wrap: wrap; /* Permette al contenuto di andare a capo */
 }
+
+
 
 .max-item .text {
     flex-grow: 1; /* Permette al testo di occupare tutto lo spazio disponibile */
@@ -150,4 +157,8 @@
     width: 100%; /* Larghezza al 100% */
     margin-top: 15px; /* Margine superiore per separare dagli input */
     gap: 10px; /* Spazio tra i pulsanti */
+}
+
+.button-modifica {
+    display: flex;
 }
