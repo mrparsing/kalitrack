@@ -75,6 +75,11 @@
         max-height: 200px; /* Smaller max height on mobile */
     }
 
+    .sfide {
+        display: flex;
+        flex-direction: column;
+    }
+
     
 }
 
