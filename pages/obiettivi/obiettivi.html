@@ -11,6 +11,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="../../assets/js/utility_functions.js"></script>
 </head>
 
 <body>
@@ -52,9 +53,6 @@
                 <span class="icon-container"><i class="fas fa-user-circle"></i></span>
                 <span class="text">Profilo</span>
             </a>
-            <button class="sidebar-btn">
-                <i class="fas fa-cog"></i><span>Impostazioni</span>
-            </button>
             <button class="sidebar-btn" id="logoutBtn">
                 <i class="fas fa-sign-out-alt"></i><span>Logout</span>
             </button>
@@ -94,42 +92,9 @@
     <div class="overlay" id="overlay"></div>
 
     <script>
-        function showLoader() {
-            const loader = document.getElementById('loader');
-            loader.style.display = 'block';
-        }
-
-        function hideLoader() {
-            const loader = document.getElementById('loader');
-            loader.style.display = 'none';
-        }
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyB2qNYCMQMjm6pAqTEWvP-1FWfPfKaQCi8",
-            authDomain: "kalitrack.firebaseapp.com",
-            projectId: "kalitrack",
-            storageBucket: "kalitrack.appspot.com",
-            messagingSenderId: "253824979149",
-            appId: "1:253824979149:web:21f3085e86bb3a41821984",
-            measurementId: "G-498X9RNHLC"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
+        document.getElementById('overlay').addEventListener('click', () => toggleSidebar());
 
         let goals = []; // Array per memorizzare gli obiettivi
-
-        async function logout() {
-            try {
-                await auth.signOut();
-                showNotification("Logout effettuato con successo!", "green");
-                window.location.href = "../../index.html";
-            } catch (error) {
-                console.error("Errore durante il logout:", error);
-                showNotification("Si è verificato un errore durante il logout.", "red");
-            }
-        }
 
         document.getElementById('logoutBtn').addEventListener('click', logout);
 
@@ -240,8 +205,8 @@
                         <input type="number" id="editGoalTarget-${index}" value="${goal.target}" min="1">
                         <input type="number" id="editGoalProgress-${index}" value="${goal.progress}" min="0">
                         <div class="button-modifica">
-                        <button onclick="updateGoal(${index})">Aggiorna</button>
-                        <button onclick="cancelEdit(${index})">Annulla</button>
+                        <button id="button-update" onclick="updateGoal(${index})">Aggiorna</button>
+                        <button id="button-delete" onclick="cancelEdit(${index})">Annulla</button>
                     </div>
                     </div>
                 `;
@@ -356,32 +321,6 @@
                 }
             });
         });
-
-        function showNotification(message, backgroundColor) {
-            // Crea l'elemento della notifica
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.innerText = message;
-
-            // Applica i colori personalizzati
-            notification.style.backgroundColor = backgroundColor;
-
-            // Aggiungi la notifica al body
-            document.body.appendChild(notification);
-
-            // Usa un timeout per aggiungere la classe 'show' per la transizione di visibilità e opacità
-            setTimeout(() => {
-                notification.classList.add('show'); // Aggiungi la classe 'show'
-            }, 10); // Piccolo timeout per assicurarsi che la classe venga applicata dopo essere aggiunta al DOM
-
-            // Fai svanire la notifica dopo 3 secondi
-            setTimeout(() => {
-                notification.classList.remove('show'); // Rimuovi la classe 'show'
-                setTimeout(() => {
-                    document.body.removeChild(notification); // Rimuovila dal DOM
-                }, 500); // Attendi la transizione di fade-out
-            }, 3000); // Notifica visibile per 3 secondi
-        }
     </script>
 </body>
 

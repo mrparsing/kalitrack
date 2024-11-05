@@ -13,183 +13,12 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <link rel="stylesheet" type="text/css" href="../home/style_home.css">
     <link rel="stylesheet" type="text/css" href="style_aggiungi_sessione.css">
-
-    <script>
-        // Configura Firebase con le tue impostazioni
-        const firebaseConfig = {
-            apiKey: "AIzaSyB2qNYCMQMjm6pAqTEWvP-1FWfPfKaQCi8",
-            authDomain: "kalitrack.firebaseapp.com",
-            projectId: "kalitrack",
-            storageBucket: "kalitrack.appspot.com",
-            messagingSenderId: "253824979149",
-            appId: "1:253824979149:web:21f3085e86bb3a41821984",
-            measurementId: "G-498X9RNHLC"
-        };
-
-        // Inizializza Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-    </script>
+    <script src="../../assets/js/utility_functions.js"></script>
+    <script src="js_aggiungi_sessione.js"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const calendarEl = document.getElementById('calendar');
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                locale: 'it',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                }
-            });
-
-            auth.onAuthStateChanged(user => {
-                if (user) {
-                    db.collection("sessions").doc(user.uid).get()
-                        .then((doc) => {
-                            if (doc.exists) {
-                                const allSessions = doc.data().workouts;
-                                const events = allSessions.map(session => ({
-                                    title: session.workoutName,
-                                    start: session.date,
-                                    extendedProps: {
-                                        description: session.exercises.map(ex => `${ex.exercise} - ${ex.series} serie - Recupero: ${ex.recovery}s`).join(", ")
-                                    }
-                                }));
-                                events.forEach(event => {
-                                    calendar.addEvent(event);
-                                });
-                                calendar.on('eventClick', function (info) {
-                                    // Ottenere la data corretta senza conversione a UTC
-                                    const date = info.event.start;
-
-                                    // Formattare la data nel formato 'YYYY-MM-DD'
-                                    const year = date.getFullYear();
-                                    const month = String(date.getMonth() + 1).padStart(2, '0'); // I mesi in JavaScript partono da 0
-                                    const day = String(date.getDate()).padStart(2, '0');
-
-                                    const formattedDate = `${year}-${month}-${day}`;
-                                    const workoutName = info.event.title;
-
-                                    // Reindirizza alla pagina di dettagli della sessione
-                                    window.location.href = `../workout/workout.html?workout_name=${workoutName}&date=${formattedDate}&page=sessions`;
-                                });
-                                calendar.render();
-                            } else {
-                                console.log("Nessuna sessione trovata per l'utente.");
-                            }
-                        })
-                        .catch(error => {
-                            console.error("Errore nel recupero delle sessioni:", error);
-                        });
-                }
-                hideLoader();
-            });
-
-            const exerciseListEl = document.getElementById('exerciseList');
-            const exercises = [];
-
-            // Aggiungi esercizio alla lista
-            document.getElementById('addExerciseBtn').addEventListener('click', function () {
-                const exercise = document.getElementById('exercise').value;
-                const series = document.getElementById('series').value;
-                const repetitions = document.getElementById('repetitions').value;
-                const recovery = document.getElementById('recovery').value;
-
-                if (exercise && series && recovery && repetitions) {
-                    const exerciseItem = { exercise, series, repetitions, recovery };
-                    exercises.push(exerciseItem);
-
-                    // Aggiorna la lista visiva
-                    const itemEl = document.createElement('div');
-                    itemEl.className = 'session-item';
-
-                    // Crea un contenitore per l'esercizio e il pulsante
-                    const itemContent = document.createElement('div');
-                    itemContent.className = 'item-content';
-                    itemContent.innerText = `${exercise} - ${series}x${repetitions} - Recupero: ${recovery}s`;
-
-                    // Crea il pulsante di rimozione
-                    const removeBtn = document.createElement('button');
-                    removeBtn.innerText = 'Rimuovi';
-                    removeBtn.className = 'remove-exercise-btn';
-
-                    // Aggiungi evento al pulsante di rimozione
-                    removeBtn.addEventListener('click', function () {
-                        const index = exercises.indexOf(exerciseItem);
-                        if (index > -1) {
-                            exercises.splice(index, 1); // Rimuove l'esercizio dall'array
-                            itemEl.remove(); // Rimuove l'elemento dalla lista visiva
-                        }
-                    });
-
-                    // Aggiungi contenuto e pulsante all'elemento della lista
-                    itemEl.appendChild(itemContent);
-                    itemEl.appendChild(removeBtn);
-                    exerciseListEl.appendChild(itemEl);
-                    // Reset input
-                    document.getElementById('exercise').value = '';
-                    document.getElementById('series').value = '';
-                    document.getElementById('repetitions').value = '';
-                    document.getElementById('recovery').value = '';
-                }
-            });
-            // Aggiungi la sessione a Firestore e al calendario
-            document.getElementById('saveSessionBtn').addEventListener('click', async function () {
-                const workoutName = document.getElementById('workoutName').value;
-                const date = document.getElementById('date').value;
-
-                if (workoutName && date && exercises.length > 0) {
-                    const sessionData = {
-                        workoutName,
-                        date,
-                        exercises
-                    };
-
-                    auth.onAuthStateChanged(async (user) => {
-                        if (user) {
-                            const userRef = db.collection('sessions').doc(user.uid);
-
-                            try {
-                                // Usa arrayUnion per aggiungere la nuova sessione all'array workouts
-                                await userRef.update({
-                                    workouts: firebase.firestore.FieldValue.arrayUnion(sessionData)
-                                });
-
-                                // Aggiunge la sessione al calendario
-                                const description = exercises.map(ex => `${ex.exercise} (${ex.series}, recupero ${ex.recovery}s)`).join(', ');
-                                calendar.addEvent({
-                                    title: workoutName,
-                                    start: date,
-                                    description: description
-                                });
-
-                                // Reset del form e della lista
-                                document.getElementById('sessionForm').reset();
-                                exerciseListEl.innerHTML = '';
-                                exercises.length = 0;
-
-                                showNotification("Sessione salvata con successo!", "green");
-                            } catch (error) {
-                                // Se il campo 'workouts' non esiste ancora, usa `.set()` per crearlo
-                                if (error.code === 'not-found') {
-                                    await userRef.set({
-                                        workouts: [sessionData]
-                                    });
-                                    showNotification("Sessione salvata con successo!", "green");
-                                } else {
-                                    console.error("Errore durante il salvataggio della sessione:", error);
-                                    showNotification("Errore durante il salvataggio della sessione.", "red");
-                                }
-                            }
-                        } else {
-                            showNotification("Devi essere loggato per salvare la sessione.", "red");
-                        }
-                    });
-                }
-            });
+            initialize();
         });
     </script>
 </head>
@@ -255,10 +84,6 @@
                 </span>
                 <span class="text">Profilo</span>
             </a>
-            <button class="sidebar-btn">
-                <i class="fas fa-cog"></i>
-                <span>Impostazioni</span>
-            </button>
             <button class="sidebar-btn" id="logoutBtn">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Logout</span>
@@ -382,65 +207,12 @@
             });
         });
 
-        function toggleSidebar() {
-            const sidebar = document.querySelector('.sidebar');
-            const overlay = document.getElementById('overlay');
-            const menuButton = document.getElementById('menuButton');
-
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('visible');
-
-            // Cambia l'icona del pulsante in base allo stato del menu
-            if (sidebar.classList.contains('active')) {
-                menuButton.innerHTML = '<i class="fas fa-times"></i>'; // Icona "X" quando il menu è aperto
-            } else {
-                menuButton.innerHTML = '<i class="fas fa-bars"></i>'; // Icona di hamburger quando il menu è chiuso
-            }
-        }
-
         document.getElementById('overlay').addEventListener('click', () => {
             toggleSidebar(); // Chiudi il menu quando si clicca sull'overlay
         });
 
-        async function logout() {
-            try {
-                await auth.signOut();
-                showNotification("Logout effettuato con successo!", "green");
-                window.location.href = "../../index.html";
-            } catch (error) {
-                console.error("Errore durante il logout:", error);
-                showNotification("Si è verificato un errore durante il logout.", "red");
-            }
-        }
-
         document.getElementById('logoutBtn').addEventListener('click', logout);
-
-        // Function to show notification
-        function showNotification(message, backgroundColor) {
-            // Crea l'elemento della notifica
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.innerText = message;
-
-            // Applica i colori personalizzati
-            notification.style.backgroundColor = backgroundColor;
-
-            // Aggiungi la notifica al body
-            document.body.appendChild(notification);
-
-            // Usa un timeout per aggiungere la classe 'show' per la transizione di visibilità e opacità
-            setTimeout(() => {
-                notification.classList.add('show'); // Aggiungi la classe 'show'
-            }, 10); // Piccolo timeout per assicurarsi che la classe venga applicata dopo essere aggiunta al DOM
-
-            // Fai svanire la notifica dopo 3 secondi
-            setTimeout(() => {
-                notification.classList.remove('show'); // Rimuovi la classe 'show'
-                setTimeout(() => {
-                    document.body.removeChild(notification); // Rimuovila dal DOM
-                }, 500); // Attendi la transizione di fade-out
-            }, 3000); // Notifica visibile per 3 secondi
-        }    </script>
+    </script>
 
 </body>
 

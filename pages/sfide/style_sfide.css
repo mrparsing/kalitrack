@@ -91,13 +91,14 @@
     margin: 10px 0; /* Margine verticale */
     padding: 15px; /* Padding */
     display: flex; /* Layout flessibile */
+    flex-direction: column;
     justify-content: space-between; /* Spaziatura uniforme tra gli elementi */
     align-items: center; /* Allineamento verticale */
 }
 
 
 #challengeList {
-    margin-right: 120px;
+    margin-right: 220px;
     width: 100%;
     max-height: 500px; /* Altezza massima della lista */
     overflow-y: auto; /* Abilita lo scorrimento verticale per la lista */
@@ -154,4 +155,8 @@
     padding: 10px;
     border: 1px solid #ddd;
     background-color: #f9f9f9;
+}
+
+.delete-challenge-btn {
+    margin-top: 15px;
 }
