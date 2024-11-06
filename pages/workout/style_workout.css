@@ -21,13 +21,6 @@
     overflow-y: auto;
 }
 
-
-/* Sezione del dettaglio sessione */
-#sessionDetails {
-    /* margin-bottom: 1rem; */
-    /* width: 150px; */
-}
-
 #sessionDetails h2 {
     font-size: 1.8rem;
     color: var(--primary-color);

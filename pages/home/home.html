@@ -22,7 +22,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.js"></script>
     <script src="../../assets/js/utility_functions.js"></script>
     <script src="js_home.js"></script>
-
 </head>
 
 <body>
@@ -131,33 +130,236 @@
                 </ul>
             </section>
         </main>
-    </div>
+        <div class="widget" id="toggleWidget">
+            <div class="widget-header">
+                <div class="widget-icon">
+                    <i class="fas fa-hourglass-start"></i>
+                </div>
+            </div>
+            <div class="widget-content">
+                <!-- Spinner Container per Ore -->
+                <div class="input-spinner">
+                    <div class="spinner-container">
+                        <label for="hourSpinner">Ore:</label>
+                        <div id="hourSpinner" class="spinner">
+                            <span id="hourValue" class="time-value" data-type="hour">00</span>
+                        </div>
+                    </div>
 
-    <div class="overlay" id="overlay"></div>
+                    <!-- Spinner Container per Minuti -->
+                    <div class="spinner-container">
+                        <label for="minuteSpinner">Minuti:</label>
+                        <div id="minuteSpinner" class="spinner">
+                            <span id="minuteValue" class="time-value" data-type="minute">00</span>
+                        </div>
+                    </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Funzione per creare la challenge giornaliera/settimanale
-            createDailyChallenge();
+                    <!-- Spinner Container per Secondi -->
+                    <div class="spinner-container">
+                        <label for="secondSpinner">Secondi:</label>
+                        <div id="secondSpinner" class="spinner">
+                            <span id="secondValue" class="time-value" data-type="second">00</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Timer Display -->
+                <div id="timerDisplay" class="timer-display">00:00:00</div>
+                <!-- Buttons per Timer Control -->
+                <button id="startTimerBtn">Avvia</button>
+                <button id="stopTimerBtn">Ferma</button>
+                <button id="resetTimerBtn">Reset</button>
+            </div>
+        </div>
 
-            // Funzione per caricare gli obiettivi e i progressi attuali
-            obiettivi_e_progressi();
 
-            // Funzione per caricare il workout del giorno
-            workout_of_the_day();
+        <div class="overlay" id="overlay"></div>
 
-            // Funzione per inizializzare il calendario
-            initialize_calendar();
-        });
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Funzione per creare la challenge giornaliera/settimanale
+                createDailyChallenge();
 
-        document.getElementById('overlay').addEventListener('click', () => { toggleSidebar(); });
+                // Funzione per caricare gli obiettivi e i progressi attuali
+                obiettivi_e_progressi();
 
-        document.getElementById('logoutBtn').addEventListener('click', logout);
+                // Funzione per caricare il workout del giorno
+                workout_of_the_day();
 
-        document.addEventListener("DOMContentLoaded", function () {
-            
-        });
-    </script>
+                // Funzione per inizializzare il calendario
+                initialize_calendar();
+            });
+
+            document.getElementById('overlay').addEventListener('click', () => { toggleSidebar(); });
+
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+
+            document.addEventListener("DOMContentLoaded", function () {
+
+            });
+            document.addEventListener("DOMContentLoaded", function () {
+                let countdown;
+                let timeRemaining;
+                let isPaused = false;
+                let isWidgetExpanded = false;
+
+                // Selezione degli elementi HTML
+                const hourValue = document.getElementById("hourValue");
+                const minuteValue = document.getElementById("minuteValue");
+                const secondValue = document.getElementById("secondValue");
+
+                const inputSpinner = document.querySelector(".input-spinner");
+                const timerDisplay = document.getElementById("timerDisplay");
+
+                // Funzione per aggiornare il display del timer
+                function updateTimerDisplay() {
+                    const hours = String(Math.floor(timeRemaining / 3600)).padStart(2, '0');
+                    const minutes = String(Math.floor((timeRemaining % 3600) / 60)).padStart(2, '0');
+                    const seconds = String(timeRemaining % 60).padStart(2, '0');
+                    timerDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+                }
+
+                function changeTimeValue(element, type) {
+                    let value = parseInt(element.textContent);
+
+                    if (type === 'increment') {
+                        if (value < (element.dataset.type === 'hour' ? 23 : 59)) {
+                            value += 1;
+                        } else {
+                            value = 0;
+                        }
+                    } else if (type === 'decrement') {
+                        if (value > 0) {
+                            value -= 1;
+                        } else {
+                            value = (element.dataset.type === 'hour' ? 23 : 59);
+                        }
+                    }
+
+                    element.textContent = String(value).padStart(2, '0');
+                }
+
+                // Funzione per rilevare il clic e tenere premuto
+                function handleTimeChange(event) {
+                    const element = event.target;
+                    let interval;
+
+                    // Impostiamo l'azione di cambio valore
+                    function increment() {
+                        changeTimeValue(element, 'increment');
+                    }
+
+                    function decrement() {
+                        changeTimeValue(element, 'decrement');
+                    }
+
+                    // Iniziamo il ciclo di increment/decremento quando l'utente tiene premuto
+                    element.addEventListener('mousedown', function () {
+                        interval = setInterval(function () {
+                            if (event.clientY > element.getBoundingClientRect().top) {
+                                increment();
+                            } else {
+                                decrement();
+                            }
+                        }, 150); // Ogni 150ms incrementa o decrementa
+                    });
+
+                    // Ferma il ciclo quando il mouse viene rilasciato
+                    element.addEventListener('mouseup', function () {
+                        clearInterval(interval);
+                    });
+
+                    // Ferma il ciclo anche se il mouse esce dalla zona
+                    element.addEventListener('mouseleave', function () {
+                        clearInterval(interval);
+                    });
+                }
+
+                // Aggiungi gli event listener per le modifiche dei numeri
+                hourValue.addEventListener("click", handleTimeChange);
+                minuteValue.addEventListener("click", handleTimeChange);
+                secondValue.addEventListener("click", handleTimeChange);
+
+                function startTimer() {
+                    if (!isPaused) {
+                        timeRemaining = (parseInt(hourValue.textContent) * 3600) + (parseInt(minuteValue.textContent) * 60) + parseInt(secondValue.textContent);
+                    }
+
+                    if (timeRemaining > 0) {
+                        updateTimerDisplay();
+                        inputSpinner.style.display = "none"; // Nasconde gli input
+                        timerDisplay.style.display = "block"; // Mostra l'orologio
+
+                        countdown = setInterval(() => {
+                            timeRemaining--;
+                            updateTimerDisplay();
+
+                            if (timeRemaining <= 0) {
+                                clearInterval(countdown);
+                                alert("Timer completato!");
+                                resetTimer();
+                            }
+                        }, 1000);
+
+                        isPaused = false;
+                    }
+                }
+
+                function stopTimer() {
+                    clearInterval(countdown);
+                    isPaused = true;
+                    inputSpinner.style.display = "flex";
+                    timerDisplay.style.display = "block";
+                }
+
+                function resetTimer() {
+                    hourValue.textContent = "00";
+                    minuteValue.textContent = "00";
+                    secondValue.textContent = "00";
+                    clearInterval(countdown);
+                    timerDisplay.textContent = "";
+                    timerDisplay.style.display = "none";
+                    inputSpinner.style.display = "flex";
+                    isPaused = false;
+                }
+
+                // Eventi per i pulsanti del timer
+                document.getElementById("startTimerBtn").addEventListener("click", function (e) {
+                    e.stopPropagation(); // Evita che l'evento clic chiuda il widget
+                    startTimer();
+                });
+
+                document.getElementById("stopTimerBtn").addEventListener("click", function (e) {
+                    e.stopPropagation(); // Evita che l'evento clic chiuda il widget
+                    stopTimer();
+                });
+
+                // Pulsante di reset
+                document.getElementById("resetTimerBtn").addEventListener("click", function (e) {
+                    e.stopPropagation(); // Evita che l'evento clic chiuda il widget
+                    resetTimer();
+                });
+
+                // Toggle per l'espansione del widget
+                document.getElementById("toggleWidget").addEventListener("click", function () {
+                    isWidgetExpanded = !isWidgetExpanded; // Cambia lo stato del widget
+
+                    this.classList.toggle("expanded");
+                    const icon = this.querySelector(".widget-icon i");
+
+                    if (isWidgetExpanded) {
+                        icon.className = "fas fa-hourglass-end";
+                        updateTimerDisplay(); // Mostra il timer quando il widget è espanso
+                    } else {
+                        icon.className = "fas fa-hourglass-start";
+                    }
+                });
+
+                // Impedire che il clic dentro il widget faccia chiudere il widget
+                document.querySelector('.widget-content').addEventListener('click', function (e) {
+                    e.stopPropagation();
+                });
+            });
+        </script>
 </body>
 
 </html>
