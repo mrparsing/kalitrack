@@ -178,6 +178,9 @@
                 <button id="stopTimerBtn">Ferma</button>
                 <button id="resetTimerBtn">Reset</button>
             </div>
+
+            <!-- Audio per il suono di allarme alla fine del timer -->
+            <audio id="alarmSound" src="../../assets/beep.mp3" preload="auto"></audio>
         </div>
 
 
@@ -234,31 +237,31 @@
                     timerDisplay.textContent = `${hours}:${minutes}:${seconds}`;
                 }
 
+                const alarmSound = document.getElementById("alarmSound");
+
                 function startTimer() {
-                    // Controlla se il timer è già in pausa
                     if (!isPaused) {
-                        timeRemaining = (parseInt(hourValue.textContent) * 3600) + (parseInt(minuteValue.textContent) * 60) + parseInt(secondValue.textContent);
+                        timeRemaining = (parseInt(hourValue.textContent) * 3600) +
+                            (parseInt(minuteValue.textContent) * 60) +
+                            parseInt(secondValue.textContent);
                     }
 
                     if (timeRemaining > 0) {
                         updateTimerDisplay();
-                        inputSpinner.style.display = "none"; // Nasconde gli input
-                        timerDisplay.style.display = "block"; // Mostra l'orologio
+                        inputSpinner.style.display = "none";
+                        timerDisplay.style.display = "block";
 
-                        // Avvia il timer solo se non è in pausa
                         countdown = setInterval(() => {
                             timeRemaining--;
                             updateTimerDisplay();
 
-                            // Ferma il timer quando raggiunge 0
                             if (timeRemaining <= 0) {
                                 clearInterval(countdown);
-                                alert("Timer completato!");
-                                resetTimer(); // Resetta il timer automaticamente alla fine
+                                alarmSound.play(); // Riproduce il suono quando il timer termina
+                                showNotification("Timer completato!", "green");
+                                resetTimer();
                             }
                         }, 1000);
-
-                        isPaused = false; // Il timer non è più in pausa
                     }
                 }
 
