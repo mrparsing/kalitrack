@@ -130,6 +130,7 @@ function unlockAudio() {
 }
 
 function startTimer(duration, display, textElement) {
+    unlockAudio();
     const alarmSound = document.getElementById("alarmSound");
     let timer = duration, minutes, seconds;
 

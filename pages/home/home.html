@@ -250,6 +250,7 @@
                 }
 
                 function startTimer() {
+                    unlockAudio();
                     if (!isPaused) {
                         timeRemaining = (parseInt(hourValue.textContent) * 3600) +
                             (parseInt(minuteValue.textContent) * 60) +
