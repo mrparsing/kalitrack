@@ -119,7 +119,18 @@ function populateExerciseDetails(container, series, repetitions, recovery) {
     }
 }
 
+let audioUnlocked = false;
+
+function unlockAudio() {
+    // Solo il primo click su "Avvia" sblocca l'audio
+    if (!audioUnlocked) {
+        alarmSound.play();
+        audioUnlocked = true;  // Impedisce di riprodurre il suono subito senza interazione
+    }
+}
+
 function startTimer(duration, display, textElement) {
+    const alarmSound = document.getElementById("alarmSound");
     let timer = duration, minutes, seconds;
 
     // Cambia il colore del testo in rosso all'avvio del timer
@@ -139,6 +150,7 @@ function startTimer(duration, display, textElement) {
 
         if (--timer < 0) {
             clearInterval(countdown);
+            alarmSound.play(); // Riproduce il suono quando il timer termina
             display.textContent = "Tempo Scaduto!";
             textElement.style.color = "gray"; // Cambia il colore del testo a grigio
 
