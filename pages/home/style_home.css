@@ -14,7 +14,7 @@ body {
 header {
     display: flex;
     align-items: center;
-    padding: 20px;
+    padding: 10px;
     background-color: #333;
     color: #ff5733;
     font-size: 24px;
@@ -398,7 +398,7 @@ header {
 
 .widget.expanded {
     width: 90%;
-    height: 400px;
+    height: 500px;
     border-radius: 8px;
 }
 
@@ -414,7 +414,7 @@ header {
 
 .widget-content {
     display: none;
-    padding: 20px;
+    padding: 25px;
     color: white;
     font-family: Arial, sans-serif;
     text-align: center;
@@ -422,12 +422,13 @@ header {
 
 .widget.expanded .widget-content {
     display: block;
+    height: 400px;
 }
 
 .input-spinner {
     display: flex;
     flex-direction: row;
-    margin-left: 10px;
+    margin-left: 30px;
 }
 
 .timer-display {
@@ -530,7 +531,6 @@ button:focus {
 
 #hourSpinner, #minuteSpinner, #secondSpinner {
     display: flex;
-    padding: 20px;
     flex-direction: column;
 }
 
@@ -545,7 +545,7 @@ button:focus {
 
     .widget.expanded {
         width: 25%; /* Riduci la larghezza quando espanso per una visualizzazione migliore su desktop */
-        height: 450px; /* Aumenta l'altezza per maggiore spazio */
+        height: 600px; /* Aumenta l'altezza per maggiore spazio */
     }
 
     .timer-display {
@@ -565,8 +565,4 @@ button:focus {
         font-size: 18px; /* Riduci la dimensione del font dei pulsanti */
         padding: 10px 25px; /* Aggiusta il padding dei pulsanti */
     }
-}
-
-#startTimerBtn, #stopTimerBtn, #resetTimerBtn {
-    padding: 30px;
 }
