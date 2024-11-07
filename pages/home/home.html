@@ -239,7 +239,18 @@
 
                 const alarmSound = document.getElementById("alarmSound");
 
+                let audioUnlocked = false;
+
+                function unlockAudio() {
+                    // Solo il primo click su "Avvia" sblocca l'audio
+                    if (!audioUnlocked) {
+                        alarmSound.play();
+                        audioUnlocked = true;  // Impedisce di riprodurre il suono subito senza interazione
+                    }
+                }
+
                 function startTimer() {
+                    unlockAudio();
                     if (!isPaused) {
                         timeRemaining = (parseInt(hourValue.textContent) * 3600) +
                             (parseInt(minuteValue.textContent) * 60) +
