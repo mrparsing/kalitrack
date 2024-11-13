@@ -32,7 +32,7 @@
 
 /* Stile per la lista degli esercizi */
 .exercise-list {
-    max-height: 600px;
+    max-height: 650px;
     overflow-y: auto; /* Barra di scorrimento */
 }
 
@@ -47,7 +47,8 @@
 
 .exercise-item h3 {
     color: var(--primary-color);
-    margin-bottom: 0.5rem;
+    /* margin-bottom: 0.5rem; */
+    margin: 5px;
 }
 
 .exercise-item p {
@@ -75,7 +76,7 @@
 }
 
 .details {
-    padding: 15px;
+    padding: 10px;
     width: 30%;
     border-radius: 5px;
     background-color: #333; /* Colore di sfondo */
@@ -83,10 +84,9 @@
 
 .workout {
     width: 100%;
-    padding: 15px;
+    /* padding: 15px; */
     max-height: 700px; /* Limita l'altezza della lista */
     overflow-y: auto; /* Aggiunge la barra di scorrimento verticale */
-
 }
 
 /* Stile per la sidebar su schermi più piccoli */
@@ -130,7 +130,7 @@
 }
 
 .text-element {
-    font-size: 18px;
+    font-size: 22px;
     text-align:center;
 }
     
@@ -143,9 +143,9 @@
 .exercise-details {
     display: none;
     margin-top: 0.5rem;
-    padding: 0.5rem;
+    /* padding: 0.5rem; */
     border-radius: 4px;
-    border: 1px solid var(--border-color);
+    /* border: 1px solid var(--border-color); */
 }
 
 .exercise-details p {

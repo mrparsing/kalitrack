@@ -87,20 +87,37 @@ h2 {
 
 /* Stile per il bottone di eliminazione e aggiornamento */
 .max-item button {
-    background-color: #dc3545; /* Colore rosso per il bottone */
     color: white; /* Colore del testo */
     padding: 10px 15px; /* Padding per il bottone */
     margin: 5px;
     border: none; /* Nessun bordo */
     border-radius: 5px; /* Raggio per gli angoli */
     cursor: pointer; /* Cursore a mano */
-    min-width: 100px; /* Larghezza minima per i pulsanti */
-    max-width: 150px; /* Larghezza massima per i pulsanti */
     text-align: center; /* Allinea il testo al centro */
 }
 
-.max-item button:hover {
-    background-color: #c82333; /* Colore più scuro al passaggio del mouse */
+.edit-btn {
+    background-color: #3c81e7;
+}
+
+.edit-btn:hover {
+    background-color: #266ed9;
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+.progress-btn {
+    background-color: green;
+}
+
+.progress-btn:hover {
+    background-color: #026902;
 }
 
 /* Media query per schermi piccoli (mobile) */

@@ -110,6 +110,10 @@ button {
     background-color: #218838;
 }
 
+#button-update {
+    background-color: #218838;
+}
+
 /* Stili per schermi con larghezza massima di 768px */
 @media (max-width: 768px) {
     .goal-setting {
@@ -132,8 +136,7 @@ button {
 
     .goal-list {
         margin: 10px;
-        height: auto; /* Adatta l'altezza in base al contenuto */
-        max-height: 400px; /* Limita l'altezza per un layout compatto */
+        max-height: 1000px; /* Limita l'altezza per un layout compatto */
         overflow-y: auto;
     }
 

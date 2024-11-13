@@ -21,6 +21,7 @@ function visualize_future_sessions() {
 <ul>${session.exercises.map(ex => `
 <li>${ex.exercise} - ${ex.series} serie - Recupero: ${ex.recovery}s</li>
 `).join('')}</ul>
+<button class="modify-btn">Modifica</button>
 <button class="delete-btn">Elimina</button>
 `;
                                 sessionEl.onclick = function () {
@@ -33,6 +34,14 @@ function visualize_future_sessions() {
                                     event.stopPropagation(); // Ferma la propagazione dell'evento click
                                     deleteSession(session.workoutName); // Passa il workoutName alla funzione
                                 };
+
+                                const modifyBtn = sessionEl.querySelector(".modify-btn")
+                                modifyBtn.onclick = function (event) {
+                                    event.stopPropagation(); // Ferma la propagazione dell'evento click
+                                    window.location.href = `../aggiungi_sessione/aggiungi_sessione.html?workout_name=${session.workoutName}&date=${session.date}`;
+                                };
+
+
                                 futureSessionsEl.appendChild(sessionEl);
                             });
                         } else {

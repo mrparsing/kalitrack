@@ -94,3 +94,17 @@
 .delete-btn:hover {
     background-color: #c0392b;
 }
+
+.modify-btn {
+    background-color: #3c81e7;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.modify-btn:hover {
+    background-color: #266ed9;
+}

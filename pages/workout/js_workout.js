@@ -32,9 +32,6 @@ function loadSessionDetails_sessions(workoutName, date, page) {
                     if (docSnapshot.exists) {
                         const sessionData = docSnapshot.data().workouts || [];
 
-                        // Debug: Stampa tutti i workout trovati
-                        console.log("Lista workout trovati:", sessionData);
-
                         // Cerca il workout in base a workoutName e data
                         const selectedSession = sessionData.find(workout => {
                             console.log(`Verifica workout: ${workout.workoutName} con data ${workout.date}`);
@@ -53,8 +50,7 @@ function loadSessionDetails_sessions(workoutName, date, page) {
                                 const exerciseItem = document.createElement("div");
                                 exerciseItem.className = "exercise-item";
                                 exerciseItem.innerHTML = `
-<h3 class="exercise-title">${exercise.exercise}</h3>
-<p>Serie: ${exercise.series}, Ripetizioni: ${exercise.repetitions} - Recupero: ${exercise.recovery} sec</p>
+<h3 class="exercise-title">${exercise.exercise}: Serie: ${exercise.series}, Ripetizioni: ${exercise.repetitions} - Recupero: ${exercise.recovery} sec</h3>
 <div class="exercise-details" style="display: none;"></div>
 `;
 
@@ -92,7 +88,9 @@ function loadSessionDetails_sessions(workoutName, date, page) {
         }
     });
 }
+
 function populateExerciseDetails(container, series, repetitions, recovery) {
+    // Controlla se i dettagli sono già stati popolati
     if (container.innerHTML.trim() !== "") {
         return;
     }
@@ -101,65 +99,94 @@ function populateExerciseDetails(container, series, repetitions, recovery) {
         const detailRow = document.createElement("div");
         detailRow.className = "exercise-detail-row";
 
+        // Creazione del bottone
+        const playButton = document.createElement("button");
+        playButton.className = "play-btn";
+        playButton.textContent = "Avvia recupero";
+
+        // Evento click per avviare il timer
+        playButton.addEventListener('click', () => {
+            startTimer(recovery, playButton, detailRow.querySelector(".text-element"));
+            playButton.disabled = true; // Disabilita il pulsante durante il timer
+        });
+
+        // Creazione della riga dei dettagli
         detailRow.innerHTML = `
-    <span class="text-element">
-        Serie ${i}: Ripetizioni: ${repetitions}, Recupero: ${recovery} sec
-    </span>
-    <button class="play-btn" id="play-${i}">Avvia recupero</button>
-`;
+            <span class="text-element">
+                Serie ${i}: Ripetizioni: ${repetitions}, Recupero: ${recovery} sec
+            </span>
+        `;
 
+        // Aggiunta del bottone alla riga dei dettagli
+        detailRow.appendChild(playButton);
+
+        // Aggiunta della riga al contenitore dei dettagli
         container.appendChild(detailRow);
+    }
+}
 
-        const textElement = detailRow.querySelector(".text-element");
+let audioContext;
+let alarmTrack;
+let audioUnlocked = false;
 
-        document.getElementById(`play-${i}`).addEventListener('click', () => {
-            startTimer(recovery, document.getElementById(`play-${i}`), textElement);
-            document.getElementById(`play-${i}`).disabled = true;
+function initializeAudio() {
+    const alarmSound = document.getElementById("alarmSound");
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    audioContext = new AudioContext();
+
+    // Crea una sola volta il nodo audio
+    alarmTrack = audioContext.createMediaElementSource(alarmSound);
+    alarmTrack.connect(audioContext.destination);
+}
+
+function unlockAudio() {
+    if (!audioUnlocked) {
+        audioContext.resume().then(() => {
+            console.log("Audio sbloccato.");
+            audioUnlocked = true;
         });
     }
 }
 
-let audioUnlocked = false;
+function playAlarmSound() {
+    const alarmSound = document.getElementById("alarmSound");
 
-function unlockAudio() {
-    // Solo il primo click su "Avvia" sblocca l'audio
-    if (!audioUnlocked) {
-        alarmSound.play();
-        audioUnlocked = true;  // Impedisce di riprodurre il suono subito senza interazione
+    // Controlla se l'audio è sbloccato
+    if (audioUnlocked) {
+        alarmSound.play().catch((error) => {
+            console.error("Errore durante la riproduzione del suono:", error);
+        });
     }
 }
 
+// Inizializza l'audio al caricamento della pagina
+window.addEventListener('DOMContentLoaded', () => {
+    initializeAudio();
+
+    // Sblocca l'audio al primo click o interazione con la pagina
+    document.body.addEventListener('click', unlockAudio, { once: true });
+});
+
 function startTimer(duration, display, textElement) {
     unlockAudio();
-    const alarmSound = document.getElementById("alarmSound");
     let timer = duration, minutes, seconds;
-
-    // Cambia il colore del testo in rosso all'avvio del timer
     textElement.style.color = "red";
-
     display.classList.add('active');
     textElement.classList.add('active');
-
 
     const countdown = setInterval(() => {
         minutes = parseInt(timer / 60, 10);
         seconds = parseInt(timer % 60, 10);
-
-        // Formatta il tempo come MM:SS
         seconds = seconds < 10 ? "0" + seconds : seconds;
         display.textContent = `${minutes}:${seconds}`;
 
         if (--timer < 0) {
             clearInterval(countdown);
-            alarmSound.play(); // Riproduce il suono quando il timer termina
+            playAlarmSound();
             display.textContent = "Tempo Scaduto!";
-            textElement.style.color = "gray"; // Cambia il colore del testo a grigio
-
-            // Rimuovi la classe 'active' quando il timer termina
+            textElement.style.color = "gray";
             display.classList.remove('active');
             textElement.classList.remove('active');
-
-            onTimerEnd();
         }
     }, 1000);
 }

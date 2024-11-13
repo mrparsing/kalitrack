@@ -29,13 +29,17 @@
                 <span class="icon-container"><i class="fas fa-home"></i></span>
                 <span class="text">Dashboard</span>
             </a>
-            <a href="../aggiungi_sessione/aggiungi_sessione.html" class="sidebar-btn">
-                <span class="icon-container"><i class="fas fa-plus"></i></span>
-                <span class="text">Aggiungi Sessioni</span>
+            <a href="../sessioni_successive/sessioni_successive.html" class="sidebar-btn active">
+                <span class="icon-container"><i class="fas fa-calendar-alt"></i></span>
+                <span class="text">Sessione successive</span>
             </a>
             <a href="../storico_sessioni/storico_sessioni.html" class="sidebar-btn active">
                 <span class="icon-container"><i class="fas fa-history"></i></span>
                 <span class="text">Storico Sessioni</span>
+            </a>
+            <a href="../aggiungi_sessione/aggiungi_sessione.html" class="sidebar-btn">
+                <span class="icon-container"><i class="fas fa-plus"></i></span>
+                <span class="text">Aggiungi Sessioni</span>
             </a>
             <a href="../massimali/massimali.html" class="sidebar-btn active">
                 <span class="icon-container"><i class="fas fa-dumbbell"></i></span>
@@ -45,10 +49,7 @@
                 <span class="icon-container"><i class="fas fa-trophy"></i></span>
                 <span class="text">Sfide</span>
             </a>
-            <a href="../sessioni_successive/sessioni_successive.html" class="sidebar-btn active">
-                <span class="icon-container"><i class="fas fa-calendar-alt"></i></span>
-                <span class="text">Sessione successive</span>
-            </a>
+
             <div class="sidebar-divider"></div>
             <a href="../profilo/profile.html" class="sidebar-btn">
                 <span class="icon-container"><i class="fas fa-user-circle"></i></span>
@@ -86,11 +87,11 @@
             loadSessionDetails_sfide(workoutName);
         }
 
-        
+
         document.getElementById('logoutBtn').addEventListener('click', logout);
 
         document.getElementById('overlay').addEventListener('click', () => toggleSidebar());
-        
+
         document.getElementById('logoutBtn').addEventListener('click', logout);
     </script>
 </body>

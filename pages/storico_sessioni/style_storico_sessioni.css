@@ -4,25 +4,33 @@
 .main-content {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centra gli elementi orizzontalmente */
+    align-items: center;
+    /* Centra gli elementi orizzontalmente */
     width: 100%;
 }
 
 /* Stile per il titolo */
 .main-content h2 {
-    align-self: flex-start; /* Posiziona il titolo in alto a sinistra */
-    margin-left: 20px; /* Margine a sinistra per allontanare il titolo dal bordo */
+    align-self: flex-start;
+    /* Posiziona il titolo in alto a sinistra */
+    margin-left: 20px;
+    /* Margine a sinistra per allontanare il titolo dal bordo */
 }
 
 /* Stile per la lista di sessioni future */
 .session-list {
     padding: 20px;
-    margin: 20px auto; /* Margine verticale per separare dal titolo */
+    margin: 20px auto;
+    /* Margine verticale per separare dal titolo */
     max-width: 800px;
-    width: 100%; /* Assicura che la lista occupi il 100% della larghezza disponibile */
-    max-height: 500px; /* Limita l'altezza della lista */
-    overflow-y: auto; /* Aggiunge la barra di scorrimento verticale */
-    border-radius: 8px; /* Aggiunge angoli arrotondati */
+    width: 100%;
+    /* Assicura che la lista occupi il 100% della larghezza disponibile */
+    max-height: 500px;
+    /* Limita l'altezza della lista */
+    overflow-y: auto;
+    /* Aggiunge la barra di scorrimento verticale */
+    border-radius: 8px;
+    /* Aggiunge angoli arrotondati */
 }
 
 /* Stile per ogni sessione */
@@ -31,7 +39,8 @@
     border-radius: 5px;
     margin-bottom: 15px;
     padding: 15px;
-    transition: background-color 0.3s, transform 0.2s; /* Transizione per il colore di sfondo e la trasformazione */
+    transition: background-color 0.3s, transform 0.2s;
+    /* Transizione per il colore di sfondo e la trasformazione */
 }
 
 /* Stile per il nome della sessione */
@@ -54,9 +63,12 @@
 
 /* Effetto hover per le sessioni */
 .session-item:hover {
-    background-color: #515050; /* Cambia il colore di sfondo */
-    color: #fff; /* Cambia il colore del testo */
-    transform: scale(1.02); /* Leggera ingrandimento dell'elemento */
+    background-color: #515050;
+    /* Cambia il colore di sfondo */
+    color: #fff;
+    /* Cambia il colore del testo */
+    transform: scale(1.02);
+    /* Leggera ingrandimento dell'elemento */
 }
 
 /* Stile per la scrollbar personalizzata */
@@ -85,4 +97,18 @@
 
 .delete-btn:hover {
     background-color: #c0392b;
+}
+
+.modify-btn {
+    background-color: #3c81e7;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.modify-btn:hover {
+    background-color: #266ed9;
 }

@@ -97,12 +97,16 @@
                 <h2>Aggiungi una sessione</h2>
 
                 <form class="session-form" id="sessionForm">
-                    <label for="workoutName">Nome Allenamento:</label>
-                    <input type="text" id="workoutName" name="workoutName" required>
-
-                    <label for="date">Data:</label>
-                    <input type="text" id="date" name="date" required class="flatpickr">
-
+                    <div class="flex-row">
+                        <div class="flex-item">
+                            <label for="workoutName">Nome Allenamento:</label>
+                            <input type="text" id="workoutName" name="workoutName" required>
+                        </div>
+                        <div class="flex-item">
+                            <label for="date">Data:</label>
+                            <input type="text" id="date" name="date" required class="flatpickr">
+                        </div>
+                    </div>
                     <label for="exercise">Esercizio:</label>
                     <input type="text" id="exercise" name="exercise" placeholder="Nome esercizio" required>
 
@@ -145,10 +149,10 @@
             const calendarEl = document.getElementById('calendar');
 
             flatpickr("#date", {
-                dateFormat: "Y-m-d", // Formato della data
-                altInput: true,      // Mostra un campo di input alternativo
-                altFormat: "F j, Y", // Formato leggibile per l'utente
-                defaultDate: new Date() // Imposta la data predefinita ad oggi
+                dateFormat: "Y-m-d",     // Formato della data nel campo input
+                altInput: true,          // Abilita un campo di input alternativo
+                altFormat: "d/m/Y",      // Formato alternativo leggibile dall'utente
+                defaultDate: new Date()  // Imposta la data predefinita ad oggi
             });
 
             // Inizializza il selettore di data
@@ -157,31 +161,6 @@
             // Gestisce la lista degli esercizi
             const exerciseListEl = document.getElementById('exerciseList');
             const exercises = [];
-
-            // Aggiunge un esercizio alla lista
-            document.getElementById('addExerciseBtn').addEventListener('click', function () {
-                const exercise = document.getElementById('exercise').value;
-                const series = document.getElementById('series').value;
-                const repetitions = document.getElementById('repetitions').value;
-                const recovery = document.getElementById('recovery').value;
-
-                if (exercise && series && repetitions && recovery) {
-                    const exerciseItem = { exercise, series, repetitions, recovery };
-                    exercises.push(exerciseItem);
-
-                    // Aggiorna la lista visiva
-                    const itemEl = document.createElement('div');
-                    itemEl.className = 'session-item';
-                    itemEl.innerText = `${exercise} - ${series}x${repetitions} - Recupero: ${recovery}s`;
-                    exerciseListEl.appendChild(itemEl);
-
-                    // Reset input
-                    document.getElementById('exercise').value = '';
-                    document.getElementById('series').value = '';
-                    document.getElementById('repetitions').value = '';
-                    document.getElementById('recovery').value = '';
-                }
-            });
 
             // Aggiunge la sessione al calendario
             document.getElementById('saveSessionBtn').addEventListener('click', function () {
