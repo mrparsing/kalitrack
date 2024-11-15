@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer Multifunzionale - KaliTrack</title>
+    <link rel="stylesheet" type="text/css" href="../home/style_home.css">
+    <!-- FullCalendar CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.css">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- FullCalendar e Firebase -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.js"></script>
+    <script src="../../assets/js/utility_functions.js"></script>
+    <link rel="stylesheet" type="text/css" href="style_timer_multifunzionale.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <button class="menu-btn" id="menuButton" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="logo">Timer Multifunzionale</div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Sidebar with Buttons -->
+        <aside class="sidebar">
+            <a href="home.html" class="sidebar-btn">
+                <span class="icon-container">
+                    <i class="fas fa-home"></i>
+                </span>
+                <span class="text">Dashboard</span>
+            </a>
+
+            <a href="../sessioni_successive/sessioni_successive.html" class="sidebar-btn">
+                <span class="icon-container">
+                    <i class="fas fa-calendar-alt"></i>
+                </span>
+                <span class="text">Sessioni future</span>
+            </a>
+
+            <a href="../storico_sessioni/storico_sessioni.html" class="sidebar-btn">
+                <span class="icon-container">
+                    <i class="fas fa-history"></i>
+                </span>
+                <span class="text">Storico Sessioni</span>
+            </a>
+
+            <a href="../aggiungi_sessione/aggiungi_sessione.html" class="sidebar-btn">
+                <span class="icon-container">
+                    <i class="fas fa-plus"></i>
+                </span>
+                <span class="text">Aggiungi sessioni</span>
+            </a>
+
+            <a href="../massimali/massimali.html" class="sidebar-btn">
+                <span class="icon-container">
+                    <i class="fas fa-dumbbell"></i>
+                </span>
+                <span class="text">Massimali</span>
+            </a>
+
+            <a href="../sfide/sfide.html" class="sidebar-btn">
+                <span class="icon-container">
+                    <i class="fas fa-trophy"></i>
+                </span>
+                <span class="text">Sfide</span>
+            </a>
+
+            <a href="timer_multifunzionale.html" class="sidebar-btn">
+                <span class="icon-container">
+                    <i class="fas fa-stopwatch"></i>
+                </span>
+                <span class="text">Timer Multifunzionale</span>
+            </a>
+
+            <!-- Divider -->
+            <div class="sidebar-divider"></div>
+
+            <!-- Profile, Settings, and Logout Buttons -->
+            <a href="../profilo/profile.html" class="sidebar-btn">
+                <span class="icon-container">
+                    <i class="fas fa-user-circle"></i>
+                </span>
+                <span class="text">Profilo</span>
+            </a>
+            <button class="sidebar-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </aside>
+
+        <div class="main-content">
+            <div class="timer-content">
+                <h3 for="workoutType">Seleziona il tipo di allenamento:</h3>
+                <select id="workoutType">
+                    <option value="emom">EMOM</option>
+                    <option value="amrap">AMRAP</option>
+                    <option value="tabata">Tabata</option>
+                    <option value="hiit">HIIT</option>
+                    <option value="forTime">For Time</option>
+                    <option value="circuit">Circuit Training</option>
+                </select>
+
+                <div>
+                    <label for="duration">Durata (minuti):</label>
+                    <input type="number" id="duration" value="10" min="1" max="60">
+                </div>
+
+                <div id="timer">00:00</div>
+
+                <div class="button-content">
+                    <button id="startBtn">Avvia</button>
+                    <button id="stopBtn" style="display:none;">Ferma</button>
+                    <button id="resetBtn">Reset</button>
+                </div>
+
+            </div>
+
+
+            <div id="details">
+                <h2>Descrizione:</h2>
+                <p id="description">Scegli un tipo di allenamento per visualizzare i dettagli.</p>
+                <h2>Obiettivo:</h2>
+                <p id="goal">--</p>
+                <h2>Esempio:</h2>
+                <p id="example">--</p>
+            </div>
+        </div>
+        <audio id="alarmSound" src="../../assets/beep.mp3" preload="auto"></audio>
+
+        <div class="overlay" id="overlay"></div>
+
+
+</body>
+
+</html>
+<script>
+    let interval;
+    let currentTime = 0;
+    let totalDuration = 0;
+    let workoutType = "emom";
+
+    const timerDisplay = document.getElementById('timer');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const durationInput = document.getElementById('duration');
+    const workoutSelect = document.getElementById('workoutType');
+
+    const description = document.getElementById('description');
+    const goal = document.getElementById('goal');
+    const example = document.getElementById('example');
+
+    const workoutDetails = {
+        emom: {
+            description: "Esegui un determinato esercizio all'inizio di ogni minuto per il tempo impostato.",
+            goal: "Costruire resistenza e forza con sforzi ripetuti.",
+            example: "10 push-up ogni minuto per 10 minuti.",
+            timerLogic: function () {
+                if (currentTime % 60 === 0) {
+                    beepSound();
+                }
+            }
+        },
+        amrap: {
+            description: "Esegui il maggior numero possibile di round o ripetizioni entro un tempo prestabilito.",
+            goal: "Massimizzare lo sforzo in un lasso di tempo limitato.",
+            example: "In 10 minuti, completa 10 squat, 10 push-up e 10 sit-up."
+        },
+        tabata: {
+            description: "Esegui 20 secondi di lavoro massimo seguiti da 10 secondi di riposo, per 8 round.",
+            goal: "Migliorare la capacità aerobica e anaerobica.",
+            example: "20 secondi di burpees, 10 secondi di riposo, ripeti 8 volte.",
+            timerLogic: function () {
+                const period = currentTime % 30;
+                if (period === 0) {
+                    beepSound();  // suono di lavoro
+                } else if (period === 20) {
+                    beepSound();  // suono di riposo
+                }
+            }
+        },
+        hiit: {
+            description: "Alterna periodi di esercizio ad alta intensità con periodi di riposo o bassa intensità.",
+            goal: "Bruciare calorie e migliorare la capacità cardiovascolare.",
+            example: "30 secondi di sprint, 30 secondi di camminata per 10 minuti."
+        },
+        forTime: {
+            description: "Completa un circuito di esercizi nel minor tempo possibile.",
+            goal: "Sviluppare velocità e resistenza.",
+            example: "50 squat, 50 push-up e 200 metri di corsa nel minor tempo possibile."
+        },
+        circuit: {
+            description: "Esegui un set di esercizi uno dopo l'altro con poco o nessun riposo tra di essi.",
+            goal: "Allenare diversi gruppi muscolari e migliorare la resistenza.",
+            example: "10 push-up, 15 squat, 20 sit-up, ripeti per 3 round."
+        }
+    };
+
+    workoutSelect.addEventListener('change', (e) => {
+        workoutType = e.target.value;
+        updateDetails();
+    });
+
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function startTimer() {
+        totalDuration = parseInt(durationInput.value, 10) * 60;
+        currentTime = 0;
+        updateDisplay();
+
+        interval = setInterval(() => {
+            currentTime++;
+            if (currentTime >= totalDuration) {
+                stopTimer();
+                beepSound();  // suono quando il timer finisce
+            }
+            if (workoutDetails[workoutType]?.timerLogic) {
+                workoutDetails[workoutType].timerLogic();
+            }
+            updateDisplay();
+        }, 1000);
+
+        // Cambia i pulsanti: Nascondi "Start", mostra "Stop"
+        startBtn.style.display = 'none';
+        stopBtn.style.display = 'inline-block';
+    }
+
+    function stopTimer() {
+        clearInterval(interval);
+        // Cambia i pulsanti: Mostra "Start", nascondi "Stop"
+        startBtn.style.display = 'inline-block';
+        stopBtn.style.display = 'none';
+    }
+
+    function resetTimer() {
+        clearInterval(interval);
+        currentTime = 0;
+        updateDisplay();
+        // Mostra il pulsante "Start" e nascondi il "Stop" quando il timer è resettato
+        startBtn.style.display = 'inline-block';
+        stopBtn.style.display = 'none';
+    }
+
+    function updateDisplay() {
+        timerDisplay.textContent = formatTime(currentTime);
+    }
+
+    function updateDetails() {
+        description.textContent = workoutDetails[workoutType].description;
+        goal.textContent = workoutDetails[workoutType].goal;
+        example.textContent = workoutDetails[workoutType].example;
+    }
+
+    function beepSound() {
+        const beep = document.getElementById("alarmSound");
+        beep.play();
+    }
+
+    startBtn.addEventListener('click', startTimer);
+    stopBtn.addEventListener('click', stopTimer);
+    resetBtn.addEventListener('click', resetTimer);
+
+    // Aggiorna i dettagli iniziali
+    updateDetails();
+
+</script>
+
+
+</html>
