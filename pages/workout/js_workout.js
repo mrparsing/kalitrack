@@ -159,37 +159,84 @@ function playAlarmSound() {
     }
 }
 
-// Inizializza l'audio al caricamento della pagina
-window.addEventListener('DOMContentLoaded', () => {
-    initializeAudio();
 
-    // Sblocca l'audio al primo click o interazione con la pagina
-    document.body.addEventListener('click', unlockAudio, { once: true });
-});
+let timers = {}; // Oggetto per memorizzare i timer di ciascun esercizio
 
-function startTimer(duration, display, textElement) {
+function startTimer(duration, display, textElement, exerciseIndex) {
     unlockAudio();
-    let timer = duration, minutes, seconds;
+
+    // Se il timer è già in esecuzione per questo esercizio, non fare nulla
+    if (timers[exerciseIndex]?.isTimerRunning) return;
+
+    timers[exerciseIndex] = {
+        isTimerRunning: true,
+        remainingTime: duration,
+        countdown: null // Inizialmente non esiste un countdown
+    };
+
+    // Memorizza lo stato del timer in localStorage (per ogni esercizio, se necessario)
+    localStorage.setItem(`remainingTime_${exerciseIndex}`, timers[exerciseIndex].remainingTime);
+    localStorage.setItem(`isTimerRunning_${exerciseIndex}`, true);
+
     textElement.style.color = "red";
     display.classList.add('active');
     textElement.classList.add('active');
 
-    const countdown = setInterval(() => {
-        minutes = parseInt(timer / 60, 10);
-        seconds = parseInt(timer % 60, 10);
+    timers[exerciseIndex].countdown = setInterval(() => {
+        let minutes = parseInt(timers[exerciseIndex].remainingTime / 60, 10);
+        let seconds = parseInt(timers[exerciseIndex].remainingTime % 60, 10);
         seconds = seconds < 10 ? "0" + seconds : seconds;
         display.textContent = `${minutes}:${seconds}`;
 
-        if (--timer < 0) {
-            clearInterval(countdown);
+        if (--timers[exerciseIndex].remainingTime < 0) {
+            clearInterval(timers[exerciseIndex].countdown);
             playAlarmSound();
             display.textContent = "Tempo Scaduto!";
             textElement.style.color = "gray";
             display.classList.remove('active');
             textElement.classList.remove('active');
+            timers[exerciseIndex].isTimerRunning = false;
+
+            // Resetta lo stato del timer in localStorage
+            localStorage.removeItem(`remainingTime_${exerciseIndex}`);
+            localStorage.removeItem(`isTimerRunning_${exerciseIndex}`);
         }
     }, 1000);
 }
+
+// Non fermiamo il timer quando la pagina perde visibilità
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+        // Quando la pagina torna visibile, riprende il timer con il tempo rimanente
+        const savedTime = localStorage.getItem(`remainingTime_${exerciseIndex}`);
+        const savedTimerState = localStorage.getItem(`isTimerRunning_${exerciseIndex}`) === 'true';
+
+        if (savedTime && savedTimerState && !timers[exerciseIndex]?.isTimerRunning) {
+            timers[exerciseIndex].remainingTime = parseInt(savedTime, 10); // Ripristina il tempo rimanente
+            startTimer(timers[exerciseIndex].remainingTime, document.querySelector('.timer-display'), document.querySelector('.text-element'), exerciseIndex);
+        }
+    }
+});
+
+// Inizializzazione dell'audio al caricamento della pagina
+window.addEventListener('DOMContentLoaded', () => {
+    initializeAudio();
+
+    // Sblocca l'audio al primo click o interazione con la pagina
+    document.body.addEventListener('click', unlockAudio, { once: true });
+
+    // Riprendi il timer al caricamento della pagina se necessario
+    const savedTime = localStorage.getItem('remainingTime');
+    const savedTimerState = localStorage.getItem('isTimerRunning') === 'true';
+
+    if (savedTime && savedTimerState && !isTimerRunning) {
+        remainingTime = parseInt(savedTime, 10);
+        startTimer(remainingTime, document.querySelector('.timer-display'), document.querySelector('.text-element'));
+    }
+});
+
+
+
 
 function loadSessionDetails_sfide(challengeName) {
     auth.onAuthStateChanged(user => {
