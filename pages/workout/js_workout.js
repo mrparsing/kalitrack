@@ -168,27 +168,32 @@ function startTimer(duration, display, textElement, exerciseIndex) {
     // Se il timer è già in esecuzione per questo esercizio, non fare nulla
     if (timers[exerciseIndex]?.isTimerRunning) return;
 
+    const startTime = Date.now(); // Salva il tempo di inizio
+    const endTime = startTime + duration * 1000; // Calcola l'ora di fine
     timers[exerciseIndex] = {
         isTimerRunning: true,
-        remainingTime: duration,
-        countdown: null // Inizialmente non esiste un countdown
+        endTime, // Memorizza l'ora di fine
+        countdown: null
     };
 
-    // Memorizza lo stato del timer in localStorage (per ogni esercizio, se necessario)
-    localStorage.setItem(`remainingTime_${exerciseIndex}`, timers[exerciseIndex].remainingTime);
+    // Salva lo stato del timer nel localStorage
+    localStorage.setItem(`endTime_${exerciseIndex}`, endTime);
     localStorage.setItem(`isTimerRunning_${exerciseIndex}`, true);
 
     textElement.style.color = "red";
     display.classList.add('active');
     textElement.classList.add('active');
 
-    timers[exerciseIndex].countdown = setInterval(() => {
-        let minutes = parseInt(timers[exerciseIndex].remainingTime / 60, 10);
-        let seconds = parseInt(timers[exerciseIndex].remainingTime % 60, 10);
+    function updateTimer() {
+        const now = Date.now();
+        const remainingTime = Math.max(0, Math.floor((timers[exerciseIndex].endTime - now) / 1000)); // Tempo rimanente in secondi
+
+        let minutes = Math.floor(remainingTime / 60);
+        let seconds = remainingTime % 60;
         seconds = seconds < 10 ? "0" + seconds : seconds;
         display.textContent = `${minutes}:${seconds}`;
 
-        if (--timers[exerciseIndex].remainingTime < 0) {
+        if (remainingTime <= 0) {
             clearInterval(timers[exerciseIndex].countdown);
             playAlarmSound();
             display.textContent = "Tempo Scaduto!";
@@ -197,24 +202,32 @@ function startTimer(duration, display, textElement, exerciseIndex) {
             textElement.classList.remove('active');
             timers[exerciseIndex].isTimerRunning = false;
 
-            // Resetta lo stato del timer in localStorage
-            localStorage.removeItem(`remainingTime_${exerciseIndex}`);
+            // Resetta lo stato del timer nel localStorage
+            localStorage.removeItem(`endTime_${exerciseIndex}`);
             localStorage.removeItem(`isTimerRunning_${exerciseIndex}`);
         }
-    }, 1000);
+    }
+
+    // Aggiorna il timer ogni secondo
+    timers[exerciseIndex].countdown = setInterval(updateTimer, 1000);
+    updateTimer(); // Aggiorna subito il display
 }
 
-// Non fermiamo il timer quando la pagina perde visibilità
+
+// Gestisci il ripristino del timer quando la pagina è visibile
 document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
-        // Quando la pagina torna visibile, riprende il timer con il tempo rimanente
-        const savedTime = localStorage.getItem(`remainingTime_${exerciseIndex}`);
-        const savedTimerState = localStorage.getItem(`isTimerRunning_${exerciseIndex}`) === 'true';
+        Object.keys(timers).forEach(exerciseIndex => {
+            const endTime = parseInt(localStorage.getItem(`endTime_${exerciseIndex}`), 10);
+            const isTimerRunning = localStorage.getItem(`isTimerRunning_${exerciseIndex}`) === 'true';
 
-        if (savedTime && savedTimerState && !timers[exerciseIndex]?.isTimerRunning) {
-            timers[exerciseIndex].remainingTime = parseInt(savedTime, 10); // Ripristina il tempo rimanente
-            startTimer(timers[exerciseIndex].remainingTime, document.querySelector('.timer-display'), document.querySelector('.text-element'), exerciseIndex);
-        }
+            if (isTimerRunning && endTime && !timers[exerciseIndex]?.isTimerRunning) {
+                const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000)); // Calcola il tempo rimanente
+                if (remainingTime > 0) {
+                    startTimer(remainingTime, document.querySelector('.timer-display'), document.querySelector('.text-element'), exerciseIndex);
+                }
+            }
+        });
     }
 });
 
