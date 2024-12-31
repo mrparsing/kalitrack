@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="../home/style_home.css">
     <link rel="stylesheet" type="text/css" href="style_workout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
@@ -78,18 +79,36 @@
                 <p id="exerciseRepetitions">Ripetizioni: </p>
                 <p id="exerciseRecovery">Recupero: </p>
                 <div class="buttons">
-                    <button id="goBack"><=</button>
+                    <button id="goBack">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
                     <div class="timerBtns">
-                        <button id="startRecoveryButton">Avvia Recupero</button>
+                        <div id="timerDisplay" class="timer-display hidden">
+                            <svg class="timer-circle" viewBox="0 0 100 100">
+                                <circle class="background-circle" cx="50" cy="50" r="45"></circle>
+                                <circle class="progress-circle" cx="50" cy="50" r="45"></circle>
+                            </svg>
+                            <span class="timer-text" id="timerText">0</span>
+                        </div>
+                        <button id="startRecoveryButton" class="startRecoveryButton">
+                            Avvia Recupero
+                        </button>
                         <div class="pauseResetBtns">
-                            <button id="pauseButton">Pausa</button>
-                            <button id="resetButton">Reset</button>
+                            <button id="pauseButton">
+                                <i class="fas fa-pause"></i>
+                            </button>
+                            <button id="resetButton">
+                                <i class="fas fa-redo"></i>
+                            </button>
                         </div>
                     </div>
-                    <button id="goOn">=></button>
+                    <button id="goOn">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
                 </div>
-                <button id="endWorkout" class="endWorkout">Termina workout</button>
-
+                <button id="endWorkout" class="endWorkout">
+                    <i class="fas fa-list"></i> Visualizza workout
+                </button>
             </div>
             <div class="workout">
                 <section id="exerciseList" class="exercise-list">
@@ -104,7 +123,7 @@
         <button id="startWorkoutButton" class="start-workout-button">Start</button>
 
     </div>
-    
+
     <div class="overlay" id="overlay"></div>
 
     <script>

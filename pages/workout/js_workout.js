@@ -111,60 +111,9 @@ function playAlarmSound() {
 
 let timers = {}; // Oggetto per memorizzare i timer di ciascun esercizio
 
-function startTimer(duration, display, textElement, exerciseIndex) {
-    unlockAudio();
-
-    // Se il timer è già in esecuzione per questo esercizio, non fare nulla
-    if (timers[exerciseIndex]?.isTimerRunning) return;
-
-    const startTime = Date.now(); // Salva il tempo di inizio
-    const endTime = startTime + duration * 1000; // Calcola l'ora di fine
-    timers[exerciseIndex] = {
-        isTimerRunning: true,
-        endTime, // Memorizza l'ora di fine
-        countdown: null
-    };
-
-    // Salva lo stato del timer nel localStorage
-    localStorage.setItem(`endTime_${exerciseIndex}`, endTime);
-    localStorage.setItem(`isTimerRunning_${exerciseIndex}`, true);
-
-    textElement.style.color = "red";
-    display.classList.add('active');
-    textElement.classList.add('active');
-
-    function updateTimer() {
-        const now = Date.now();
-        const remainingTime = Math.max(0, Math.floor((timers[exerciseIndex].endTime - now) / 1000)); // Tempo rimanente in secondi
-
-        let minutes = Math.floor(remainingTime / 60);
-        let seconds = remainingTime % 60;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
-        display.textContent = `${minutes}:${seconds}`;
-
-        if (remainingTime <= 0) {
-            clearInterval(timers[exerciseIndex].countdown);
-            playAlarmSound();
-            display.textContent = "Tempo Scaduto!";
-            textElement.style.color = "gray";
-            display.classList.remove('active');
-            textElement.classList.remove('active');
-            timers[exerciseIndex].isTimerRunning = false;
-
-            // Resetta lo stato del timer nel localStorage
-            localStorage.removeItem(`endTime_${exerciseIndex}`);
-            localStorage.removeItem(`isTimerRunning_${exerciseIndex}`);
-        }
-    }
-
-    // Aggiorna il timer ogni secondo
-    timers[exerciseIndex].countdown = setInterval(updateTimer, 1000);
-    updateTimer(); // Aggiorna subito il display
-}
-
 
 // Gestisci il ripristino del timer quando la pagina è visibile
-document.addEventListener('visibilitychange', () => {
+/*document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
         Object.keys(timers).forEach(exerciseIndex => {
             const endTime = parseInt(localStorage.getItem(`endTime_${exerciseIndex}`), 10);
@@ -197,7 +146,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-
+*/
 
 
 function loadSessionDetails_sfide(challengeName) {
@@ -254,7 +203,7 @@ function onTimerEnd() {
 
 document.addEventListener("DOMContentLoaded", () => {
     const startButton = document.getElementById("startWorkoutButton");
-
+    
     if (startButton) {
         startButton.addEventListener("click", () => {
             if (selectedSession && selectedSession.exercises) {
@@ -276,6 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function startFullScreenWorkout(exercises) {
+    document.getElementById("startWorkoutButton").textContent = "Riprendi"
     let currentIndex = 0; // Indice dell'esercizio corrente
     let currentSeries = 0; // Indice della serie corrente
     let timerId = null; // Per memorizzare il timer
@@ -301,6 +251,27 @@ function startFullScreenWorkout(exercises) {
         remainingTime = duration;
         isPaused = false;
 
+        const timerDisplay = document.getElementById("timerDisplay");
+        const timerText = document.getElementById("timerText");
+        const progressCircle = document.querySelector(".progress-circle");
+
+        // Nascondi il pulsante di recupero e mostra il quadrante del timer
+        recoveryButton.classList.add("hidden");
+        timerDisplay.classList.remove("hidden");
+
+        // Calcola la lunghezza totale del cerchio
+        const circleCircumference = 2 * Math.PI * 45;
+
+        // Imposta le proprietà iniziali del cerchio
+        progressCircle.style.strokeDasharray = circleCircumference;
+        progressCircle.style.strokeDashoffset = circleCircumference;
+
+        function updateTimerDisplay(seconds) {
+            timerText.textContent = seconds; // Aggiorna il testo al centro del quadrante
+            const offset = (circleCircumference * (duration - seconds)) / duration;
+            progressCircle.style.strokeDashoffset = circleCircumference - offset; // Aggiorna la barra circolare
+        }
+
         function tick() {
             if (isPaused) return;
 
@@ -309,7 +280,11 @@ function startFullScreenWorkout(exercises) {
                 clearInterval(timerId);
                 timerId = null;
 
-                // Avanza alla serie successiva o all'esercizio successivo
+                // Ripristina il pulsante di recupero e nascondi il quadrante
+                recoveryButton.classList.remove("hidden");
+                timerDisplay.classList.add("hidden");
+
+                // Azioni successive alla fine del timer
                 currentSeries++;
                 if (currentSeries >= exercises[currentIndex].series) {
                     currentSeries = 0; // Resetta la serie
@@ -323,6 +298,7 @@ function startFullScreenWorkout(exercises) {
 
         clearInterval(timerId); // Reset del timer se già attivo
         timerId = setInterval(tick, 1000);
+        updateTimerDisplay(remainingTime);
     }
 
     function pauseTimer() {
@@ -331,20 +307,30 @@ function startFullScreenWorkout(exercises) {
 
     function resumeTimer() {
         isPaused = false;
-        startTimer(remainingTime);
+        startTimer(remainingTime); // Continua il timer dal punto in cui era stato interrotto
     }
 
     function resetTimer() {
-        clearInterval(timerId);
+        clearInterval(timerId); // Ferma il timer
         timerId = null;
+
+        // Imposta il tempo di recupero per l'esercizio corrente
         remainingTime = exercises[currentIndex].recovery;
-        updateTimerDisplay(remainingTime);
+
+        // Azzera il timer e aggiorna il display del timer
+        updateTimerDisplay(exercises[currentIndex].recovery); // Imposta il timer su zero
+
+        // Mostra di nuovo il pulsante per iniziare il recupero
+        recoveryButton.classList.remove("hidden");
+        document.getElementById("timerDisplay").classList.add("hidden"); // Nascondi il timer
     }
 
     function showExercise(index) {
         if (index >= exercises.length) {
             fullscreenContainer.classList.add("hidden");
             showNotification("Workout completato!", "green");
+            document.getElementById("startWorkoutButton").textContent = "Start";
+
             return;
         }
 
@@ -363,53 +349,69 @@ function startFullScreenWorkout(exercises) {
     // Gestione dei pulsanti
     recoveryButton.onclick = () => {
         if (!timerId) {
-            startTimer(exercises[currentIndex].recovery);
+            startTimer(exercises[currentIndex].recovery); // Avvia il timer per il recupero
         }
-    };
-
-    goBackButton.onclick = () => {
-        clearInterval(timerId);
-        timerId = null;
-
-        if (currentSeries > 0) {
-            currentSeries--; // Torna alla serie precedente
-        } else if (currentIndex > 0) {
-            currentIndex--; // Torna all'esercizio precedente
-            currentSeries = exercises[currentIndex].series - 1; // Vai all'ultima serie dell'esercizio precedente
-        }
-
-        showExercise(currentIndex);
     };
 
     goOnButton.onclick = () => {
-        clearInterval(timerId);
-        timerId = null;
-
+        animateButtonDirection("goOn", "right"); // Anima verso destra
+    
         if (currentSeries < exercises[currentIndex].series - 1) {
             currentSeries++; // Vai alla serie successiva
         } else if (currentIndex < exercises.length - 1) {
             currentIndex++; // Passa all'esercizio successivo
             currentSeries = 0; // Resetta la serie
         }
-
+    
+        showExercise(currentIndex);
+    };
+    
+    goBackButton.onclick = () => {
+        animateButtonDirection("goBack", "left"); // Anima verso sinistra
+    
+        if (currentSeries > 0) {
+            currentSeries--; // Torna alla serie precedente
+        } else if (currentIndex > 0) {
+            currentIndex--; // Torna all'esercizio precedente
+            currentSeries = exercises[currentIndex].series - 1; // Vai all'ultima serie dell'esercizio precedente
+        }
+    
         showExercise(currentIndex);
     };
 
     pauseButton.onclick = () => {
         if (isPaused) {
             resumeTimer();
-            pauseButton.textContent = "Pausa";
+            pauseButton.textContent = "Pause"; // Cambia il testo a "Pause"
         } else {
             pauseTimer();
-            pauseButton.textContent = "Riprendi";
+            pauseButton.textContent = "Resume"; // Cambia il testo a "Resume"
         }
     };
 
     resetButton.onclick = () => {
         resetTimer();
-        pauseButton.textContent = "Pausa";
+        pauseButton.textContent = "Pause"; // Rende "Pause" il testo del pulsante
     };
 
     // Mostra il primo esercizio
     showExercise(currentIndex);
+}
+
+function animateButtonDirection(buttonId, direction) {
+    const button = document.getElementById(buttonId);
+    button.classList.add("animate");
+
+    // Direzione dell'animazione
+    if (direction === "right") {
+        button.style.transform = "translateX(10px)";
+    } else if (direction === "left") {
+        button.style.transform = "translateX(-10px)";
+    }
+
+    // Rimuovi l'animazione dopo 300ms
+    setTimeout(() => {
+        button.classList.remove("animate");
+        button.style.transform = "translateX(0)"; // Ripristina la posizione
+    }, 300);
 }
