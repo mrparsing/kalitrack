@@ -79,9 +79,6 @@
                 <p id="exerciseRepetitions">Ripetizioni: </p>
                 <p id="exerciseRecovery">Recupero: </p>
                 <div class="buttons">
-                    <button id="goBack">
-                        <i class="fas fa-arrow-left"></i>
-                    </button>
                     <div class="timerBtns">
                         <div id="timerDisplay" class="timer-display hidden">
                             <svg class="timer-circle" viewBox="0 0 100 100">
@@ -90,10 +87,8 @@
                             </svg>
                             <span class="timer-text" id="timerText">0</span>
                         </div>
-                        <button id="startRecoveryButton" class="startRecoveryButton">
-                            Avvia Recupero
-                        </button>
-                        <div class="pauseResetBtns">
+                        <button id="startRecoveryButton" class="startRecoveryButton">Avvia Recupero</button>
+                        <div id="pauseResetBtns" class="pauseResetBtns hidden">
                             <button id="pauseButton">
                                 <i class="fas fa-pause"></i>
                             </button>
@@ -102,6 +97,11 @@
                             </button>
                         </div>
                     </div>
+                </div>
+                <div class="goBtn">
+                    <button id="goBack">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
                     <button id="goOn">
                         <i class="fas fa-arrow-right"></i>
                     </button>

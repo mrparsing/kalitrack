@@ -113,7 +113,7 @@ let timers = {}; // Oggetto per memorizzare i timer di ciascun esercizio
 
 
 // Gestisci il ripristino del timer quando la pagina è visibile
-/*document.addEventListener('visibilitychange', () => {
+document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
         Object.keys(timers).forEach(exerciseIndex => {
             const endTime = parseInt(localStorage.getItem(`endTime_${exerciseIndex}`), 10);
@@ -130,7 +130,7 @@ let timers = {}; // Oggetto per memorizzare i timer di ciascun esercizio
 });
 
 // Inizializzazione dell'audio al caricamento della pagina
-window.addEventListener('DOMContentLoaded', () => {
+/*window.addEventListener('DOMContentLoaded', () => {
     initializeAudio();
 
     // Sblocca l'audio al primo click o interazione con la pagina
@@ -216,7 +216,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-
     const endButton = document.getElementById("endWorkout");
     endButton.addEventListener("click", () => {
         const fullscreenContainer = document.getElementById("fullscreenExercise");
@@ -242,6 +241,7 @@ function startFullScreenWorkout(exercises) {
     const goOnButton = document.getElementById("goOn");
     const pauseButton = document.getElementById("pauseButton");
     const resetButton = document.getElementById("resetButton");
+    const pauseResetBtns = document.getElementById("pauseResetBtns");
 
     function updateTimerDisplay(seconds) {
         recoveryElement.textContent = `Recupero: ${seconds} secondi`;
@@ -258,6 +258,7 @@ function startFullScreenWorkout(exercises) {
         // Nascondi il pulsante di recupero e mostra il quadrante del timer
         recoveryButton.classList.add("hidden");
         timerDisplay.classList.remove("hidden");
+        pauseResetBtns.classList.remove("hidden");
 
         // Calcola la lunghezza totale del cerchio
         const circleCircumference = 2 * Math.PI * 45;
@@ -283,6 +284,7 @@ function startFullScreenWorkout(exercises) {
                 // Ripristina il pulsante di recupero e nascondi il quadrante
                 recoveryButton.classList.remove("hidden");
                 timerDisplay.classList.add("hidden");
+                pauseResetBtns.classList.add("hidden");
 
                 // Azioni successive alla fine del timer
                 currentSeries++;
@@ -318,11 +320,12 @@ function startFullScreenWorkout(exercises) {
         remainingTime = exercises[currentIndex].recovery;
 
         // Azzera il timer e aggiorna il display del timer
-        updateTimerDisplay(exercises[currentIndex].recovery); // Imposta il timer su zero
+        updateTimerDisplay(remainingTime); // Imposta il timer su zero
 
         // Mostra di nuovo il pulsante per iniziare il recupero
         recoveryButton.classList.remove("hidden");
         document.getElementById("timerDisplay").classList.add("hidden"); // Nascondi il timer
+        pauseResetBtns.classList.add("hidden");
     }
 
     function showExercise(index) {
