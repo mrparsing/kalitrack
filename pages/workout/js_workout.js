@@ -108,24 +108,21 @@ function playAlarmSound() {
     }
 }
 
-
-let timers = {}; // Oggetto per memorizzare i timer di ciascun esercizio
-
-
 // Gestisci il ripristino del timer quando la pagina è visibile
 document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
-        Object.keys(timers).forEach(exerciseIndex => {
-            const endTime = parseInt(localStorage.getItem(`endTime_${exerciseIndex}`), 10);
-            const isTimerRunning = localStorage.getItem(`isTimerRunning_${exerciseIndex}`) === 'true';
+        if (timerId && !isPaused) {
+            // Calcola il tempo rimanente usando l'ora corrente
+            const endTime = parseInt(localStorage.getItem('timerEndTime'), 10);
+            const now = Date.now();
+            remainingTime = Math.max(0, Math.floor((endTime - now) / 1000));
 
-            if (isTimerRunning && endTime && !timers[exerciseIndex]?.isTimerRunning) {
-                const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000)); // Calcola il tempo rimanente
-                if (remainingTime > 0) {
-                    startTimer(remainingTime, document.querySelector('.timer-display'), document.querySelector('.text-element'), exerciseIndex);
-                }
+            if (remainingTime > 0) {
+                startTimer(remainingTime); // Continua il timer
+            } else {
+                onTimerEnd(); // Timer scaduto
             }
-        });
+        }
     }
 });
 
@@ -248,31 +245,47 @@ function startFullScreenWorkout(exercises) {
     }
 
     function startTimer(duration) {
-        remainingTime = duration;
+        const endTime = Date.now() + duration * 1000; // Calcola il tempo di fine in millisecondi
+        remainingTime = duration; // Inizia con il tempo totale
         isPaused = false;
-
+    
         const timerDisplay = document.getElementById("timerDisplay");
         const timerText = document.getElementById("timerText");
         const progressCircle = document.querySelector(".progress-circle");
-
+    
         // Nascondi il pulsante di recupero e mostra il quadrante del timer
         recoveryButton.classList.add("hidden");
         timerDisplay.classList.remove("hidden");
         pauseResetBtns.classList.remove("hidden");
-
-        // Calcola la lunghezza totale del cerchio
-        const circleCircumference = 2 * Math.PI * 45;
-
-        // Imposta le proprietà iniziali del cerchio
+    
+        const circleCircumference = 2 * Math.PI * 45; // Circonferenza del cerchio
         progressCircle.style.strokeDasharray = circleCircumference;
-        progressCircle.style.strokeDashoffset = circleCircumference;
-
-        function updateTimerDisplay(seconds) {
-            timerText.textContent = seconds; // Aggiorna il testo al centro del quadrante
-            const offset = (circleCircumference * (duration - seconds)) / duration;
-            progressCircle.style.strokeDashoffset = circleCircumference - offset; // Aggiorna la barra circolare
+    
+        function updateTimerDisplay() {
+            if (isPaused) return;
+    
+            const now = Date.now();
+            remainingTime = Math.max(0, Math.floor((endTime - now) / 1000)); // Calcola il tempo rimanente
+    
+            // Aggiorna il testo e la barra del timer
+            timerText.textContent = remainingTime;
+            const offset = (circleCircumference * (duration - remainingTime)) / duration;
+            progressCircle.style.strokeDashoffset = circleCircumference - offset;
+    
+            if (remainingTime <= 0) {
+                clearInterval(timerId);
+                timerId = null;
+    
+                // Ripristina il pulsante di recupero e nascondi il quadrante
+                recoveryButton.classList.remove("hidden");
+                timerDisplay.classList.add("hidden");
+                pauseResetBtns.classList.add("hidden");
+    
+                // Azioni successive alla fine del timer
+                onTimerEnd();
+            }
         }
-
+        
         function tick() {
             if (isPaused) return;
 
