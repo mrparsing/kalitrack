@@ -1,20 +1,3 @@
-function toggleExerciseDetails(exerciseItem) {
-    const detailsContainer = exerciseItem.querySelector(".exercise-details");
-
-    // Alterna la visibilità del contenitore dei dettagli
-    detailsContainer.classList.toggle("visible");
-
-    // Se i dettagli non sono visibili, rimuovi i contenuti
-    if (!detailsContainer.classList.contains("visible")) {
-        detailsContainer.innerHTML = ""; // Rimuovi i dettagli esistenti
-    } else {
-        const series = exerciseItem.series; // Supponendo che tu abbia questa informazione
-        const repetitions = exerciseItem.repetitions; // Supponendo che tu abbia questa informazione
-        const recovery = exerciseItem.recovery; // Supponendo che tu abbia questa informazione
-        populateExerciseDetails(detailsContainer, series, repetitions, recovery);
-    }
-}
-
 function getUrlParams() {
     const params = new URLSearchParams(window.location.search);
     return {
@@ -23,6 +6,7 @@ function getUrlParams() {
         page: params.get('page')
     };
 }
+let selectedSession;
 
 function loadSessionDetails_sessions(workoutName, date, page) {
     auth.onAuthStateChanged(user => {
@@ -33,7 +17,7 @@ function loadSessionDetails_sessions(workoutName, date, page) {
                         const sessionData = docSnapshot.data().workouts || [];
 
                         // Cerca il workout in base a workoutName e data
-                        const selectedSession = sessionData.find(workout => {
+                        selectedSession = sessionData.find(workout => {
                             console.log(`Verifica workout: ${workout.workoutName} con data ${workout.date}`);
                             return workout.workoutName === workoutName && workout.date === date;
                         });
@@ -51,12 +35,11 @@ function loadSessionDetails_sessions(workoutName, date, page) {
                                 exerciseItem.className = "exercise-item";
                                 exerciseItem.innerHTML = `
 <h3 class="exercise-title">${exercise.exercise}: Serie: ${exercise.series}, Ripetizioni: ${exercise.repetitions} - Recupero: ${exercise.recovery} sec</h3>
-<div class="exercise-details" style="display: none;"></div>
 `;
 
                                 // Aggiungi l'evento click per espandere/collassare i dettagli
                                 const exerciseTitle = exerciseItem.querySelector(".exercise-title");
-                                const exerciseDetails = exerciseItem.querySelector(".exercise-details");
+
 
                                 exerciseTitle.addEventListener("click", () => {
                                     // Toggles the display property between none and block
@@ -89,41 +72,7 @@ function loadSessionDetails_sessions(workoutName, date, page) {
     });
 }
 
-function populateExerciseDetails(container, series, repetitions, recovery) {
-    // Controlla se i dettagli sono già stati popolati
-    if (container.innerHTML.trim() !== "") {
-        return;
-    }
 
-    for (let i = 1; i <= series; i++) {
-        const detailRow = document.createElement("div");
-        detailRow.className = "exercise-detail-row";
-
-        // Creazione del bottone
-        const playButton = document.createElement("button");
-        playButton.className = "play-btn";
-        playButton.textContent = "Avvia recupero";
-
-        // Evento click per avviare il timer
-        playButton.addEventListener('click', () => {
-            startTimer(recovery, playButton, detailRow.querySelector(".text-element"));
-            playButton.disabled = true; // Disabilita il pulsante durante il timer
-        });
-
-        // Creazione della riga dei dettagli
-        detailRow.innerHTML = `
-            <span class="text-element">
-                Serie ${i}: Ripetizioni: ${repetitions}, Recupero: ${recovery} sec
-            </span>
-        `;
-
-        // Aggiunta del bottone alla riga dei dettagli
-        detailRow.appendChild(playButton);
-
-        // Aggiunta della riga al contenitore dei dettagli
-        container.appendChild(detailRow);
-    }
-}
 
 let audioContext;
 let alarmTrack;
@@ -276,18 +225,7 @@ function loadSessionDetails_sfide(challengeName) {
                                 exerciseItem.innerHTML = `
                             <h3 class="exercise-title">${exercise.exercise}</h3>
                             <p>Obiettivo: ${exercise.series}x${exercise.repetitions} - Recupero: ${exercise.recoveryTime}</p>
-                            <div class="exercise-details" style="display: none;"></div>
                         `;
-
-                                // Aggiungi l'evento click per espandere/collassare i dettagli
-                                const exerciseTitle = exerciseItem.querySelector(".exercise-title");
-                                exerciseTitle.addEventListener("click", () => {
-                                    const detailsContainer = exerciseItem.querySelector(".exercise-details");
-                                    detailsContainer.style.display = detailsContainer.style.display === "block" ? "none" : "block";
-                                    if (detailsContainer.style.display === "block") {
-                                        populateExerciseDetails(detailsContainer, exercise.series, exercise.repetitions, exercise.recoveryTime);
-                                    }
-                                });
 
                                 exercisesContainer.appendChild(exerciseItem);
                             });
@@ -312,4 +250,166 @@ function onTimerEnd() {
         textElement.classList.remove('active'); // Rimuovi lo stile attivo
         textElement.classList.add('timer-ended'); // Aggiungi lo stile per il timer scaduto
     }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const startButton = document.getElementById("startWorkoutButton");
+
+    if (startButton) {
+        startButton.addEventListener("click", () => {
+            if (selectedSession && selectedSession.exercises) {
+                startFullScreenWorkout(selectedSession.exercises);
+            } else {
+                showNotification("Nessun workout selezionato. Carica una sessione prima di iniziare.", "red");
+            }
+        });
+    }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const endButton = document.getElementById("endWorkout");
+    endButton.addEventListener("click", () => {
+        const fullscreenContainer = document.getElementById("fullscreenExercise");
+        fullscreenContainer.classList.add("hidden");
+    })
+});
+
+function startFullScreenWorkout(exercises) {
+    let currentIndex = 0; // Indice dell'esercizio corrente
+    let currentSeries = 0; // Indice della serie corrente
+    let timerId = null; // Per memorizzare il timer
+    let remainingTime = 0; // Tempo rimanente per il recupero
+    let isPaused = false; // Stato del timer
+
+    const fullscreenContainer = document.getElementById("fullscreenExercise");
+    const exerciseNameElement = document.getElementById("exerciseName");
+    const seriesElement = document.getElementById("exerciseSeries");
+    const repetitionsElement = document.getElementById("exerciseRepetitions");
+    const recoveryElement = document.getElementById("exerciseRecovery");
+    const recoveryButton = document.getElementById("startRecoveryButton");
+    const goBackButton = document.getElementById("goBack");
+    const goOnButton = document.getElementById("goOn");
+    const pauseButton = document.getElementById("pauseButton");
+    const resetButton = document.getElementById("resetButton");
+
+    function updateTimerDisplay(seconds) {
+        recoveryElement.textContent = `Recupero: ${seconds} secondi`;
+    }
+
+    function startTimer(duration) {
+        remainingTime = duration;
+        isPaused = false;
+
+        function tick() {
+            if (isPaused) return;
+
+            updateTimerDisplay(remainingTime);
+            if (remainingTime <= 0) {
+                clearInterval(timerId);
+                timerId = null;
+
+                // Avanza alla serie successiva o all'esercizio successivo
+                currentSeries++;
+                if (currentSeries >= exercises[currentIndex].series) {
+                    currentSeries = 0; // Resetta la serie
+                    currentIndex++; // Passa all'esercizio successivo
+                }
+                showExercise(currentIndex);
+            } else {
+                remainingTime--;
+            }
+        }
+
+        clearInterval(timerId); // Reset del timer se già attivo
+        timerId = setInterval(tick, 1000);
+    }
+
+    function pauseTimer() {
+        isPaused = true;
+    }
+
+    function resumeTimer() {
+        isPaused = false;
+        startTimer(remainingTime);
+    }
+
+    function resetTimer() {
+        clearInterval(timerId);
+        timerId = null;
+        remainingTime = exercises[currentIndex].recovery;
+        updateTimerDisplay(remainingTime);
+    }
+
+    function showExercise(index) {
+        if (index >= exercises.length) {
+            fullscreenContainer.classList.add("hidden");
+            showNotification("Workout completato!", "green");
+            return;
+        }
+
+        const exercise = exercises[index];
+
+        // Aggiorna il contenuto dell'esercizio
+        exerciseNameElement.textContent = exercise.exercise;
+        seriesElement.textContent = `Serie: ${currentSeries + 1} / ${exercise.series}`;
+        repetitionsElement.textContent = `Ripetizioni: ${exercise.repetitions}`;
+        updateTimerDisplay(exercise.recovery);
+
+        // Mostra il contenitore del workout in full-screen
+        fullscreenContainer.classList.remove("hidden");
+    }
+
+    // Gestione dei pulsanti
+    recoveryButton.onclick = () => {
+        if (!timerId) {
+            startTimer(exercises[currentIndex].recovery);
+        }
+    };
+
+    goBackButton.onclick = () => {
+        clearInterval(timerId);
+        timerId = null;
+
+        if (currentSeries > 0) {
+            currentSeries--; // Torna alla serie precedente
+        } else if (currentIndex > 0) {
+            currentIndex--; // Torna all'esercizio precedente
+            currentSeries = exercises[currentIndex].series - 1; // Vai all'ultima serie dell'esercizio precedente
+        }
+
+        showExercise(currentIndex);
+    };
+
+    goOnButton.onclick = () => {
+        clearInterval(timerId);
+        timerId = null;
+
+        if (currentSeries < exercises[currentIndex].series - 1) {
+            currentSeries++; // Vai alla serie successiva
+        } else if (currentIndex < exercises.length - 1) {
+            currentIndex++; // Passa all'esercizio successivo
+            currentSeries = 0; // Resetta la serie
+        }
+
+        showExercise(currentIndex);
+    };
+
+    pauseButton.onclick = () => {
+        if (isPaused) {
+            resumeTimer();
+            pauseButton.textContent = "Pausa";
+        } else {
+            pauseTimer();
+            pauseButton.textContent = "Riprendi";
+        }
+    };
+
+    resetButton.onclick = () => {
+        resetTimer();
+        pauseButton.textContent = "Pausa";
+    };
+
+    // Mostra il primo esercizio
+    showExercise(currentIndex);
 }

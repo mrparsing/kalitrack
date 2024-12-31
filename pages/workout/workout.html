@@ -72,6 +72,25 @@
                     <p id="sessionDate">Data: --</p>
                 </section>
             </div>
+            <div id="fullscreenExercise" class="fullscreen hidden">
+                <h1 id="exerciseName">Nome: </h1>
+                <p id="exerciseSeries">Serie: </p>
+                <p id="exerciseRepetitions">Ripetizioni: </p>
+                <p id="exerciseRecovery">Recupero: </p>
+                <div class="buttons">
+                    <button id="goBack"><=</button>
+                    <div class="timerBtns">
+                        <button id="startRecoveryButton">Avvia Recupero</button>
+                        <div class="pauseResetBtns">
+                            <button id="pauseButton">Pausa</button>
+                            <button id="resetButton">Reset</button>
+                        </div>
+                    </div>
+                    <button id="goOn">=></button>
+                </div>
+                <button id="endWorkout" class="endWorkout">Termina workout</button>
+
+            </div>
             <div class="workout">
                 <section id="exerciseList" class="exercise-list">
                     <h3 id="list">Esercizi</h3>
@@ -82,7 +101,10 @@
             </div>
         </main>
         <audio id="alarmSound" src="../../assets/beep.mp3" preload="auto"></audio>
+        <button id="startWorkoutButton" class="start-workout-button">Start</button>
+
     </div>
+    
     <div class="overlay" id="overlay"></div>
 
     <script>
