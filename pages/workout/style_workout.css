@@ -484,6 +484,8 @@
 }
 
 #goOn, #goBack {
+    width: 80px;
+    height: 80px;
     margin: 0 30px;
     border-radius: 5px;
     position: relative; /* Necessario per l'animazione */
@@ -520,7 +522,9 @@
 #startRecoveryButton {
     background-color: #28a745;
     border-radius: 5px;
-    width: 160px;
+    width: 180px;
+    height: 90px;
+    font-size: 26px;
 }
 
 #startRecoveryButton:hover {
@@ -529,10 +533,14 @@
 }
 
 #pauseButton {
+    width: 70px;
+    height: 60px;
     border-radius: 5px;
 }
 
 #resetButton {
+    width: 70px;
+    height: 60px;
     border-radius: 5px;
 }
 
@@ -567,8 +575,8 @@
 
 .timer-circle {
     transform: rotate(-90deg);
-    width: 100%;
-    height: 100%;
+    width: 200px;
+    height: 200px;
 }
 
 .background-circle {

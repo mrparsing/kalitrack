@@ -203,7 +203,7 @@ function onTimerEnd() {
 
 document.addEventListener("DOMContentLoaded", () => {
     const startButton = document.getElementById("startWorkoutButton");
-    
+
     if (startButton) {
         startButton.addEventListener("click", () => {
             if (selectedSession && selectedSession.exercises) {
@@ -355,43 +355,43 @@ function startFullScreenWorkout(exercises) {
 
     goOnButton.onclick = () => {
         animateButtonDirection("goOn", "right"); // Anima verso destra
-    
+
         if (currentSeries < exercises[currentIndex].series - 1) {
             currentSeries++; // Vai alla serie successiva
         } else if (currentIndex < exercises.length - 1) {
             currentIndex++; // Passa all'esercizio successivo
             currentSeries = 0; // Resetta la serie
         }
-    
+
         showExercise(currentIndex);
     };
-    
+
     goBackButton.onclick = () => {
         animateButtonDirection("goBack", "left"); // Anima verso sinistra
-    
+
         if (currentSeries > 0) {
             currentSeries--; // Torna alla serie precedente
         } else if (currentIndex > 0) {
             currentIndex--; // Torna all'esercizio precedente
             currentSeries = exercises[currentIndex].series - 1; // Vai all'ultima serie dell'esercizio precedente
         }
-    
+
         showExercise(currentIndex);
     };
 
     pauseButton.onclick = () => {
         if (isPaused) {
             resumeTimer();
-            pauseButton.textContent = "Pause"; // Cambia il testo a "Pause"
+            pauseButton.innerHTML = '<i class="fas fa-pause"></i>'; // Mostra l'icona di pausa
         } else {
             pauseTimer();
-            pauseButton.textContent = "Resume"; // Cambia il testo a "Resume"
+            pauseButton.innerHTML = '<i class="fas fa-play"></i>'; // Mostra l'icona di riproduzione
         }
     };
 
     resetButton.onclick = () => {
         resetTimer();
-        pauseButton.textContent = "Pause"; // Rende "Pause" il testo del pulsante
+        pauseButton.innerHTML = '<i class="fas fa-pause"></i>'; // Mostra l'icona di pausa
     };
 
     // Mostra il primo esercizio
