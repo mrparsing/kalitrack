@@ -460,7 +460,7 @@
     text-align: center;
     width: 100%;
     position: fixed;
-    top: 50px; /* Distanza dal bordo inferiore */
+    top: 20px; /* Distanza dal bordo inferiore */
     left: 50%; /* Allinea il centro del bottone con il centro della pagina */
     transform: translateX(-50%); /* Corregge il posizionamento */
     padding: 10px 20px;
@@ -484,8 +484,7 @@
 }
 
 #goOn, #goBack {
-    width: 80px;
-    height: 80px;
+    width: 20%;
     margin: 0 30px;
     border-radius: 5px;
     position: relative; /* Necessario per l'animazione */
