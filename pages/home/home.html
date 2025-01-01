@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     <title>Dashboard - KaliTrack</title>
     <link rel="stylesheet" type="text/css" href="style_home.css">
     <!-- FullCalendar CSS -->
@@ -146,8 +146,6 @@
             <div class="widget-content">
                 <!-- Spinner Container per Ore -->
                 <div class="input-spinner">
-
-
                     <div class="spinner-container">
                         <label for="hourSpinner">Ore:</label>
                         <div id="hourSpinner" class="spinner">
@@ -180,9 +178,11 @@
                 <!-- Timer Display -->
                 <div id="timerDisplay" class="timer-display">00:00:00</div>
 
+                <p class="close-btn" id="closeWidget">Chiudi</p>
+
                 <!-- Buttons per Timer Control -->
-                <button id="startTimerBtn">Avvia</button>
                 <button id="stopTimerBtn">Ferma</button>
+                <button id="startTimerBtn">Avvia</button>
                 <button id="resetTimerBtn">Reset</button>
             </div>
 
@@ -378,10 +378,45 @@
                     }
                 });
 
-                // Impedire che il clic dentro il widget faccia chiudere il widget
-                document.querySelector('.widget-content').addEventListener('click', function (e) {
-                    e.stopPropagation();
+                document.addEventListener("DOMContentLoaded", function () {
+                    let isWidgetExpanded = false;
+
+                    // Riferimento al widget e al pulsante di chiusura
+                    const widget = document.getElementById("toggleWidget");
+                    const closeWidgetButton = document.getElementById("closeWidget");
+
+                    // Funzione per chiudere il widget
+                    function closeWidget() {
+                        isWidgetExpanded = false; // Imposta il widget come chiuso
+                        widget.classList.remove("expanded"); // Rimuove lo stato espanso
+                    }
+
+                    // Gestione del click sul pulsante di chiusura
+                    closeWidgetButton.addEventListener("click", function (e) {
+                        e.stopPropagation(); // Evita che l'evento clic chiuda il widget in modo errato
+                        closeWidget();
+                    });
+
+                    // Gestione del toggle del widget
+                    widget.addEventListener("click", function () {
+                        isWidgetExpanded = !isWidgetExpanded; // Cambia lo stato del widget
+
+                        this.classList.toggle("expanded");
+                        const icon = this.querySelector(".widget-icon i");
+
+                        if (isWidgetExpanded) {
+                            icon.className = "fas fa-hourglass-end";
+                        } else {
+                            icon.className = "fas fa-hourglass-start";
+                        }
+                    });
+
+                    // Impedire che il clic dentro il widget chiuda il widget
+                    document.querySelector('.widget-content').addEventListener('click', function (e) {
+                        e.stopPropagation();
+                    });
                 });
+
             });
         </script>
 </body>
