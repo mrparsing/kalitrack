@@ -411,12 +411,12 @@
                         }
                     });
 
-                    // Impedire che il clic dentro il widget chiuda il widget
-                    document.querySelector('.widget-content').addEventListener('click', function (e) {
-                        e.stopPropagation();
-                    });
                 });
 
+            });
+            // Impedire che il clic dentro il widget chiuda il widget
+            document.querySelector('.widget-content').addEventListener('click', function (e) {
+                e.stopPropagation();
             });
         </script>
 </body>
