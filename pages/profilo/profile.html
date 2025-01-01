@@ -46,7 +46,8 @@
                         document.getElementById("name").value = userData.name || "";
                         document.getElementById("email").value = userData.email || "";
                         document.getElementById("age").value = userData.age || "";
-                        document.getElementById("gender").value = userData.gender || "Maschio";
+                        let capitalizeGender = userData.gender.charAt(0).toUpperCase() + userData.gender.slice(1).toLowerCase();
+                        document.getElementById("gender").value = capitalizeGender || "";
                         document.getElementById("weight").value = userData.weight || "";
                     } else {
                         console.log("Nessun documento trovato!");
@@ -185,13 +186,8 @@
                     <p><strong>Email:</strong> <input type="email" id="email" placeholder="Caricamento..." disabled
                             style="color: gray;"></p>
                     <p><strong>Età:</strong> <input type="number" id="age" placeholder="Caricamento..."></p>
-                    <p><strong>Sesso:</strong>
-                        <select id="gender" disabled style="color: gray;">
-                            <option value="Maschio">Maschio</option>
-                            <option value="Femmina">Femmina</option>
-                            <option value="Altro">Altro</option>
-                        </select>
-                    </p>
+                    <p><strong>Sesso:</strong> <input type="gender" id="gender" placeholder="Caricamento..." disabled
+                        style="color: gray;"></p>
                     <p><strong>Peso:</strong> <input type="number" id="weight" placeholder="Caricamento..."></p>
                 </div>
                 <button class="save-btn" onclick="saveProfile()">Salva Modifiche</button>

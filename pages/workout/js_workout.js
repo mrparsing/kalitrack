@@ -215,18 +215,18 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
     const endButton = document.getElementById("endWorkout");
     endButton.addEventListener("click", () => {
-        const fullscreenContainer = document.getElementById("fullscreenExercise");
-        fullscreenContainer.classList.add("hidden");
+        document.getElementById("fullscreenExercise").classList.add("hidden");
     })
 });
 
+let remainingTime = 0; // Tempo rimanente per il recupero
+let currentIndex = 0; // Indice dell'esercizio corrente
+let currentSeries = 0; // Indice della serie corrente
+let timerId = null; // Per memorizzare il timer
+let isPaused = false; // Stato del timer
+
 function startFullScreenWorkout(exercises) {
     document.getElementById("startWorkoutButton").textContent = "Riprendi"
-    let currentIndex = 0; // Indice dell'esercizio corrente
-    let currentSeries = 0; // Indice della serie corrente
-    let timerId = null; // Per memorizzare il timer
-    let remainingTime = 0; // Tempo rimanente per il recupero
-    let isPaused = false; // Stato del timer
 
     const fullscreenContainer = document.getElementById("fullscreenExercise");
     const exerciseNameElement = document.getElementById("exerciseName");
@@ -285,7 +285,7 @@ function startFullScreenWorkout(exercises) {
                 onTimerEnd();
             }
         }
-        
+
         function tick() {
             if (isPaused) return;
 
@@ -312,7 +312,9 @@ function startFullScreenWorkout(exercises) {
         }
 
         clearInterval(timerId); // Reset del timer se già attivo
-        timerId = setInterval(tick, 1000);
+        timerId = setInterval(() => {
+            tick();
+        }, 1000);
         updateTimerDisplay(remainingTime);
     }
 
