@@ -1,4 +1,4 @@
-let modify = false;
+let modify;
 let exercises = [];
 let index;
 
@@ -66,7 +66,7 @@ function initialize() {
         if (modify) {
             modifyExercise(exercise, series, repetitions, recovery);
             document.getElementById("addExerciseBtn").innerHTML = "Memorizza esercizio";
-            modify = false;
+
         } else {
             addToTemporaryList(exercise, series, repetitions, recovery);
         }
@@ -167,6 +167,7 @@ function initialize() {
             });
         }
 
+        console.log(modify);
         if (modify) {
             // Se modify è true, aggiorna una sessione esistente
             auth.onAuthStateChanged(async (user) => {
@@ -184,6 +185,8 @@ function initialize() {
                             showNotification("Sessione non trovata.", "red");
                             return;
                         }
+
+                        console.log(sessionIndex);
 
                         // Aggiorna la sessione con i nuovi esercizi
                         sessionData[sessionIndex] = {
