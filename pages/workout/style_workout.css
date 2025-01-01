@@ -463,11 +463,9 @@
     top: 20px; /* Distanza dal bordo inferiore */
     left: 50%; /* Allinea il centro del bottone con il centro della pagina */
     transform: translateX(-50%); /* Corregge il posizionamento */
-    padding: 10px 20px;
     color: white;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
     transition: background-color 0.3s;
 }
 
@@ -541,20 +539,27 @@
 }
 
 #pauseButton {
-    width: 70px;
-    height: 60px;
+    width: 100%;
     border-radius: 5px;
+    margin: 10px;
 }
 
 #resetButton {
-    width: 70px;
-    height: 60px;
+    width: 100%;
     border-radius: 5px;
+    margin: 10px;
+}
+
+.pauseResetBtns {
+    display: flex;
+    flex-direction: row;
+    width: 200px;
+    align-items: center;
 }
 
 #exerciseSeries, #exerciseRepetitions, #exerciseRecovery {
     margin: 8px;
-    font-size: 32px;
+    font-size: 28px;
 }
 
 .start-workout-button {
