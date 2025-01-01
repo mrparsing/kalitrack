@@ -483,7 +483,7 @@
 
 #goOn, #goBack {
     width: 20%;
-    margin: 0 30px;
+    margin: 0 10px;
     border-radius: 5px;
     position: relative; /* Necessario per l'animazione */
     overflow: hidden;   /* Nasconde il contenuto che esce durante l'animazione */
@@ -539,22 +539,13 @@
 }
 
 #pauseButton {
-    width: 100%;
+    width: 80px;
     border-radius: 5px;
-    margin: 10px;
 }
 
 #resetButton {
-    width: 100%;
+    width: 80px;
     border-radius: 5px;
-    margin: 10px;
-}
-
-.pauseResetBtns {
-    display: flex;
-    flex-direction: row;
-    width: 200px;
-    align-items: center;
 }
 
 #exerciseSeries, #exerciseRepetitions, #exerciseRecovery {
